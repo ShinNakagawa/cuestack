@@ -1,0 +1,45 @@
+<ion-content>
+  <ion-title>Edit Stack data</ion-title>
+  <form [formGroup]="editStackForm" (ngSubmit)="update()" novalidate>
+    <ion-row>
+      <ion-item>
+        <ion-label for="title"></ion-label>
+        <ion-input type="title" value='{{card.title}}' placeholder="Title" formControlName="title"></ion-input>
+      </ion-item>
+    </ion-row>
+    <ion-row>
+      <ion-item>
+        <ion-label for="description"></ion-label>
+        <ion-input type="description" value='{{card.description}}' placeholder="Description" formControlName="description"></ion-input>
+      </ion-item>
+    </ion-row>
+    <ion-row>
+      <ion-item>
+        <ion-label for="imageUrl"></ion-label>
+        <ion-input type="imageUrl" value='{{card.imageUrl}}' placeholder="ImageUrl" formControlName="imageUrl"></ion-input>
+      </ion-item>
+    </ion-row>
+    <ion-row>
+      <ion-item>
+        <ion-label for="status"></ion-label>
+        <ion-select placeholder="Status" formControlName="status">
+          <ion-option value="all">All</ion-option>
+          <ion-option value="favorite">Favorite</ion-option>
+          <ion-option value="study">Study</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-row>
+  </form>
+  <ion-row no-padding>
+    <ion-col>
+      <button ion-button block (click)="update()">
+        Update
+      </button>
+    </ion-col>
+    <ion-col text-right>
+      <button ion-button block color="danger" (click)="dismiss()">
+        Cancel
+      </button>
+    </ion-col>
+  </ion-row>
+</ion-content>

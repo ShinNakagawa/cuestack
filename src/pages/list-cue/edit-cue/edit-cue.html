@@ -1,0 +1,44 @@
+<ion-content>
+  <form [formGroup]="editCueForm" (ngSubmit)="submit()" novalidate>      
+    <ion-row>
+      <ion-item>
+        <ion-label for="question"></ion-label>
+        <ion-input type="question" value='{{card.question}}' placeholder="Question" formControlName="question"></ion-input>
+      </ion-item>
+    </ion-row> 
+    <ion-row>         
+      <ion-item>
+        <ion-label for="answer"></ion-label>
+        <ion-input type="answer" value='{{card.answer}}' placeholder="Answer" formControlName="answer"></ion-input>
+      </ion-item>
+    </ion-row>
+    <ion-row>         
+      <ion-item>
+        <ion-label for="imageUrl"></ion-label>
+        <ion-input type="imageUrl" value='{{card.imageUrl}}' placeholder="ImageUrl" formControlName="imageUrl"></ion-input>
+      </ion-item>
+    </ion-row>
+    <ion-row>         
+      <ion-item>
+        <ion-label for="rate"></ion-label>
+        <ion-select placeholder="Rate" formControlName="rate">
+          <ion-option value="good">Good</ion-option>
+          <ion-option value="bad">Bad</ion-option>
+          <ion-option value="never shows">Never shows</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-row>
+  </form>
+  <ion-row no-padding>
+    <ion-col>
+      <button ion-button block (click)="update()">
+        Update
+      </button>
+    </ion-col>
+    <ion-col text-right>
+      <button ion-button block color="danger" (click)="dismiss()">
+        Cancel
+      </button>
+    </ion-col>
+  </ion-row>
+</ion-content>

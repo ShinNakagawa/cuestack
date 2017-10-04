@@ -3,16 +3,68 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Home</ion-title>
+    <ion-title>Cue Stacks</ion-title>
+    <button ion-button round color="secondary" (click)="openModalSignup()">sign up</button>
+    <button *ngIf="auth.currentUser; else login;" ion-button round (click)="logout()">Log out</button>
+    <ng-template #login>
+      <button ion-button round (click)="openModalLogin()">Log in</button>
+    </ng-template>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <h3>Ionic Menu Starter</h3>
+  <h3>Stacks
+    <ion-icon *ngIf="auth.currentUser" name="add-circle" block (click)="openModalAddStack()"></ion-icon>
+  </h3>
+  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div>  
+  <ion-row no-padding>
+    <button *ngIf="checked == false; else selectcheck;" ion-button round (click)="checkSelect()">Select</button>
+    <ng-template #selectcheck>
+      <button ion-button round color="danger" (click)="checkSelect()">Close</button>
+      <button ion-button round color="secondary" (click)="actionSheet1()">Action</button>
+    </ng-template>
+  </ion-row>
 
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will show you the way.
-  </p>
+  <ion-card *ngFor="let card of cards" >
+    <div *ngIf="card.status == status || card.status == 'all' || status == 'all'">
+      <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>     
+      <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />
+      <ion-card-content>
+        <h2 class="card-title" (click)="cardTapped($event, card)">
+          {{card.title}}
+        </h2>
+        <p>
+          {{card.description}}
+        </p>
+        <p>
+          {{card.status}}
+        </p>  
+        <p>
+          {{card.timeStart}}
+        </p>  
+      </ion-card-content>
+    </div>
+  </ion-card>
 
-  <button ion-button secondary menuToggle>Toggle Menu</button>
+  <!-- Float Action Buttons -->
+  <ion-fab bottom right >
+    <button ion-fab class="pop-in" color="danger">Share</button>
+    <ion-fab-list side="top">
+      <button ion-fab color="primary">
+        <ion-icon  name="logo-facebook"></ion-icon>
+      </button>
+      <button ion-fab color="secondary">
+        <ion-icon name="logo-twitter"></ion-icon>
+      </button>
+      <button ion-fab color="dark">
+        <ion-icon name="logo-instagram"></ion-icon>
+      </button>
+    </ion-fab-list>
+    <ion-fab-list side="left">
+      <button ion-fab>
+        <ion-icon name="logo-github"></ion-icon>
+      </button>
+    </ion-fab-list>
+  </ion-fab>
+
 </ion-content>

@@ -1,37 +1,69 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, ModalController } from 'ionic-angular';
+import { AuthProvider } from '../../providers/auth/auth';
+import { CueStackProvider } from '../../providers/cuestack/cuestack';
+import { ListCuePage } from '../list-cue/list-cue';
 
 @Component({
   selector: 'page-list',
   templateUrl: 'list.html'
 })
 export class ListPage {
-  selectedItem: any;
-  icons: string[];
-  items: Array<{title: string, note: string, icon: string}>;
+  cards: Array<{title: string, imageUrl: string, description: string, id: string, status: string}>;
+  status: string;
+  userid : string;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-    // If we navigated to this page, we will have an item available as a nav param
-    this.selectedItem = navParams.get('item');
-
-    // Let's populate this page with some filler content for funzies
-    this.icons = ['flask', 'wifi', 'beer', 'football', 'basketball', 'paper-plane',
-    'american-football', 'boat', 'bluetooth', 'build'];
-
-    this.items = [];
-    for (let i = 1; i < 11; i++) {
-      this.items.push({
-        title: 'Item ' + i,
-        note: 'This is item #' + i,
-        icon: this.icons[Math.floor(Math.random() * this.icons.length)]
+  constructor(
+    private navCtrl: NavController,
+    private modalCtrl: ModalController,
+    private cueStack: CueStackProvider,
+    private auth: AuthProvider) {
+      console.log("status=" + this.status);
+      let user = this.auth.authUser();
+      user.subscribe(data => {
+        if (data) {
+          this.userid = data.uid;
+          let stacks = this.cueStack.getStacks(this.userid);
+          stacks.subscribe(res => {
+            this.cards = [];   
+            res.forEach(stack => {
+              this.cards.push({
+                title: stack.title,
+                description: stack.description,
+                imageUrl: stack.imageUrl,
+                id: stack.id,
+                status: stack.status
+              })
+            });
+          });
+        }
       });
-    }
+
+   }
+
+  cardTapped(event, card) {
+    this.navCtrl.push(ListCuePage, {title: card.title, id: card.id});    
   }
 
-  itemTapped(event, item) {
-    // That's right, we're pushing to ourselves!
-    this.navCtrl.push(ListPage, {
-      item: item
-    });
+  reportsPage(card) {
+    this.modalCtrl.create('ReportsPage', {title: card.title, id: card.id, userid: this.userid}, { cssClass: 'inset-modal' })
+    .present();
   }
+
+
+  delete(card) {
+    alert('Deleting ' + card.title);
+    this.cueStack.deleteStack(card.id);
+  }
+
+  edit(card) {
+    this.modalCtrl.create('EditStackPage', {
+      id: card.id,
+      title: card.title,
+      description: card.description,
+      imageUrl: card.imageUrl,
+      status: card.status}, { cssClass: 'inset-modal' })
+    .present();
+  }
+
 }

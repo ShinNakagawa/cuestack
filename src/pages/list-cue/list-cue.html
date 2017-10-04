@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>List Cue</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content> 
+
+  <ion-card *ngFor="let card of cards">
+    <ion-card-content>
+      <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />      
+      <h2 class="card-title" (click)="cardTapped($event, card)">
+        Question: {{card.question}}
+      </h2>
+      <p>
+        Answer: {{card.answer}}
+      </p>
+      <p>
+        Image: {{card.imageUrl}}
+      </p>
+      <p>
+        Rate: {{card.rate}}
+      </p>
+    </ion-card-content>
+    <ion-row no-padding>
+      <ion-col>
+        <button ion-button clear small color="danger" icon-left (click)="edit(card)">
+          <ion-icon name='star'></ion-icon>
+          Edit
+        </button>
+      </ion-col>
+      <ion-col text-center>
+        <button ion-button clear small color="danger" icon-left (click)="delete(card)">
+          <ion-icon name='musical-notes'></ion-icon>
+          Delete
+        </button>
+      </ion-col>
+      <ion-col text-right>
+        <button ion-button clear small color="danger" icon-left (click)="share(card)">
+          <ion-icon name='share-alt'></ion-icon>
+          Share
+        </button>
+      </ion-col>
+    </ion-row>
+  </ion-card>
+
+</ion-content>

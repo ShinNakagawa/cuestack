@@ -1,0 +1,19 @@
+<ion-content>
+  <ion-card>
+    <ion-card>
+      <ion-card-header>
+        Stack Report: user[{{userid}}]
+      </ion-card-header>
+      <ion-card-content>
+        <canvas #barCanvas></canvas>
+      </ion-card-content>
+    </ion-card>
+    <ion-card-header>
+      Cue Report: Stack[{{title}}]
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #pieCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+  <button ion-button block color="danger" (click)="dismiss()">Dismiss</button>  
+</ion-content>

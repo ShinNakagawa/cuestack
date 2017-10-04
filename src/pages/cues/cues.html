@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Cues:  {{title}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <h3>Cues
+    <ion-icon *ngIf="currentUser" name="add-circle" block (click)="openModalAddCue()"></ion-icon>
+  </h3>
+ 
+  <ion-slides>
+    <ion-slide *ngFor="let card of cards">
+      <flash-card>
+        <div class="fc-front">
+          <p>{{card.front.count}} of {{card.front.length}}</p>              
+          <img *ngIf="card.front.imageUrl"  [src]="card.front.imageUrl" />
+          <h2 text-center>{{card.front.title}}</h2>
+          <h3 text-center>{{card.front.subtitle}}</h3>
+          <hr />
+          <p *ngIf="card.front.title" >{{card.front.content}}</p>
+          <p>{{card.front.timeStart}}</p>              
+        </div>
+        <div class="fc-back">
+          <p>{{card.front.count}} of {{card.front.length}}</p>              
+          <img *ngIf="card.back.imageUrl"  [src]="card.back.imageUrl" />
+          <h2 text-center>{{card.back.title}}</h2>
+          <h3 text-center>{{card.back.subtitle}}</h3>
+          <hr />
+          <p *ngIf="card.back.title" >{{card.back.content}}</p>
+        </div>
+      </flash-card>
+      <ion-row no-padding>
+        <ion-item>
+          <ion-label>Rate: </ion-label>
+          <ion-select [(ngModel)]="card.front.rate" block (ionChange)="updateCueRate(card)">
+            <ion-option value="bad">Bad</ion-option>
+            <ion-option value="good">Good</ion-option>
+            <ion-option value="never show">Never Show</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-range min="0" max='{{card.front.length}}' step="1" color="danger" value='{{card.front.count}}' [(ngModel)]="card.front.count"></ion-range>
+        </ion-item>      
+      </ion-row>
+    </ion-slide>
+  </ion-slides>
+
+</ion-content>

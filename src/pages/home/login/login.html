@@ -1,0 +1,28 @@
+<ion-content>
+  <form [formGroup]="loginForm" (ngSubmit)="submit()" novalidate>      
+    <ion-row>
+      <ion-item>
+        <ion-label for="email"></ion-label>
+          <ion-input type="email" value="" placeholder="Email" formControlName="email"></ion-input>
+        </ion-item>
+    </ion-row>
+    <ion-row>
+      <ion-item>
+        <ion-label for="password"></ion-label>
+        <ion-input type="password" placeholder="Password" formControlName="password"></ion-input>
+      </ion-item>
+    </ion-row>
+  </form>
+  <ion-row no-padding>
+    <ion-col>
+      <button ion-button block (click)="login()">
+        Log in
+      </button>
+    </ion-col>
+    <ion-col text-right>
+      <button ion-button block color="danger" (click)="dismiss()">
+        Cancel
+      </button>
+    </ion-col>
+  </ion-row>
+</ion-content>
