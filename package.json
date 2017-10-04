@@ -27,6 +27,7 @@
         "@ionic/storage": "2.0.1",
         "angularfire2": "^4.0.0-rc.2",
         "chart.js": "^2.7.0",
+        "connect": "^3.6.5",
         "cordova-android": "^6.2.3",
         "cordova-browser": "^4.1.0",
         "cordova-plugin-device": "^1.1.4",
@@ -43,6 +44,7 @@
         "morgan": "^1.9.0",
         "promise-polyfill": "6.0.2",
         "rxjs": "5.4.0",
+        "serve-static": "^1.13.1",
         "sw-toolbox": "3.6.0",
         "zone.js": "0.8.12"
     },
