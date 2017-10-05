@@ -212,8 +212,8 @@ var HomePage = (function () {
         this.auth = auth;
         this.status = 'all';
         this.checked = false;
-        var user = this.auth.authUser();
-        user.subscribe(function (data) {
+        this.user = this.auth.authUser();
+        this.user.subscribe(function (data) {
             if (data) {
                 var userid = data.uid;
                 var stacks = _this.cueStack.getStacks(userid);

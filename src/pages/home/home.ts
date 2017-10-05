@@ -4,6 +4,9 @@ import { NavController, ModalController, AlertController, ActionSheetController 
 import { AuthProvider } from '../../providers/auth/auth';
 import { CueStackProvider } from '../../providers/cuestack/cuestack';
 import moment from 'moment';
+import { AngularFireAuth } from 'angularfire2/auth';
+import { Observable } from 'rxjs/Observable';
+import * as firebase from 'firebase/app';
 
 @Component({
   selector: 'page-home',
@@ -13,6 +16,7 @@ export class HomePage {
   cards: Array<{id: string, checked: boolean, title: string, imageUrl: string, description: string, status: string, timeStart: any}>;
   status: string;
   checked: boolean;
+  private user: Observable<firebase.User>;
   
   constructor(
     private navCtrl: NavController,
@@ -23,8 +27,8 @@ export class HomePage {
     private auth: AuthProvider) {      
       this.status = 'all';
       this.checked = false;
-      let user = this.auth.authUser();
-      user.subscribe(data => {
+      this.user = this.auth.authUser();
+      this.user.subscribe(data => {
         if (data) {
           let userid = data.uid;
           let stacks = this.cueStack.getStacks(userid);
