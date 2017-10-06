@@ -6,5 +6,5 @@ export class Cue {
     answer?: string;
     imageUrl?: string;
     rate?: string;
-    timeStart?: Date = new Date();    
+    timeStart?: string;
 }

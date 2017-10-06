@@ -3,7 +3,7 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Cues:  {{title}}</ion-title>
+    <ion-title>Cues:</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -12,12 +12,12 @@
   <h3>Cues
     <ion-icon *ngIf="currentUser" name="add-circle" block (click)="openModalAddCue()"></ion-icon>
   </h3>
- 
+  <button ion-button round color="danger" (click)="showRates()">Show Rates</button> 
   <ion-slides>
     <ion-slide *ngFor="let card of cards">
       <flash-card>
         <div class="fc-front">
-          <p>{{card.front.count}} of {{card.front.length}}</p>              
+          <p>{{card.front.count}} of {{cards.length}}</p>              
           <img *ngIf="card.front.imageUrl"  [src]="card.front.imageUrl" />
           <h2 text-center>{{card.front.title}}</h2>
           <h3 text-center>{{card.front.subtitle}}</h3>
@@ -26,7 +26,7 @@
           <p>{{card.front.timeStart}}</p>              
         </div>
         <div class="fc-back">
-          <p>{{card.front.count}} of {{card.front.length}}</p>              
+          <p>{{card.front.count}} of {{cards.length}}</p>              
           <img *ngIf="card.back.imageUrl"  [src]="card.back.imageUrl" />
           <h2 text-center>{{card.back.title}}</h2>
           <h3 text-center>{{card.back.subtitle}}</h3>

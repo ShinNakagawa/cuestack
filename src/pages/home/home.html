@@ -16,7 +16,8 @@
   <h3>Stacks
     <ion-icon *ngIf="auth.currentUser" name="add-circle" block (click)="openModalAddStack()"></ion-icon>
   </h3>
-  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div>  
+  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div> 
+  <button ion-button round color="danger" (click)="showSharedStacks()">Show Shared Stacks</button>   
   <ion-row no-padding>
     <button *ngIf="checked == false; else selectcheck;" ion-button round (click)="checkSelect()">Select</button>
     <ng-template #selectcheck>
@@ -42,11 +43,14 @@
         <p>
           {{card.timeStart}}
         </p>  
-      </ion-card-content>
+        <p>
+          {{card.shareflag}}
+        </p>  
+        </ion-card-content>
     </div>
   </ion-card>
 
-  <!-- Float Action Buttons -->
+  <!-- Float Action Buttons 
   <ion-fab bottom right >
     <button ion-fab class="pop-in" color="danger">Share</button>
     <ion-fab-list side="top">
@@ -66,5 +70,5 @@
       </button>
     </ion-fab-list>
   </ion-fab>
-
+-->
 </ion-content>

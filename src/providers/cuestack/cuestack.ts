@@ -5,12 +5,14 @@ import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Cue } from '../../models/cue.model';
 import { Stack } from '../../models/stack.model';
+import { CueRate } from '../../models/cuerate.model';
 import moment from 'moment';
 
 @Injectable()
 export class CueStackProvider {
   user: firebase.User;
   cues: FirebaseListObservable<Cue[]>;
+  cuerates: FirebaseListObservable<CueRate[]>;
   stacks: FirebaseListObservable<Stack[]>;
   userName: Observable<string>;
 
@@ -47,11 +49,11 @@ export class CueStackProvider {
       question: question,
       answer: answer,
       imageUrl: imageUrl,
-      rate: rate,
-      timeStart: timestamp
-      //timeStart: firebase.database.ServerValue.TIMESTAMP,
+      //rate: rate,
+      timeStart: timestamp,
     }).key;
     this.updateCueID(key);
+    this.addCueRate(userid, stackid, key, rate); 
   }
 
   updateCueID(key: string): void {
@@ -63,14 +65,46 @@ export class CueStackProvider {
       .catch(error => console.log(error));
   }
 
+  addCueRate(userid: string, stackid: string, cueid: string, rate: string) {  
+    const timestamp = moment(new Date()).format('YYYY-MM-DD');
+    this.cuerates = this.getCueRates(cueid);
+    let key = this.cuerates.push({
+      userid: userid,
+      stackid: stackid,
+      cueid: cueid,
+      rate: rate,
+      timeStart: timestamp
+    }).key;
+    this.updateCueRateID(key);
+  }
+
+  updateCueRateID(key: string): void {
+    const path = `cuerates/${key}`;
+    const data = {
+      id: key
+    };
+    this.db.object(path).update(data)
+      .catch(error => console.log(error));
+  }
+
   updateCueRate(id: string, rate: string): void {
-    const path = `cues/${id}`;
+    const path = `cuerates/${id}`;
     const data = {
       rate: rate,
       //timeStart: firebase.database.ServerValue.TIMESTAMP,
     };
     this.db.object(path).update(data)
       .catch(error => console.log(error));
+  }
+
+  getCueRates(cueid: string): FirebaseListObservable<CueRate[]> {
+    return this.db.list('cuerates', {
+      query: {
+        limitToLast: 25,
+        orderByChild: 'cueid',
+        equalTo: cueid,
+      }
+    });
   }
 
   getCues(stackid: string): FirebaseListObservable<Cue[]> {
@@ -88,8 +122,7 @@ export class CueStackProvider {
     const data = {
       question: cue.question,
       answer: cue.answer,
-      imageUrl: cue.imageUrl,
-      rate: cue.rate
+      imageUrl: cue.imageUrl
     };
     this.db.object(path).update(data)
       .catch(error => console.log(error));
@@ -97,6 +130,12 @@ export class CueStackProvider {
 
   deleteCue(key: string): void {
     const path = `cues/${key}`;
+    this.db.object(path).remove()
+      .catch(error => console.log(error));
+  }
+
+  deleteCueRate(key: string): void {
+    const path = `cuerates/${key}`;
     this.db.object(path).remove()
       .catch(error => console.log(error));
   }
@@ -114,7 +153,7 @@ export class CueStackProvider {
       imageUrl: imageUrl,
       status: status,
       timeStart: timestamp,
-      //timeStart: firebase.database.ServerValue.TIMESTAMP,
+      shareflag: false,
     }).key;
     this.updateStackID(key);
   }
@@ -129,15 +168,24 @@ export class CueStackProvider {
     });
   }
 
-  // getPublicStacks(): FirebaseListObservable<Stack[]> {
-  //   return this.db.list('stacks', {
-  //     query: {
-  //       limitToLast: 25,
-  //       orderByChild: 'shared',
-  //       equalTo: 'public',
-  //     }
-  //   });
-  // }
+  getShareStacks(shareflag: boolean): FirebaseListObservable<Stack[]> {
+    return this.db.list('stacks', {
+      query: {
+        limitToLast: 25,
+        orderByChild: 'shareflag',
+        equalTo: shareflag,
+      }
+    });
+  }
+
+  updateStackShare(stackid: string, shareflag: boolean): void {
+    const path = `stacks/${stackid}`;
+    const data = {
+      shareflag: shareflag
+    };
+    this.db.object(path).update(data)
+      .catch(error => console.log(error));
+  }
 
   updateStackID(key: string): void {
     const path = `stacks/${key}`;
@@ -163,7 +211,8 @@ export class CueStackProvider {
       title: stack.title,
       description: stack.description,
       imageUrl: stack.imageUrl,
-      status: stack.status
+      status: stack.status,
+      shareflag: stack.shareflag
     };
     this.db.object(path).update(data)
       .catch(error => console.log(error));

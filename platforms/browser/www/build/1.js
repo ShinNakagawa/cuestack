@@ -74,23 +74,27 @@ var EditStackPage = (function () {
         var id = navParams.get('id');
         var imageUrl = navParams.get('imageUrl');
         var status = navParams.get('status');
+        var shareflag = navParams.get('shareflag');
         this.card = {
             id: id,
             title: title,
             description: description,
             imageUrl: imageUrl,
             status: status,
+            shareflag: shareflag
         };
         this.editStackForm = this.fb.group({
             'title': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],
             'description': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],
             'imageUrl': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],
-            'status': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])]
+            'status': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],
+            'shareflag': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])]
         });
         this.title = this.editStackForm.controls['title'];
         this.description = this.editStackForm.controls['description'];
         this.imageUrl = this.editStackForm.controls['imageUrl'];
         this.status = this.editStackForm.controls['status'];
+        this.shareflag = this.editStackForm.controls['shareflag'];
     }
     EditStackPage.prototype.dismiss = function () {
         this.viewCtrl.dismiss();
@@ -100,6 +104,7 @@ var EditStackPage = (function () {
         this.card.description = this.description.value;
         this.card.imageUrl = this.imageUrl.value;
         this.card.status = this.status.value;
+        this.card.shareflag = this.shareflag.value;
         //send message to add it into firebase
         this.cueStack.updateStack(this.card);
         this.viewCtrl.dismiss();
@@ -110,7 +115,7 @@ var EditStackPage = (function () {
 EditStackPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* IonicPage */])(),
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-edit-stack',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\list\edit-stack\edit-stack.html"*/'<ion-content>\n  <ion-title>Edit Stack data</ion-title>\n  <form [formGroup]="editStackForm" (ngSubmit)="update()" novalidate>\n    <ion-row>\n      <ion-item>\n        <ion-label for="title"></ion-label>\n        <ion-input type="title" value=\'{{card.title}}\' placeholder="Title" formControlName="title"></ion-input>\n      </ion-item>\n    </ion-row>\n    <ion-row>\n      <ion-item>\n        <ion-label for="description"></ion-label>\n        <ion-input type="description" value=\'{{card.description}}\' placeholder="Description" formControlName="description"></ion-input>\n      </ion-item>\n    </ion-row>\n    <ion-row>\n      <ion-item>\n        <ion-label for="imageUrl"></ion-label>\n        <ion-input type="imageUrl" value=\'{{card.imageUrl}}\' placeholder="ImageUrl" formControlName="imageUrl"></ion-input>\n      </ion-item>\n    </ion-row>\n    <ion-row>\n      <ion-item>\n        <ion-label for="status"></ion-label>\n        <ion-select placeholder="Status" formControlName="status">\n          <ion-option value="all">All</ion-option>\n          <ion-option value="favorite">Favorite</ion-option>\n          <ion-option value="study">Study</ion-option>\n        </ion-select>\n      </ion-item>\n    </ion-row>\n  </form>\n  <ion-row no-padding>\n    <ion-col>\n      <button ion-button block (click)="update()">\n        Update\n      </button>\n    </ion-col>\n    <ion-col text-right>\n      <button ion-button block color="danger" (click)="dismiss()">\n        Cancel\n      </button>\n    </ion-col>\n  </ion-row>\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\list\edit-stack\edit-stack.html"*/
+        selector: 'page-edit-stack',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\list\edit-stack\edit-stack.html"*/'<ion-content>\n  <ion-title>Edit Stack data</ion-title>\n  <form [formGroup]="editStackForm" (ngSubmit)="update()" novalidate>\n    <ion-row>\n      <ion-item>\n        <ion-label for="title"></ion-label>\n        <ion-input type="title" value=\'{{card.title}}\' placeholder="Title" formControlName="title"></ion-input>\n      </ion-item>\n    </ion-row>\n    <ion-row>\n      <ion-item>\n        <ion-label for="description"></ion-label>\n        <ion-input type="description" value=\'{{card.description}}\' placeholder="Description" formControlName="description"></ion-input>\n      </ion-item>\n    </ion-row>\n    <ion-row>\n      <ion-item>\n        <ion-label for="imageUrl"></ion-label>\n        <ion-input type="imageUrl" value=\'{{card.imageUrl}}\' placeholder="ImageUrl" formControlName="imageUrl"></ion-input>\n      </ion-item>\n    </ion-row>\n    <ion-row>\n      <ion-item>\n        <ion-label for="status"></ion-label>\n        <ion-select placeholder="Status" formControlName="status">\n          <ion-option value="all">All</ion-option>\n          <ion-option value="favorite">Favorite</ion-option>\n          <ion-option value="study">Study</ion-option>\n        </ion-select>\n      </ion-item>\n    </ion-row>\n    <ion-row>\n      <ion-item>\n        <ion-label for="shareflag"></ion-label>\n        <ion-select placeholder="Shareflag" formControlName="shareflag">\n          <ion-option value="public">Public</ion-option>\n          <ion-option value="private">Private</ion-option>\n        </ion-select>\n      </ion-item>\n    </ion-row>\n  </form>\n  <ion-row no-padding>\n    <ion-col>\n      <button ion-button block (click)="update()">\n        Update\n      </button>\n    </ion-col>\n    <ion-col text-right>\n      <button ion-button block color="danger" (click)="dismiss()">\n        Cancel\n      </button>\n    </ion-col>\n  </ion-row>\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\list\edit-stack\edit-stack.html"*/
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["m" /* ViewController */],
         __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* NavParams */],

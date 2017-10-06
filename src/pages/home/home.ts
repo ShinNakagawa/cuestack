@@ -4,7 +4,6 @@ import { NavController, ModalController, AlertController, ActionSheetController 
 import { AuthProvider } from '../../providers/auth/auth';
 import { CueStackProvider } from '../../providers/cuestack/cuestack';
 import moment from 'moment';
-import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 
@@ -13,9 +12,10 @@ import * as firebase from 'firebase/app';
   templateUrl: 'home.html'
 })
 export class HomePage {
-  cards: Array<{id: string, checked: boolean, title: string, imageUrl: string, description: string, status: string, timeStart: any}>;
+  cards: Array<{id: string, checked: boolean, title: string, imageUrl: string, description: string, status: string, timeStart: any, shareflag: boolean}>;
   status: string;
   checked: boolean;
+  userid: string;
   private user: Observable<firebase.User>;
   
   constructor(
@@ -30,8 +30,8 @@ export class HomePage {
       this.user = this.auth.authUser();
       this.user.subscribe(data => {
         if (data) {
-          let userid = data.uid;
-          let stacks = this.cueStack.getStacks(userid);
+          this.userid = data.uid;
+          let stacks = this.cueStack.getStacks(this.userid);
           stacks.subscribe(res => {
             this.cards = [];   
             res.forEach(stack => {
@@ -42,6 +42,7 @@ export class HomePage {
                 description: stack.description,
                 imageUrl: stack.imageUrl,
                 status: stack.status,
+                shareflag: stack.shareflag,
                 timeStart: moment(stack.timeStart, 'YYYY-MM-DD').calendar()
                 //timeStart: moment(stack.timeStart, 'YYYY-MM-DD').add(5, 'days').calendar()
               })
@@ -56,18 +57,32 @@ export class HomePage {
 //   http://i.dailymail.co.uk/i/pix/2017/01/16/20/332EE38400000578-4125738-image-a-132_1484600112489.jpg   
 //   https://cdn.eso.org/images/thumb700x/eso1238a.jpg
 
+  showSharedStacks() {
+    let sharedStacks = this.cueStack.getShareStacks(true);
+    sharedStacks.subscribe(res => {
+      //console.log('shared length=' + res.length);
+      res.forEach(data =>{
+        let stack = this.cards.find(item => item.id === data.id);
+        if (!stack) {
+          //console.log('found id=' + data.id);          
+          this.cards.push({
+            id: data.id,
+            checked: false,
+            title: data.title,
+            description: data.description,
+            imageUrl: data.imageUrl,
+            status: data.status,
+            shareflag: data.shareflag,
+            timeStart: moment(data.timeStart, 'YYYY-MM-DD').calendar()
+          })
+        }
+      })
+    });
+
+  }
 
   openModalAddStack() {
     this.openModal('AddStackPage');
-    // let addStackModel = this.modalCtrl.create('AddStackPage', {id: String(this.count)}, { cssClass: 'inset-modal' });
-    // addStackModel.onDidDismiss(data => {
-    //   console.log(data);
-    //   if (data) {
-    //     //this.cards = [];
-    //     console.log("clean cards");
-    //   }
-    // });
-    // addStackModel.present();
   }
 
   openModalLogin() {
@@ -89,35 +104,24 @@ export class HomePage {
   }
 
   cardTapped(event, card) {
-    //console.log("id=" + String(card.id));
-    this.navCtrl.push(CuesPage, {title: card.title, id: card.id, currentUser: this.auth.currentUser});    
+    let ids = [];
+    ids.push({id: card.id, title: card.title});
+    this.navCtrl.push(CuesPage, {id: ids, userid: this.userid, currentUser: this.auth.currentUser});    
   }
 
-
-  updateStatus(cards, status: string) {
-    //alert('updateStatus = ' + status);
-    cards.forEach(card => {    
+  startStudy() {
+    let ids = [];
+    this.cards.forEach(card => {    
       if (card.checked) {
-        this.cueStack.updateStackStatus(card.id, status);
+        ids.push({id: card.id, title: card.title})
       }
     });
-    //clear
-    this.clearCheck(false);        
-  }
-
-  deleteChecked(cards) {
-    //alert('delete checked items');
-    cards.forEach(card => { 
-      if (card.checked) {  
-        this.cueStack.deleteStack(card.id);
-      }
-    });
-    //clear
-    this.clearCheck(false);        
+    //clear check
+    this.clearCheck(false);   
+    this.navCtrl.push(CuesPage, {id: ids, userid: this.userid, currentUser: this.auth.currentUser});    
   }
 
   checkSelect() {
-    //alert('checkSelect:: checked all off');
     if (this.checked) {this.checked = false;}
     else { this.checked = true;}
     //clear
@@ -131,8 +135,7 @@ export class HomePage {
     });    
   }
 
-
-  doRadio(status: string, updated: boolean) {
+  selectStatus(status: string) {
     const alert = this.alertCtrl.create();
     alert.setTitle('Set Status');
 
@@ -161,16 +164,10 @@ export class HomePage {
     alert.addButton({
       text: 'Ok',
       handler: (data: any) => {
-        console.log('Radio data:', data);  
-        if (updated) {  //update status on all checked items
-          this.updateStatus(this.cards, data);
-        }
-        else {          //change filter
-          this.status = data;          
-        }
+        console.log('status data:', data);  
+        this.status = data;          
       }
     });
-
     alert.present();
   }
 
@@ -182,21 +179,14 @@ export class HomePage {
           text: 'select filter',
           icon: 'text',
           handler: () => {
-            this.doRadio(this.status, false);
+            this.selectStatus(this.status);
           }
         },
         {
-          text: 'update status',
+          text: 'start study',
           icon: 'text',
           handler: () => {
-            this.doRadio(this.status, true);
-          }
-        },
-        {
-          text: 'delete',
-          icon: 'trash',
-          handler: () => {
-            this.deleteChecked(this.cards);
+            this.startStudy();
           }
         },
         {
@@ -210,20 +200,6 @@ export class HomePage {
       ]
     });
     return actionsheet.present();
-  }
-
-
-
-
-
-
-  share(card) {
-    alert(card.title + ' was shared.');
-  }
-
-  favorite(card) {
-    alert(card.title + ' was favorited.');
-    this.cueStack.updateStackStatus(card.id, "favorite")
   }
 
 

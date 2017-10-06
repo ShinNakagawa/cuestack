@@ -15,6 +15,7 @@ export class EditStackPage {
   description: AbstractControl;
   imageUrl: AbstractControl;
   status: AbstractControl;
+  shareflag: AbstractControl;
   card: Stack;
 
   constructor(
@@ -27,23 +28,27 @@ export class EditStackPage {
       let id = navParams.get('id');
       let imageUrl = navParams.get('imageUrl');
       let status = navParams.get('status');
+      let shareflag = navParams.get('shareflag');
       this.card = {
         id: id,
         title: title,
         description: description,
         imageUrl: imageUrl,
         status: status,
+        shareflag: shareflag
       }
       this.editStackForm = this.fb.group({  
         'title': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
         'description': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
         'imageUrl': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
-        'status': ['', Validators.compose([Validators.required, Validators.minLength(1)])]
+        'status': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
+        'shareflag': ['', Validators.compose([Validators.required, Validators.minLength(1)])]
       });
       this.title = this.editStackForm.controls['title'];  
       this.description = this.editStackForm.controls['description'];  
       this.imageUrl = this.editStackForm.controls['imageUrl'];  
       this.status = this.editStackForm.controls['status'];  
+      this.shareflag = this.editStackForm.controls['shareflag'];  
     }
 
   dismiss() {
@@ -55,6 +60,7 @@ export class EditStackPage {
     this.card.description = this.description.value;
     this.card.imageUrl = this.imageUrl.value;
     this.card.status = this.status.value;
+    this.card.shareflag = this.shareflag.value;
 
     //send message to add it into firebase
     this.cueStack.updateStack(this.card);

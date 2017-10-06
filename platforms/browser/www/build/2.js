@@ -73,12 +73,14 @@ var EditCuePage = (function () {
         var answer = navParams.get('answer');
         var id = navParams.get('id');
         var imageUrl = navParams.get('imageUrl');
+        var idrate = navParams.get('idrate');
         var rate = navParams.get('rate');
         this.card = {
             id: id,
             question: question,
             answer: answer,
             imageUrl: imageUrl,
+            idrate: idrate,
             rate: rate,
         };
         this.editCueForm = this.fb.group({
@@ -102,8 +104,8 @@ var EditCuePage = (function () {
         this.card.rate = this.rate.value;
         //send message to add it into firebase
         this.cueStack.updateCue(this.card);
-        this.viewCtrl.dismiss();
-        //this.viewCtrl.dismiss({title: "new stack was added"});
+        this.cueStack.updateCueRate(this.card.idrate, this.card.rate);
+        this.viewCtrl.dismiss({ title: "cue was modified" });
     };
     return EditCuePage;
 }());

@@ -39,7 +39,6 @@ export class AddStackPage {
   add(): void{    
     //send message to add it into firebase
     this.cueStack.addStack(this.title.value, this.description.value, this.imageUrl.value, this.status.value);
-    this.viewCtrl.dismiss();   
-    //this.viewCtrl.dismiss({title: "new stack was added"});
+    this.viewCtrl.dismiss({title: "new stack was added"});
   }
 }

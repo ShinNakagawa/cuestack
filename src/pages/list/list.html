@@ -8,8 +8,16 @@
 </ion-header>
 
 <ion-content> 
+  <ion-row no-padding>
+    <button *ngIf="checked == false; else selectcheck;" ion-button round (click)="checkSelect()">Select</button>
+    <ng-template #selectcheck>
+      <button ion-button round color="danger" (click)="checkSelect()">Close</button>
+      <button ion-button round color="secondary" (click)="actionSheet1()">Action</button>
+    </ng-template>
+  </ion-row>
     
   <ion-card *ngFor="let card of cards">
+    <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>          
     <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />      
     <ion-card-content>
       <h2 class="card-title" (click)="cardTapped($event, card)">
@@ -24,6 +32,9 @@
       <p>
         Status: {{card.status}}
       </p>
+      <p>
+        Public Share: {{card.shareflag}}
+      </p>
     </ion-card-content>
     <ion-row no-padding>
       <ion-col>
@@ -33,16 +44,11 @@
         </button>
       </ion-col>
       <ion-col text-center>
-        <button ion-button clear small color="danger" icon-left (click)="delete(card)">
+        <button ion-button clear small color="danger" icon-left (click)="reportsPage(card)">
           <ion-icon name='musical-notes'></ion-icon>
-          Delete
+          Reports
         </button>
       </ion-col>
-
-      <button ion-button clear small color="danger" (click)="reportsPage(card)">Reports</button>
-      
-
-
     </ion-row>
   </ion-card>
 

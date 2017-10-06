@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { ViewController, IonicPage, NavParams } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { CueStackProvider } from '../../../providers/cuestack/cuestack';
-import { Cue } from '../../../models/cue.model';
 
 @IonicPage()
 @Component({
@@ -15,7 +14,7 @@ export class EditCuePage {
   answer: AbstractControl;
   imageUrl: AbstractControl;
   rate: AbstractControl;
-  card: Cue;
+  card: {id: string, idrate: string, question: string, answer: string, imageUrl: string, rate: string};
 
   constructor(
     public viewCtrl: ViewController, 
@@ -26,12 +25,14 @@ export class EditCuePage {
       let answer = navParams.get('answer');
       let id = navParams.get('id');
       let imageUrl = navParams.get('imageUrl');
+      let idrate = navParams.get('idrate');
       let rate = navParams.get('rate');
       this.card = {
         id: id,
         question: question,
         answer: answer,
         imageUrl: imageUrl,
+        idrate: idrate,
         rate: rate,
       }
       this.editCueForm = this.fb.group({  
@@ -58,7 +59,7 @@ export class EditCuePage {
 
     //send message to add it into firebase
     this.cueStack.updateCue(this.card);
-    this.viewCtrl.dismiss();   
-    //this.viewCtrl.dismiss({title: "new stack was added"});
+    this.cueStack.updateCueRate(this.card.idrate, this.card.rate);
+    this.viewCtrl.dismiss({title: "cue was modified"});   
   }
 }

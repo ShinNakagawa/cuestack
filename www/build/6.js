@@ -88,10 +88,7 @@ var AddCuePage = (function () {
         //console.log("question: " + this.question.value + ", answer: " + this.answer.value + ", id=" + this.stackid);  
         //send message to add it into firebase
         this.cueStack.addCue(this.stackid, this.question.value, this.answer.value, this.imageUrl.value, this.rate.value);
-        //clear chat text
-        this.question.reset("");
-        this.answer.reset("");
-        this.viewCtrl.dismiss();
+        this.viewCtrl.dismiss({ title: "new cue was added" });
     };
     return AddCuePage;
 }());

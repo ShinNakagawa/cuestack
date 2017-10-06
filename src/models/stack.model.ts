@@ -5,6 +5,6 @@ export class Stack {
     imageUrl?: string;
     userid?: string;
     status?: string;
-    timeStart?: Date = new Date(); 
-    //publicflag?: boolean;   
+    timeStart?: string; 
+    shareflag?: boolean;   
 }
