@@ -79,7 +79,7 @@ var LoginPage = (function () {
         var _this = this;
         //console.log('login() called from Login Pge [' + this.email.value + "][" + this.password.value + "]");
         this.auth.login(this.email.value, this.password.value).then(function (res) {
-            _this.viewCtrl.dismiss();
+            _this.viewCtrl.dismiss(res);
         })
             .catch(function (error) {
             console.log(error);

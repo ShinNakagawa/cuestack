@@ -1,22 +1,66 @@
 <ion-header>
   <ion-navbar>
-    <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
-    </button>
-    <ion-title>Cue Stacks</ion-title>
-    <button ion-button round color="secondary" (click)="openModalSignup()">sign up</button>
-    <button *ngIf="auth.currentUser; else login;" ion-button round (click)="logout()">Log out</button>
-    <ng-template #login>
-      <button ion-button round (click)="openModalLogin()">Log in</button>
-    </ng-template>
+<!--      <button (click)="value=1">select - 1</button>
+      <button (click)="value=2">select - 2</button>
+      <button (click)="value=3">select - 3</button>
+-->
+    <div [ngSwitch]="value">
+      <div *ngSwitchCase="1">
+        <button ion-button small menuToggle>
+          <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>Cue Stacks
+        <!-- <ion-buttons end> -->
+          <button ion-button small icon-center (click)="searchMode()">
+            <ion-icon name='search'></ion-icon>
+          </button>
+          <button ion-button small icon-center (click)="checkMode()">
+            <ion-icon name='list'></ion-icon>
+          </button>
+          <button ion-button small icon-center (click)="showSharedStacks()">
+            <ion-icon name='share-alt'></ion-icon>
+          </button>
+          <button *ngIf="auth.currentUser" ion-button small icon-center (click)="openModalAddStack()">
+            <ion-icon name='add-circle'></ion-icon>
+          </button>     
+      <!--  </ion-buttons> -->
+        </ion-title>
+      </div>
+      <div *ngSwitchCase="2">
+        <ion-col text-left>
+          <button ion-button small icon-center (click)="actionSheet1()">
+            <ion-icon name='beer'></ion-icon>
+          </button>
+        </ion-col> 
+        <ion-col text-right>
+          <button ion-button small icon-center (click)="closeMode()">
+            <ion-icon name='close'></ion-icon>
+          </button>
+        </ion-col>       
+      </div>
+      <div *ngSwitchCase="3">
+        <ion-searchbar
+          [(ngModel)]="myInput"
+          [showCancelButton]="shouldShowCancel"
+          (ionInput)="onInput($event)"
+          (ionCancel)="onCancel($event)">
+        </ion-searchbar>
+        <ion-col text-right>
+          <button ion-button small icon-center (click)="closeMode()">
+            <ion-icon name='close'></ion-icon>
+          </button>
+        </ion-col>         
+      </div>
+      <div *ngSwitchDefault>Default Template</div>
+    </div>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <h3>Stacks
-    <ion-icon *ngIf="auth.currentUser" name="add-circle" block (click)="openModalAddStack()"></ion-icon>
-  </h3>
-  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div> 
+  <h3>Stacks</h3>
+  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div>                
+  
+<!--  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div> 
   <button ion-button round color="danger" (click)="showSharedStacks()">Show Shared Stacks</button>   
   <ion-row no-padding>
     <button *ngIf="checked == false; else selectcheck;" ion-button round (click)="checkSelect()">Select</button>
@@ -25,7 +69,7 @@
       <button ion-button round color="secondary" (click)="actionSheet1()">Action</button>
     </ng-template>
   </ion-row>
-
+-->
   <ion-card *ngFor="let card of cards" >
     <div *ngIf="card.status == status || card.status == 'all' || status == 'all'">
       <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>     
@@ -50,18 +94,18 @@
     </div>
   </ion-card>
 
-  <!-- Float Action Buttons 
+  <!-- Float Action Buttons -->
   <ion-fab bottom right >
-    <button ion-fab class="pop-in" color="danger">Share</button>
+    <button ion-fab class="pop-in" color="danger">Accout</button>
     <ion-fab-list side="top">
-      <button ion-fab color="primary">
-        <ion-icon  name="logo-facebook"></ion-icon>
+      <button ion-fab color="primary" (click)="openModalLogin()">
+        <ion-icon  name="log-in"></ion-icon>
       </button>
-      <button ion-fab color="secondary">
-        <ion-icon name="logo-twitter"></ion-icon>
+      <button ion-fab color="secondary" (click)="logout()">
+        <ion-icon name="log-out"></ion-icon>
       </button>
-      <button ion-fab color="dark">
-        <ion-icon name="logo-instagram"></ion-icon>
+      <button ion-fab color="danger" (click)="openModalSignup()">
+        <ion-icon name="link"></ion-icon>
       </button>
     </ion-fab-list>
     <ion-fab-list side="left">
@@ -70,5 +114,5 @@
       </button>
     </ion-fab-list>
   </ion-fab>
--->
+
 </ion-content>

@@ -82,9 +82,9 @@ var SignupPage = (function () {
         if (this.signupForm.valid) {
             var credentials = ({ email: this.email.value, password: this.password.value, username: this.username.value });
             this.auth.registerUser(credentials).subscribe(function (registerData) {
-                console.log(registerData);
+                //console.log(registerData);
                 alert('User is registered and logged in.');
-                _this.viewCtrl.dismiss();
+                _this.viewCtrl.dismiss(registerData);
             }, function (registerError) {
                 console.log(registerError);
                 if (registerError.code === 'auth/weak-password' || registerError.code === 'auth/email-already-in-use') {

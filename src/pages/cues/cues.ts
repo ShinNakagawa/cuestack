@@ -35,13 +35,11 @@ export class CuesPage {
     private cueStack: CueStackProvider) {
       this.stackid = [];
       this.stackid = navParams.get('id');
-      //console.log("this.stackid=" + this.stackid.length);
       this.userid = navParams.get('userid');
       this.currentUser = navParams.get('currentUser');
       let index = 0;      
       this.cards = [];
       this.stackid.forEach(data =>{
-        console.log('no' + String(index) + ': stackid=' + data.id);
         let cues = this.cueStack.getCues(data.id);
         cues.subscribe(res => {
           res.forEach(cue => {

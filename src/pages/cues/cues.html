@@ -3,16 +3,18 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Cues:</ion-title>
+    <ion-title>Cues
+      <button *ngIf="currentUser" ion-button small icon-center (click)="openModalAddCue()">
+        <ion-icon name='add-circle'></ion-icon>
+      </button>
+      <button ion-button small icon-center (click)="showRates()">
+        <ion-icon name='ribbon'></ion-icon>
+      </button>
+    </ion-title>
   </ion-navbar>
 </ion-header>
 
-
 <ion-content padding>
-  <h3>Cues
-    <ion-icon *ngIf="currentUser" name="add-circle" block (click)="openModalAddCue()"></ion-icon>
-  </h3>
-  <button ion-button round color="danger" (click)="showRates()">Show Rates</button> 
   <ion-slides>
     <ion-slide *ngFor="let card of cards">
       <flash-card>
@@ -43,9 +45,6 @@
             <ion-option value="never show">Never Show</ion-option>
           </ion-select>
         </ion-item>
-        <ion-item>
-          <ion-range min="0" max='{{card.front.length}}' step="1" color="danger" value='{{card.front.count}}' [(ngModel)]="card.front.count"></ion-range>
-        </ion-item>      
       </ion-row>
     </ion-slide>
   </ion-slides>

@@ -67,10 +67,6 @@ export class ListCuePage {
     editCueModel.present();
   }
 
-  share(card) {
-    alert(card.question + ' was shared.');
-  }
-
   edit(card) {
     alert(card.question + ' was editted.');
   }

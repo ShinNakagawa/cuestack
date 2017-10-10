@@ -21,6 +21,7 @@ export class CueStackProvider {
     this.afAuth.authState.subscribe(auth => {
       if (auth !== undefined && auth !== null) {
         this.user = auth;
+        console.log("CueStackProvider::userid=" + auth.uid);
       }
       this.getUser().subscribe(a => {
         this.userName = a.displayName;

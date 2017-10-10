@@ -32,9 +32,9 @@ export class SignupPage {
     if(this.signupForm.valid) {
       var credentials = ({email: this.email.value, password: this.password.value, username: this.username.value});
       this.auth.registerUser(credentials).subscribe(registerData => {
-          console.log(registerData);
+          //console.log(registerData);
           alert('User is registered and logged in.');
-          this.viewCtrl.dismiss();
+          this.viewCtrl.dismiss(registerData);
         }, registerError => {
         console.log(registerError);
         if (registerError.code === 'auth/weak-password' || registerError.code === 'auth/email-already-in-use')

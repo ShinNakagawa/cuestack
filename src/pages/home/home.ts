@@ -15,6 +15,7 @@ export class HomePage {
   cards: Array<{id: string, checked: boolean, title: string, imageUrl: string, description: string, status: string, timeStart: any, shareflag: boolean}>;
   status: string;
   checked: boolean;
+  value: string;
   userid: string;
   private user: Observable<firebase.User>;
   
@@ -27,10 +28,12 @@ export class HomePage {
     private auth: AuthProvider) {      
       this.status = 'all';
       this.checked = false;
+      this.value = '1';
       this.user = this.auth.authUser();
       this.user.subscribe(data => {
         if (data) {
           this.userid = data.uid;
+          console.log('userid=' + this.userid);
           let stacks = this.cueStack.getStacks(this.userid);
           stacks.subscribe(res => {
             this.cards = [];   
@@ -91,6 +94,14 @@ export class HomePage {
 
   openModalSignup() {
     this.openModal('SignupPage');
+  //   let signupModel = this.modalCtrl.create('SignupPage', null, { cssClass: 'inset-modal' });
+  //   signupModel.onDidDismiss(data => {
+  //     if (data) {
+  //       console.log("HomePage::uid=" + data.uid);
+  //       //this.userid = data.uid;
+  //     }
+  //   });
+  //   signupModel.present();
   }
 
   openModal(pageName) {
@@ -121,18 +132,28 @@ export class HomePage {
     this.navCtrl.push(CuesPage, {id: ids, userid: this.userid, currentUser: this.auth.currentUser});    
   }
 
-  checkSelect() {
-    if (this.checked) {this.checked = false;}
-    else { this.checked = true;}
-    //clear
-    this.clearCheck(this.checked);        
+  checkMode() {    
+    this.clearCheck(false); 
+    this.checked = true;          
+    this.value = '2';      
+  }
+
+  searchMode() {
+    this.value = '3';
+  }
+
+  closeMode() {
+    this.clearCheck(false);           
   }
 
   clearCheck(checked: boolean) {
-    this.checked = checked;        
-    this.cards.forEach(card => { 
-      card.checked = false;
-    });    
+    this.value = '1';    
+    this.checked = checked; 
+    if (this.cards) {      
+      this.cards.forEach(card => { 
+        card.checked = false;
+      });
+    }   
   }
 
   selectStatus(status: string) {
@@ -165,7 +186,8 @@ export class HomePage {
       text: 'Ok',
       handler: (data: any) => {
         console.log('status data:', data);  
-        this.status = data;          
+        this.status = data;
+        this.clearCheck(false);           
       }
     });
     alert.present();
