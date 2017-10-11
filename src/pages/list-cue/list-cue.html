@@ -1,45 +1,74 @@
 <ion-header>
   <ion-navbar>
-    <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
-    </button>
-    <ion-title>List Cue</ion-title>
+    <div [ngSwitch]="value">
+      <div *ngSwitchCase="1">
+        <button ion-button small menuToggle>
+          <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>Cue List
+          <ion-buttons end>
+            <button ion-button icon-only (click)="searchMode()">
+              <ion-icon name='search'></ion-icon>
+            </button>
+            <button ion-button icon-only (click)="checkMode()">
+              <ion-icon name='list'></ion-icon>
+            </button>
+            <button ion-button icon-only (click)="showRates()">
+              <ion-icon name='ribbon'></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-title>
+      </div>
+      <div *ngSwitchCase="2">
+        <ion-buttons end>
+          <button ion-button icon-only (click)="actionSheet1()">
+            <ion-icon name='beer'></ion-icon>
+          </button>
+          <button ion-button icon-only (click)="closeMode()">
+            <ion-icon name='close'></ion-icon>
+          </button>
+        </ion-buttons>       
+      </div>
+      <div *ngSwitchCase="3">
+        <ion-searchbar
+          [(ngModel)]="myInput"
+          [showCancelButton]="shouldShowCancel"
+          (ionInput)="onInput($event)"
+          (ionCancel)="onCancel($event)">
+        </ion-searchbar>
+        <ion-buttons end>
+          <button ion-button icon-only (click)="closeMode()">
+            <ion-icon name='close'></ion-icon>
+          </button>
+        </ion-buttons>         
+      </div>
+      <div *ngSwitchDefault>Default Template</div>
+    </div>
   </ion-navbar>
 </ion-header>
 
 <ion-content> 
-  <button ion-button round color="danger" (click)="showRates()">Show Rates</button> 
-  
-  <ion-card *ngFor="let card of cards">
-    <ion-card-content>
-      <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />      
-      <h2 class="card-title" (click)="cardTapped($event, card)">
-        Question: {{card.question}}
-      </h2>
-      <p>
-        Answer: {{card.answer}}
-      </p>
-      <p>
-        Image: {{card.imageUrl}}
-      </p>
-      <p>
-        Rate: {{card.rate}}
-      </p>
-    </ion-card-content>
-    <ion-row no-padding>
-      <ion-col>
-        <button ion-button clear small color="danger" icon-left (click)="edit(card)">
-          <ion-icon name='star'></ion-icon>
-          Edit
-        </button>
-      </ion-col>
-      <ion-col text-center>
-        <button ion-button clear small color="danger" icon-left (click)="delete(card)">
-          <ion-icon name='musical-notes'></ion-icon>
-          Delete
-        </button>
-      </ion-col>
-    </ion-row>
-  </ion-card>
-
+  <ion-list>
+    <ion-item-sliding *ngFor="let card of cards">
+      <button *ngIf="checked == true; else selectcheck;" ion-item>
+        <ion-checkbox [(ngModel)]="card.checked"></ion-checkbox>
+        <ion-avatar item-start>
+          <img [src]="card.imageUrl" />
+        </ion-avatar>
+        <ion-label>{{card.question}}</ion-label>
+        <div item-content>{{card.answer}}</div>
+        <ion-note item-end>Rate: {{card.rate}}</ion-note>     
+      </button>
+      <ng-template #selectcheck>
+      <button ion-item (click)="cardTapped($event, card)">
+        <ion-avatar item-start>
+          <img [src]="card.imageUrl" />
+        </ion-avatar>
+        <ion-label>{{card.question}}</ion-label>
+        <div item-content>{{card.answer}}</div>
+        <ion-note item-end>Rate: {{card.rate}}</ion-note>     
+      </button>
+      </ng-template>
+    </ion-item-sliding>
+  </ion-list>
 </ion-content>

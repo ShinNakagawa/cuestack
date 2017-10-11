@@ -1,55 +1,49 @@
 <ion-header>
   <ion-navbar>
-<!--      <button (click)="value=1">select - 1</button>
-      <button (click)="value=2">select - 2</button>
-      <button (click)="value=3">select - 3</button>
--->
     <div [ngSwitch]="value">
       <div *ngSwitchCase="1">
-        <button ion-button small menuToggle>
+        <button ion-button menuToggle left>
           <ion-icon name="menu"></ion-icon>
         </button>
-        <ion-title>Cue Stacks
-        <!-- <ion-buttons end> -->
-          <button ion-button small icon-center (click)="searchMode()">
+        <ion-title text-align-center>Cue Stacks</ion-title>
+        <ion-buttons end>
+          <button ion-button icon-only (click)="searchMode()">
             <ion-icon name='search'></ion-icon>
           </button>
-          <button ion-button small icon-center (click)="checkMode()">
+          <button ion-button icon-only (click)="checkMode()">
             <ion-icon name='list'></ion-icon>
           </button>
-          <button ion-button small icon-center (click)="showSharedStacks()">
+          <button ion-button icon-only (click)="showSharedStacks()">
             <ion-icon name='share-alt'></ion-icon>
           </button>
-          <button *ngIf="auth.currentUser" ion-button small icon-center (click)="openModalAddStack()">
-            <ion-icon name='add-circle'></ion-icon>
+          <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">
+            <ion-icon name='add'></ion-icon>
           </button>     
-      <!--  </ion-buttons> -->
-        </ion-title>
+        </ion-buttons>       
       </div>
       <div *ngSwitchCase="2">
-        <ion-col text-left>
-          <button ion-button small icon-center (click)="actionSheet1()">
+        <ion-buttons end>
+          <button ion-button icon-only (click)="actionSheet1()">
             <ion-icon name='beer'></ion-icon>
-          </button>
-        </ion-col> 
-        <ion-col text-right>
-          <button ion-button small icon-center (click)="closeMode()">
+          </button>   
+          <button ion-button icon-only (click)="closeMode()">
             <ion-icon name='close'></ion-icon>
           </button>
-        </ion-col>       
+        </ion-buttons>       
       </div>
       <div *ngSwitchCase="3">
-        <ion-searchbar
+        <ion-searchbar (ionInput)="getItems($event)" placeholder="search}"></ion-searchbar>         
+        <!-- <ion-searchbar
           [(ngModel)]="myInput"
           [showCancelButton]="shouldShowCancel"
           (ionInput)="onInput($event)"
           (ionCancel)="onCancel($event)">
-        </ion-searchbar>
-        <ion-col text-right>
-          <button ion-button small icon-center (click)="closeMode()">
+        </ion-searchbar> -->
+        <ion-buttons end>
+          <button ion-button icon-only (click)="closeMode()">
             <ion-icon name='close'></ion-icon>
           </button>
-        </ion-col>         
+        </ion-buttons>         
       </div>
       <div *ngSwitchDefault>Default Template</div>
     </div>

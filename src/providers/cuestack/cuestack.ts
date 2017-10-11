@@ -118,6 +118,41 @@ export class CueStackProvider {
     });
   }
 
+  getCuesMultiStacks(stackid: any): FirebaseListObservable<Cue[]> {
+    let refData: FirebaseListObservable<Cue[]>;
+    stackid.forEach(data => {
+      console.log('getCuesMultiStacks::stackid=' + data.id);
+        if (refData) {
+          refData.push(this.db.list('cues', {
+            query: {
+            limitToLast: 25,
+            orderByChild: 'stackid',
+            equalTo: data.id,
+            }
+          }));
+        } else {
+          refData = this.db.list('cues', {
+            query: {
+            limitToLast: 25,
+            orderByChild: 'stackid',
+            equalTo: data.id,
+            }
+          });          
+        }
+    });
+
+    // Promise.all([refData]).then(values => {
+    //   values.forEach(ref1 => {
+    //     refReturn = ref1[0];        
+    //   })
+    // }).catch(reason => { 
+    //   console.log(reason)
+    // });
+    return refData;
+  }
+
+
+
   updateCue(cue: Cue): void {
     const path = `cues/${cue.id}`;
     const data = {

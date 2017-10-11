@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalController, NavParams } from 'ionic-angular';
+import { ModalController, ActionSheetController, NavParams } from 'ionic-angular';
 import { CueStackProvider } from '../../providers/cuestack/cuestack';
 
 @Component({
@@ -7,14 +7,19 @@ import { CueStackProvider } from '../../providers/cuestack/cuestack';
   templateUrl: 'list-cue.html'
 })
 export class ListCuePage {
-  cards: Array<{id: string, idrate: string, question: string, answer: string, imageUrl: string, rate: string}>;
+  cards: Array<{id: string, idrate: string, question: string, answer: string, imageUrl: string, rate: string, checked: boolean}>;
   stackid: string;
   userid: string;
+  checked: boolean;
+  value: string;
 
   constructor(
     private modalCtrl: ModalController,
     public navParams: NavParams,
+    public actionsheetCtrl: ActionSheetController,
     private cueStack: CueStackProvider) {
+      this.checked = false;
+      this.value = '1';
       this.stackid = navParams.get('id');
       this.userid = navParams.get('userid');
       let cues = this.cueStack.getCues(this.stackid);
@@ -27,7 +32,8 @@ export class ListCuePage {
             imageUrl: cue.imageUrl,
             id: cue.id,
             idrate: '',
-            rate: ''
+            rate: '',
+            checked: false
           })
         })
       })
@@ -50,15 +56,9 @@ export class ListCuePage {
   }
 
   cardTapped(event, card) {    
-    let editCueModel = this.modalCtrl.create('EditCuePage', {
-      id: card.id,
-      idrate: card.idrate,
-      question: card.question,
-      answer: card.answer,
-      imageUrl: card.imageUrl,
-      rate: card.rate}, { cssClass: 'inset-modal' });
+    let editCueModel = this.modalCtrl.create('EditCuePage', { card : card }, { cssClass: 'inset-modal' });
     editCueModel.onDidDismiss(data => {
-      console.log(data);
+      //console.log(data);
       if (data) {
         console.log("modified cue");
         this.showRates();
@@ -67,13 +67,64 @@ export class ListCuePage {
     editCueModel.present();
   }
 
-  edit(card) {
-    alert(card.question + ' was editted.');
+  deleteChecked(cards) {
+    cards.forEach(card => { 
+      if (card.checked) {  
+        this.cueStack.deleteCue(card.id);
+      }
+    });
+    //clear check
+    this.clearCheck(false);        
+    this.showRates();
   }
 
-  delete(card) {
-    alert('Deleting ' + card.question);
-    this.cueStack.deleteCue(card.id);
+  checkMode() {    
+    this.clearCheck(false); 
+    this.checked = true;          
+    this.value = '2';      
   }
+
+  searchMode() {
+    this.value = '3';
+  }
+
+  closeMode() {
+    this.clearCheck(false);           
+  }
+
+  clearCheck(checked: boolean) {
+    this.value = '1';    
+    this.checked = checked; 
+    if (this.cards) {      
+      this.cards.forEach(card => { 
+        card.checked = false;
+      });
+    }   
+  }
+
+  actionSheet1() {
+    const actionsheet = this.actionsheetCtrl.create({
+      title: 'select action',
+      buttons: [
+        {
+          text: 'delete',
+          icon: 'trash',
+          handler: () => {
+            this.deleteChecked(this.cards);
+          }
+        },
+        {
+          text: 'cancel',
+          icon: 'close',
+          role: 'destructive',
+          handler: () => {
+            console.log('the user has cancelled the interaction.');
+          }
+        }
+      ]
+    });
+    return actionsheet.present();
+  }
+
 
 }

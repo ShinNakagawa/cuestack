@@ -30,34 +30,53 @@ var CuesPage = (function () {
         this.navParams = navParams;
         this.modalCtrl = modalCtrl;
         this.cueStack = cueStack;
-        this.stackid = [];
         this.stackid = navParams.get('id');
         this.userid = navParams.get('userid');
         this.currentUser = navParams.get('currentUser');
-        var index = 0;
+        var cues = this.cueStack.getCuesMultiStacks(this.stackid);
         this.cards = [];
-        this.stackid.forEach(function (data) {
-            var cues = _this.cueStack.getCues(data.id);
-            cues.subscribe(function (res) {
-                res.forEach(function (cue) {
-                    index++;
-                    _this.cards.push({
-                        front: { stackid: data.id,
-                            id: cue.id,
-                            count: String(index),
-                            idrate: '',
-                            rate: '',
-                            timeStart: '',
-                            title: "front-title: " + data.title,
-                            subtitle: "front-subtitle: " + cue.question,
-                            imageUrl: cue.imageUrl },
-                        back: { title: "back-title: " + data.title,
-                            imageUrl: cue.imageUrl,
-                            subtitle: "back-subtitle(question): " + cue.question,
-                            content: "back-content(answer): " + cue.answer }
-                    });
+        cues.subscribe(function (res) {
+            var index = 0;
+            res.forEach(function (cue) {
+                index++;
+                _this.cards.push({
+                    front: { stackid: cue.stackid,
+                        id: cue.id,
+                        count: String(index),
+                        idrate: '',
+                        rate: '',
+                        timeStart: '',
+                        title: "front-title: " + cue.stackid,
+                        subtitle: "front-subtitle: " + cue.question,
+                        imageUrl: cue.imageUrl },
+                    back: { title: "back-title: " + 'title',
+                        imageUrl: cue.imageUrl,
+                        subtitle: "back-subtitle(question): " + cue.question,
+                        content: "back-content(answer): " + cue.answer }
                 });
             });
+            // this.stackid.forEach(data =>{
+            //   let cues = this.cueStack.getCues(data.id);
+            //   cues.subscribe(res => {
+            //     res.forEach(cue => {
+            //       index++;
+            //       this.cards.push({
+            //         front:{ stackid: data.id,
+            //                 id: cue.id,
+            //                 count: String(index),
+            //                 idrate: '',
+            //                 rate: '',
+            //                 timeStart: '',
+            //                 title: "front-title: " + data.title,
+            //                 subtitle: "front-subtitle: " + cue.question,
+            //                 imageUrl: cue.imageUrl },
+            //         back: { title: "back-title: " + data.title,
+            //                 imageUrl: cue.imageUrl,
+            //                 subtitle: "back-subtitle(question): " + cue.question,
+            //                 content: "back-content(answer): " + cue.answer }
+            //       })
+            //     })
+            //   })
         });
     }
     //   https://static.pexels.com/photos/34950/pexels-photo.jpg
@@ -123,7 +142,7 @@ var CuesPage = (function () {
 CuesPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* IonicPage */])(),
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-cues',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\cues\cues.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Cues\n      <button *ngIf="currentUser" ion-button small icon-center (click)="openModalAddCue()">\n        <ion-icon name=\'add-circle\'></ion-icon>\n      </button>\n      <button ion-button small icon-center (click)="showRates()">\n        <ion-icon name=\'ribbon\'></ion-icon>\n      </button>\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <ion-slides>\n    <ion-slide *ngFor="let card of cards">\n      <flash-card>\n        <div class="fc-front">\n          <p>{{card.front.count}} of {{cards.length}}</p>              \n          <img *ngIf="card.front.imageUrl"  [src]="card.front.imageUrl" />\n          <h2 text-center>{{card.front.title}}</h2>\n          <h3 text-center>{{card.front.subtitle}}</h3>\n          <hr />\n          <p *ngIf="card.front.title" >{{card.front.content}}</p>\n          <p>{{card.front.timeStart}}</p>              \n        </div>\n        <div class="fc-back">\n          <p>{{card.front.count}} of {{cards.length}}</p>              \n          <img *ngIf="card.back.imageUrl"  [src]="card.back.imageUrl" />\n          <h2 text-center>{{card.back.title}}</h2>\n          <h3 text-center>{{card.back.subtitle}}</h3>\n          <hr />\n          <p *ngIf="card.back.title" >{{card.back.content}}</p>\n        </div>\n      </flash-card>\n      <ion-row no-padding>\n        <ion-item>\n          <ion-label>Rate: </ion-label>\n          <ion-select [(ngModel)]="card.front.rate" block (ionChange)="updateCueRate(card)">\n            <ion-option value="bad">Bad</ion-option>\n            <ion-option value="good">Good</ion-option>\n            <ion-option value="never show">Never Show</ion-option>\n          </ion-select>\n        </ion-item>\n      </ion-row>\n    </ion-slide>\n  </ion-slides>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\cues\cues.html"*/,
+        selector: 'page-cues',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\cues\cues.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Cues\n      <ion-buttons end>\n        <button ion-button icon-only (click)="showRates()">\n          <ion-icon name=\'ribbon\'></ion-icon>\n        </button>\n        <button *ngIf="currentUser" ion-button icon-only (click)="openModalAddCue()">\n          <ion-icon name=\'add\'></ion-icon>\n        </button>     \n      </ion-buttons>\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <ion-slides>\n    <ion-slide *ngFor="let card of cards">\n      <flash-card>\n        <div class="fc-front">\n          <p>{{card.front.count}} of {{cards.length}}</p>              \n          <img *ngIf="card.front.imageUrl"  [src]="card.front.imageUrl" />\n          <h2 text-center>{{card.front.title}}</h2>\n          <h3 text-center>{{card.front.subtitle}}</h3>\n          <hr />\n          <p *ngIf="card.front.title" >{{card.front.content}}</p>\n          <p>{{card.front.timeStart}}</p>              \n        </div>\n        <div class="fc-back">\n          <p>{{card.front.count}} of {{cards.length}}</p>              \n          <img *ngIf="card.back.imageUrl"  [src]="card.back.imageUrl" />\n          <h2 text-center>{{card.back.title}}</h2>\n          <h3 text-center>{{card.back.subtitle}}</h3>\n          <hr />\n          <p *ngIf="card.back.title" >{{card.back.content}}</p>\n        </div>\n      </flash-card>\n      <ion-row no-padding>\n        <ion-item>\n          <ion-label>Rate: </ion-label>\n          <ion-select [(ngModel)]="card.front.rate" block (ionChange)="updateCueRate(card)">\n            <ion-option value="bad">Bad</ion-option>\n            <ion-option value="good">Good</ion-option>\n            <ion-option value="never show">Never Show</ion-option>\n          </ion-select>\n        </ion-item>\n      </ion-row>\n    </ion-slide>\n  </ion-slides>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\cues\cues.html"*/,
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavController */],
         __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* NavParams */],
@@ -424,7 +443,7 @@ var HomePage = (function () {
 }());
 HomePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-home',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\home\home.html"*/'<ion-header>\n  <ion-navbar>\n<!--      <button (click)="value=1">select - 1</button>\n      <button (click)="value=2">select - 2</button>\n      <button (click)="value=3">select - 3</button>\n-->\n    <div [ngSwitch]="value">\n      <div *ngSwitchCase="1">\n        <button ion-button small menuToggle>\n          <ion-icon name="menu"></ion-icon>\n        </button>\n        <ion-title>Cue Stacks\n        <!-- <ion-buttons end> -->\n          <button ion-button small icon-center (click)="searchMode()">\n            <ion-icon name=\'search\'></ion-icon>\n          </button>\n          <button ion-button small icon-center (click)="checkMode()">\n            <ion-icon name=\'list\'></ion-icon>\n          </button>\n          <button ion-button small icon-center (click)="showSharedStacks()">\n            <ion-icon name=\'share-alt\'></ion-icon>\n          </button>\n          <button *ngIf="auth.currentUser" ion-button small icon-center (click)="openModalAddStack()">\n            <ion-icon name=\'add-circle\'></ion-icon>\n          </button>     \n      <!--  </ion-buttons> -->\n        </ion-title>\n      </div>\n      <div *ngSwitchCase="2">\n        <ion-col text-left>\n          <button ion-button small icon-center (click)="actionSheet1()">\n            <ion-icon name=\'beer\'></ion-icon>\n          </button>\n        </ion-col> \n        <ion-col text-right>\n          <button ion-button small icon-center (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-col>       \n      </div>\n      <div *ngSwitchCase="3">\n        <ion-searchbar\n          [(ngModel)]="myInput"\n          [showCancelButton]="shouldShowCancel"\n          (ionInput)="onInput($event)"\n          (ionCancel)="onCancel($event)">\n        </ion-searchbar>\n        <ion-col text-right>\n          <button ion-button small icon-center (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-col>         \n      </div>\n      <div *ngSwitchDefault>Default Template</div>\n    </div>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <h3>Stacks</h3>\n  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div>                \n  \n<!--  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div> \n  <button ion-button round color="danger" (click)="showSharedStacks()">Show Shared Stacks</button>   \n  <ion-row no-padding>\n    <button *ngIf="checked == false; else selectcheck;" ion-button round (click)="checkSelect()">Select</button>\n    <ng-template #selectcheck>\n      <button ion-button round color="danger" (click)="checkSelect()">Close</button>\n      <button ion-button round color="secondary" (click)="actionSheet1()">Action</button>\n    </ng-template>\n  </ion-row>\n-->\n  <ion-card *ngFor="let card of cards" >\n    <div *ngIf="card.status == status || card.status == \'all\' || status == \'all\'">\n      <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>     \n      <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />\n      <ion-card-content>\n        <h2 class="card-title" (click)="cardTapped($event, card)">\n          {{card.title}}\n        </h2>\n        <p>\n          {{card.description}}\n        </p>\n        <p>\n          {{card.status}}\n        </p>  \n        <p>\n          {{card.timeStart}}\n        </p>  \n        <p>\n          {{card.shareflag}}\n        </p>  \n        </ion-card-content>\n    </div>\n  </ion-card>\n\n  <!-- Float Action Buttons -->\n  <ion-fab bottom right >\n    <button ion-fab class="pop-in" color="danger">Accout</button>\n    <ion-fab-list side="top">\n      <button ion-fab color="primary" (click)="openModalLogin()">\n        <ion-icon  name="log-in"></ion-icon>\n      </button>\n      <button ion-fab color="secondary" (click)="logout()">\n        <ion-icon name="log-out"></ion-icon>\n      </button>\n      <button ion-fab color="danger" (click)="openModalSignup()">\n        <ion-icon name="link"></ion-icon>\n      </button>\n    </ion-fab-list>\n    <ion-fab-list side="left">\n      <button ion-fab>\n        <ion-icon name="logo-github"></ion-icon>\n      </button>\n    </ion-fab-list>\n  </ion-fab>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\home\home.html"*/
+        selector: 'page-home',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\home\home.html"*/'<ion-header>\n  <ion-navbar>\n    <div [ngSwitch]="value">\n      <div *ngSwitchCase="1">\n        <button ion-button menuToggle left>\n          <ion-icon name="menu"></ion-icon>\n        </button>\n        <ion-title text-align-center>Cue Stacks</ion-title>\n        <ion-buttons end>\n          <button ion-button icon-only (click)="searchMode()">\n            <ion-icon name=\'search\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="checkMode()">\n            <ion-icon name=\'list\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="showSharedStacks()">\n            <ion-icon name=\'share-alt\'></ion-icon>\n          </button>\n          <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">\n            <ion-icon name=\'add\'></ion-icon>\n          </button>     \n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="2">\n        <ion-buttons end>\n          <button ion-button icon-only (click)="actionSheet1()">\n            <ion-icon name=\'beer\'></ion-icon>\n          </button>   \n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="3">\n        <ion-searchbar (ionInput)="getItems($event)" placeholder="search}"></ion-searchbar>         \n        <!-- <ion-searchbar\n          [(ngModel)]="myInput"\n          [showCancelButton]="shouldShowCancel"\n          (ionInput)="onInput($event)"\n          (ionCancel)="onCancel($event)">\n        </ion-searchbar> -->\n        <ion-buttons end>\n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>         \n      </div>\n      <div *ngSwitchDefault>Default Template</div>\n    </div>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <h3>Stacks</h3>\n  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div>                \n  \n<!--  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div> \n  <button ion-button round color="danger" (click)="showSharedStacks()">Show Shared Stacks</button>   \n  <ion-row no-padding>\n    <button *ngIf="checked == false; else selectcheck;" ion-button round (click)="checkSelect()">Select</button>\n    <ng-template #selectcheck>\n      <button ion-button round color="danger" (click)="checkSelect()">Close</button>\n      <button ion-button round color="secondary" (click)="actionSheet1()">Action</button>\n    </ng-template>\n  </ion-row>\n-->\n  <ion-card *ngFor="let card of cards" >\n    <div *ngIf="card.status == status || card.status == \'all\' || status == \'all\'">\n      <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>     \n      <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />\n      <ion-card-content>\n        <h2 class="card-title" (click)="cardTapped($event, card)">\n          {{card.title}}\n        </h2>\n        <p>\n          {{card.description}}\n        </p>\n        <p>\n          {{card.status}}\n        </p>  \n        <p>\n          {{card.timeStart}}\n        </p>  \n        <p>\n          {{card.shareflag}}\n        </p>  \n        </ion-card-content>\n    </div>\n  </ion-card>\n\n  <!-- Float Action Buttons -->\n  <ion-fab bottom right >\n    <button ion-fab class="pop-in" color="danger">Accout</button>\n    <ion-fab-list side="top">\n      <button ion-fab color="primary" (click)="openModalLogin()">\n        <ion-icon  name="log-in"></ion-icon>\n      </button>\n      <button ion-fab color="secondary" (click)="logout()">\n        <ion-icon name="log-out"></ion-icon>\n      </button>\n      <button ion-fab color="danger" (click)="openModalSignup()">\n        <ion-icon name="link"></ion-icon>\n      </button>\n    </ion-fab-list>\n    <ion-fab-list side="left">\n      <button ion-fab>\n        <ion-icon name="logo-github"></ion-icon>\n      </button>\n    </ion-fab-list>\n  </ion-fab>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\home\home.html"*/
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavController */],
         __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["h" /* ModalController */],
@@ -472,6 +491,7 @@ var ListPage = (function () {
         this.actionsheetCtrl = actionsheetCtrl;
         this.auth = auth;
         this.checked = false;
+        this.value = '1';
         var user = this.auth.authUser();
         user.subscribe(function (data) {
             if (data) {
@@ -502,14 +522,7 @@ var ListPage = (function () {
             .present();
     };
     ListPage.prototype.edit = function (card) {
-        this.modalCtrl.create('EditStackPage', {
-            id: card.id,
-            title: card.title,
-            description: card.description,
-            imageUrl: card.imageUrl,
-            status: card.status,
-            shareflag: card.shareflag
-        }, { cssClass: 'inset-modal' })
+        this.modalCtrl.create('EditStackPage', { card: card }, { cssClass: 'inset-modal' })
             .present();
     };
     ListPage.prototype.updateStatus = function (cards, status) {
@@ -532,21 +545,25 @@ var ListPage = (function () {
         //clear check
         this.clearCheck(false);
     };
-    ListPage.prototype.checkSelect = function () {
-        if (this.checked) {
-            this.checked = false;
-        }
-        else {
-            this.checked = true;
-        }
-        //clear check
-        this.clearCheck(this.checked);
+    ListPage.prototype.checkMode = function () {
+        this.clearCheck(false);
+        this.checked = true;
+        this.value = '2';
+    };
+    ListPage.prototype.searchMode = function () {
+        this.value = '3';
+    };
+    ListPage.prototype.closeMode = function () {
+        this.clearCheck(false);
     };
     ListPage.prototype.clearCheck = function (checked) {
+        this.value = '1';
         this.checked = checked;
-        this.cards.forEach(function (card) {
-            card.checked = false;
-        });
+        if (this.cards) {
+            this.cards.forEach(function (card) {
+                card.checked = false;
+            });
+        }
     };
     ListPage.prototype.selectStatus = function (status) {
         var _this = this;
@@ -576,6 +593,7 @@ var ListPage = (function () {
             handler: function (data) {
                 console.log('status data:', data);
                 _this.updateStatus(_this.cards, data);
+                _this.clearCheck(false);
             }
         });
         alert.present();
@@ -606,6 +624,7 @@ var ListPage = (function () {
                     flag = true;
                 }
                 _this.updateShare(_this.cards, flag);
+                _this.clearCheck(false);
             }
         });
         alert.present();
@@ -662,7 +681,7 @@ var ListPage = (function () {
 }());
 ListPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-list',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\list\list.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>List</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content> \n  <ion-row no-padding>\n    <button *ngIf="checked == false; else selectcheck;" ion-button round (click)="checkSelect()">Select</button>\n    <ng-template #selectcheck>\n      <button ion-button round color="danger" (click)="checkSelect()">Close</button>\n      <button ion-button round color="secondary" (click)="actionSheet1()">Action</button>\n    </ng-template>\n  </ion-row>\n    \n  <ion-card *ngFor="let card of cards">\n    <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>          \n    <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />      \n    <ion-card-content>\n      <h2 class="card-title" (click)="cardTapped($event, card)">\n        Title: {{card.title}}\n      </h2>\n      <p>\n        Description: {{card.description}}\n      </p>\n      <p>\n        Image: {{card.imageUrl}}\n      </p>\n      <p>\n        Status: {{card.status}}\n      </p>\n      <p>\n        Public Share: {{card.shareflag}}\n      </p>\n    </ion-card-content>\n    <ion-row no-padding>\n      <ion-col>\n        <button ion-button clear small color="danger" icon-left (click)="edit(card)">\n          <ion-icon name=\'star\'></ion-icon>\n          Edit\n        </button>\n      </ion-col>\n      <ion-col text-center>\n        <button ion-button clear small color="danger" icon-left (click)="reportsPage(card)">\n          <ion-icon name=\'musical-notes\'></ion-icon>\n          Reports\n        </button>\n      </ion-col>\n    </ion-row>\n  </ion-card>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\list\list.html"*/
+        selector: 'page-list',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\list\list.html"*/'<ion-header>\n  <ion-navbar>\n    <div [ngSwitch]="value">\n      <div *ngSwitchCase="1">\n        <button ion-button small menuToggle>\n          <ion-icon name="menu"></ion-icon>\n        </button>\n        <ion-title>Stack List\n          <ion-buttons end>\n            <button ion-button icon-only (click)="searchMode()">\n              <ion-icon name=\'search\'></ion-icon>\n            </button>\n            <button ion-button icon-only (click)="checkMode()">\n              <ion-icon name=\'list\'></ion-icon>\n            </button>\n          </ion-buttons>\n        </ion-title>\n      </div>\n      <div *ngSwitchCase="2">\n        <ion-buttons end>\n          <button ion-button icon-only (click)="actionSheet1()">\n            <ion-icon name=\'beer\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="3">\n        <ion-searchbar\n          [(ngModel)]="myInput"\n          [showCancelButton]="shouldShowCancel"\n          (ionInput)="onInput($event)"\n          (ionCancel)="onCancel($event)">\n        </ion-searchbar>\n        <ion-buttons end>\n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>         \n      </div>\n      <div *ngSwitchDefault>Default Template</div>\n    </div>\n  </ion-navbar>\n</ion-header>\n\n<ion-content> \n  <ion-list>\n    <ion-item-sliding *ngFor="let card of cards">\n      <button *ngIf="checked == true; else selectcheck;" ion-item>\n        <ion-checkbox [(ngModel)]="card.checked"></ion-checkbox>\n        <ion-avatar item-start>\n          <img [src]="card.imageUrl" />\n        </ion-avatar>\n        <ion-label>{{card.title}}</ion-label>\n        <!-- <div item-content>{{card.description}}</div> -->\n        <ion-note item-end>Status: {{card.status}}, Share: {{card.shareflag}}</ion-note>     \n      </button>\n      <ng-template #selectcheck>\n      <button ion-item (click)="cardTapped($event, card)">\n        <ion-avatar item-start>\n          <img [src]="card.imageUrl" />\n        </ion-avatar>\n        <h2>{{card.title}}</h2>\n        <!-- <div item-content>{{card.description}}</div> -->\n        <p>{{card.description}}</p>\n        <ion-note item-end>Status: {{card.status}}, Share: {{card.shareflag}}</ion-note>\n      </button>\n      </ng-template>\n\n      <ion-item-options>\n        <button ion-button (click)="edit(card)">\n          Edit\n        </button>\n        <button ion-button (click)="reportsPage(card)">\n          Report\n        </button>\n      </ion-item-options>\n    </ion-item-sliding>\n  </ion-list>\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\list\list.html"*/
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavController */],
         __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* ModalController */],
@@ -697,11 +716,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 var ListCuePage = (function () {
-    function ListCuePage(modalCtrl, navParams, cueStack) {
+    function ListCuePage(modalCtrl, navParams, actionsheetCtrl, cueStack) {
         var _this = this;
         this.modalCtrl = modalCtrl;
         this.navParams = navParams;
+        this.actionsheetCtrl = actionsheetCtrl;
         this.cueStack = cueStack;
+        this.checked = false;
+        this.value = '1';
         this.stackid = navParams.get('id');
         this.userid = navParams.get('userid');
         var cues = this.cueStack.getCues(this.stackid);
@@ -714,7 +736,8 @@ var ListCuePage = (function () {
                     imageUrl: cue.imageUrl,
                     id: cue.id,
                     idrate: '',
-                    rate: ''
+                    rate: '',
+                    checked: false
                 });
             });
         });
@@ -737,16 +760,9 @@ var ListCuePage = (function () {
     };
     ListCuePage.prototype.cardTapped = function (event, card) {
         var _this = this;
-        var editCueModel = this.modalCtrl.create('EditCuePage', {
-            id: card.id,
-            idrate: card.idrate,
-            question: card.question,
-            answer: card.answer,
-            imageUrl: card.imageUrl,
-            rate: card.rate
-        }, { cssClass: 'inset-modal' });
+        var editCueModel = this.modalCtrl.create('EditCuePage', { card: card }, { cssClass: 'inset-modal' });
         editCueModel.onDidDismiss(function (data) {
-            console.log(data);
+            //console.log(data);
             if (data) {
                 console.log("modified cue");
                 _this.showRates();
@@ -754,21 +770,70 @@ var ListCuePage = (function () {
         });
         editCueModel.present();
     };
-    ListCuePage.prototype.edit = function (card) {
-        alert(card.question + ' was editted.');
+    ListCuePage.prototype.deleteChecked = function (cards) {
+        var _this = this;
+        cards.forEach(function (card) {
+            if (card.checked) {
+                _this.cueStack.deleteCue(card.id);
+            }
+        });
+        //clear check
+        this.clearCheck(false);
+        this.showRates();
     };
-    ListCuePage.prototype.delete = function (card) {
-        alert('Deleting ' + card.question);
-        this.cueStack.deleteCue(card.id);
+    ListCuePage.prototype.checkMode = function () {
+        this.clearCheck(false);
+        this.checked = true;
+        this.value = '2';
+    };
+    ListCuePage.prototype.searchMode = function () {
+        this.value = '3';
+    };
+    ListCuePage.prototype.closeMode = function () {
+        this.clearCheck(false);
+    };
+    ListCuePage.prototype.clearCheck = function (checked) {
+        this.value = '1';
+        this.checked = checked;
+        if (this.cards) {
+            this.cards.forEach(function (card) {
+                card.checked = false;
+            });
+        }
+    };
+    ListCuePage.prototype.actionSheet1 = function () {
+        var _this = this;
+        var actionsheet = this.actionsheetCtrl.create({
+            title: 'select action',
+            buttons: [
+                {
+                    text: 'delete',
+                    icon: 'trash',
+                    handler: function () {
+                        _this.deleteChecked(_this.cards);
+                    }
+                },
+                {
+                    text: 'cancel',
+                    icon: 'close',
+                    role: 'destructive',
+                    handler: function () {
+                        console.log('the user has cancelled the interaction.');
+                    }
+                }
+            ]
+        });
+        return actionsheet.present();
     };
     return ListCuePage;
 }());
 ListCuePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-list-cue',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\list-cue\list-cue.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>List Cue</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content> \n  <button ion-button round color="danger" (click)="showRates()">Show Rates</button> \n  \n  <ion-card *ngFor="let card of cards">\n    <ion-card-content>\n      <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />      \n      <h2 class="card-title" (click)="cardTapped($event, card)">\n        Question: {{card.question}}\n      </h2>\n      <p>\n        Answer: {{card.answer}}\n      </p>\n      <p>\n        Image: {{card.imageUrl}}\n      </p>\n      <p>\n        Rate: {{card.rate}}\n      </p>\n    </ion-card-content>\n    <ion-row no-padding>\n      <ion-col>\n        <button ion-button clear small color="danger" icon-left (click)="edit(card)">\n          <ion-icon name=\'star\'></ion-icon>\n          Edit\n        </button>\n      </ion-col>\n      <ion-col text-center>\n        <button ion-button clear small color="danger" icon-left (click)="delete(card)">\n          <ion-icon name=\'musical-notes\'></ion-icon>\n          Delete\n        </button>\n      </ion-col>\n    </ion-row>\n  </ion-card>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\list-cue\list-cue.html"*/
+        selector: 'page-list-cue',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\list-cue\list-cue.html"*/'<ion-header>\n  <ion-navbar>\n    <div [ngSwitch]="value">\n      <div *ngSwitchCase="1">\n        <button ion-button small menuToggle>\n          <ion-icon name="menu"></ion-icon>\n        </button>\n        <ion-title>Cue List\n          <ion-buttons end>\n            <button ion-button icon-only (click)="searchMode()">\n              <ion-icon name=\'search\'></ion-icon>\n            </button>\n            <button ion-button icon-only (click)="checkMode()">\n              <ion-icon name=\'list\'></ion-icon>\n            </button>\n            <button ion-button icon-only (click)="showRates()">\n              <ion-icon name=\'ribbon\'></ion-icon>\n            </button>\n          </ion-buttons>\n        </ion-title>\n      </div>\n      <div *ngSwitchCase="2">\n        <ion-buttons end>\n          <button ion-button icon-only (click)="actionSheet1()">\n            <ion-icon name=\'beer\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="3">\n        <ion-searchbar\n          [(ngModel)]="myInput"\n          [showCancelButton]="shouldShowCancel"\n          (ionInput)="onInput($event)"\n          (ionCancel)="onCancel($event)">\n        </ion-searchbar>\n        <ion-buttons end>\n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>         \n      </div>\n      <div *ngSwitchDefault>Default Template</div>\n    </div>\n  </ion-navbar>\n</ion-header>\n\n<ion-content> \n  <ion-list>\n    <ion-item-sliding *ngFor="let card of cards">\n      <button *ngIf="checked == true; else selectcheck;" ion-item>\n        <ion-checkbox [(ngModel)]="card.checked"></ion-checkbox>\n        <ion-avatar item-start>\n          <img [src]="card.imageUrl" />\n        </ion-avatar>\n        <ion-label>{{card.question}}</ion-label>\n        <div item-content>{{card.answer}}</div>\n        <ion-note item-end>Rate: {{card.rate}}</ion-note>     \n      </button>\n      <ng-template #selectcheck>\n      <button ion-item (click)="cardTapped($event, card)">\n        <ion-avatar item-start>\n          <img [src]="card.imageUrl" />\n        </ion-avatar>\n        <ion-label>{{card.question}}</ion-label>\n        <div item-content>{{card.answer}}</div>\n        <ion-note item-end>Rate: {{card.rate}}</ion-note>     \n      </button>\n      </ng-template>\n    </ion-item-sliding>\n  </ion-list>\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\list-cue\list-cue.html"*/
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* ModalController */],
         __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* NavParams */],
+        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* ActionSheetController */],
         __WEBPACK_IMPORTED_MODULE_2__providers_cuestack_cuestack__["a" /* CueStackProvider */]])
 ], ListCuePage);
 
@@ -1082,6 +1147,39 @@ var CueStackProvider = (function () {
                 equalTo: stackid,
             }
         });
+    };
+    CueStackProvider.prototype.getCuesMultiStacks = function (stackid) {
+        var _this = this;
+        var refData;
+        stackid.forEach(function (data) {
+            console.log('getCuesMultiStacks::stackid=' + data.id);
+            if (refData) {
+                refData.push(_this.db.list('cues', {
+                    query: {
+                        limitToLast: 25,
+                        orderByChild: 'stackid',
+                        equalTo: data.id,
+                    }
+                }));
+            }
+            else {
+                refData = _this.db.list('cues', {
+                    query: {
+                        limitToLast: 25,
+                        orderByChild: 'stackid',
+                        equalTo: data.id,
+                    }
+                });
+            }
+        });
+        // Promise.all([refData]).then(values => {
+        //   values.forEach(ref1 => {
+        //     refReturn = ref1[0];        
+        //   })
+        // }).catch(reason => { 
+        //   console.log(reason)
+        // });
+        return refData;
     };
     CueStackProvider.prototype.updateCue = function (cue) {
         var path = "cues/" + cue.id;

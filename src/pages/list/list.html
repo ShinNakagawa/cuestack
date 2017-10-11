@@ -1,55 +1,81 @@
 <ion-header>
   <ion-navbar>
-    <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
-    </button>
-    <ion-title>List</ion-title>
+    <div [ngSwitch]="value">
+      <div *ngSwitchCase="1">
+        <button ion-button small menuToggle>
+          <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>Stack List
+          <ion-buttons end>
+            <button ion-button icon-only (click)="searchMode()">
+              <ion-icon name='search'></ion-icon>
+            </button>
+            <button ion-button icon-only (click)="checkMode()">
+              <ion-icon name='list'></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-title>
+      </div>
+      <div *ngSwitchCase="2">
+        <ion-buttons end>
+          <button ion-button icon-only (click)="actionSheet1()">
+            <ion-icon name='beer'></ion-icon>
+          </button>
+          <button ion-button icon-only (click)="closeMode()">
+            <ion-icon name='close'></ion-icon>
+          </button>
+        </ion-buttons>       
+      </div>
+      <div *ngSwitchCase="3">
+        <ion-searchbar
+          [(ngModel)]="myInput"
+          [showCancelButton]="shouldShowCancel"
+          (ionInput)="onInput($event)"
+          (ionCancel)="onCancel($event)">
+        </ion-searchbar>
+        <ion-buttons end>
+          <button ion-button icon-only (click)="closeMode()">
+            <ion-icon name='close'></ion-icon>
+          </button>
+        </ion-buttons>         
+      </div>
+      <div *ngSwitchDefault>Default Template</div>
+    </div>
   </ion-navbar>
 </ion-header>
 
 <ion-content> 
-  <ion-row no-padding>
-    <button *ngIf="checked == false; else selectcheck;" ion-button round (click)="checkSelect()">Select</button>
-    <ng-template #selectcheck>
-      <button ion-button round color="danger" (click)="checkSelect()">Close</button>
-      <button ion-button round color="secondary" (click)="actionSheet1()">Action</button>
-    </ng-template>
-  </ion-row>
-    
-  <ion-card *ngFor="let card of cards">
-    <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>          
-    <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />      
-    <ion-card-content>
-      <h2 class="card-title" (click)="cardTapped($event, card)">
-        Title: {{card.title}}
-      </h2>
-      <p>
-        Description: {{card.description}}
-      </p>
-      <p>
-        Image: {{card.imageUrl}}
-      </p>
-      <p>
-        Status: {{card.status}}
-      </p>
-      <p>
-        Public Share: {{card.shareflag}}
-      </p>
-    </ion-card-content>
-    <ion-row no-padding>
-      <ion-col>
-        <button ion-button clear small color="danger" icon-left (click)="edit(card)">
-          <ion-icon name='star'></ion-icon>
+  <ion-list>
+    <ion-item-sliding *ngFor="let card of cards">
+      <button *ngIf="checked == true; else selectcheck;" ion-item>
+        <ion-checkbox [(ngModel)]="card.checked"></ion-checkbox>
+        <ion-avatar item-start>
+          <img [src]="card.imageUrl" />
+        </ion-avatar>
+        <ion-label>{{card.title}}</ion-label>
+        <!-- <div item-content>{{card.description}}</div> -->
+        <ion-note item-end>Status: {{card.status}}, Share: {{card.shareflag}}</ion-note>     
+      </button>
+      <ng-template #selectcheck>
+      <button ion-item (click)="cardTapped($event, card)">
+        <ion-avatar item-start>
+          <img [src]="card.imageUrl" />
+        </ion-avatar>
+        <h2>{{card.title}}</h2>
+        <!-- <div item-content>{{card.description}}</div> -->
+        <p>{{card.description}}</p>
+        <ion-note item-end>Status: {{card.status}}, Share: {{card.shareflag}}</ion-note>
+      </button>
+      </ng-template>
+
+      <ion-item-options>
+        <button ion-button (click)="edit(card)">
           Edit
         </button>
-      </ion-col>
-      <ion-col text-center>
-        <button ion-button clear small color="danger" icon-left (click)="reportsPage(card)">
-          <ion-icon name='musical-notes'></ion-icon>
-          Reports
+        <button ion-button (click)="reportsPage(card)">
+          Report
         </button>
-      </ion-col>
-    </ion-row>
-  </ion-card>
-
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
 </ion-content>

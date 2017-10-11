@@ -23,19 +23,14 @@ export class EditStackPage {
     public navParams: NavParams,     
     public fb: FormBuilder,
     public cueStack: CueStackProvider) {
-      let title = navParams.get('title');
-      let description = navParams.get('description');
-      let id = navParams.get('id');
-      let imageUrl = navParams.get('imageUrl');
-      let status = navParams.get('status');
-      let shareflag = navParams.get('shareflag');
+      let data = navParams.get('card');
       this.card = {
-        id: id,
-        title: title,
-        description: description,
-        imageUrl: imageUrl,
-        status: status,
-        shareflag: shareflag
+        id: data.id,
+        title: data.title,
+        description: data.description,
+        imageUrl: data.imageUrl,
+        status: data.status,
+        shareflag: data.shareflag
       }
       this.editStackForm = this.fb.group({  
         'title': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
@@ -64,7 +59,6 @@ export class EditStackPage {
 
     //send message to add it into firebase
     this.cueStack.updateStack(this.card);
-    this.viewCtrl.dismiss();   
-    //this.viewCtrl.dismiss({title: "new stack was added"});
+    this.viewCtrl.dismiss({title: "new stack was added"});
   }
 }

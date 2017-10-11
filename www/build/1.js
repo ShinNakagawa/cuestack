@@ -69,19 +69,14 @@ var EditStackPage = (function () {
         this.navParams = navParams;
         this.fb = fb;
         this.cueStack = cueStack;
-        var title = navParams.get('title');
-        var description = navParams.get('description');
-        var id = navParams.get('id');
-        var imageUrl = navParams.get('imageUrl');
-        var status = navParams.get('status');
-        var shareflag = navParams.get('shareflag');
+        var data = navParams.get('card');
         this.card = {
-            id: id,
-            title: title,
-            description: description,
-            imageUrl: imageUrl,
-            status: status,
-            shareflag: shareflag
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            imageUrl: data.imageUrl,
+            status: data.status,
+            shareflag: data.shareflag
         };
         this.editStackForm = this.fb.group({
             'title': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],
@@ -107,8 +102,7 @@ var EditStackPage = (function () {
         this.card.shareflag = this.shareflag.value;
         //send message to add it into firebase
         this.cueStack.updateStack(this.card);
-        this.viewCtrl.dismiss();
-        //this.viewCtrl.dismiss({title: "new stack was added"});
+        this.viewCtrl.dismiss({ title: "new stack was added" });
     };
     return EditStackPage;
 }());

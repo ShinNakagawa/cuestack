@@ -12,6 +12,7 @@ export class ListPage {
   cards: Array<{title: string, imageUrl: string, description: string, id: string, status: string, shareflag: boolean, checked: boolean}>;
   userid : string;
   checked: boolean;
+  value: string;
 
   constructor(
     private navCtrl: NavController,
@@ -21,6 +22,7 @@ export class ListPage {
     public actionsheetCtrl: ActionSheetController,
     private auth: AuthProvider) {
       this.checked = false;
+      this.value = '1';
       let user = this.auth.authUser();
       user.subscribe(data => {
         if (data) {
@@ -55,14 +57,7 @@ export class ListPage {
   }
 
   edit(card) {
-    this.modalCtrl.create('EditStackPage', {
-      id: card.id,
-      title: card.title,
-      description: card.description,
-      imageUrl: card.imageUrl,
-      status: card.status,
-      shareflag: card.shareflag
-    }, { cssClass: 'inset-modal' })
+    this.modalCtrl.create('EditStackPage', { card: card }, { cssClass: 'inset-modal' })
     .present();
   }
 
@@ -86,19 +81,34 @@ export class ListPage {
     this.clearCheck(false);        
   }
 
-  checkSelect() {
-    if (this.checked) {this.checked = false;}
-    else { this.checked = true;}
-    //clear check
-    this.clearCheck(this.checked);        
+  checkMode() {    
+    this.clearCheck(false); 
+    this.checked = true;          
+    this.value = '2';      
+  }
+
+  searchMode() {
+    this.value = '3';
+  }
+
+  closeMode() {
+    this.clearCheck(false);           
   }
 
   clearCheck(checked: boolean) {
-    this.checked = checked;        
-    this.cards.forEach(card => { 
-      card.checked = false;
-    });    
+    this.value = '1';    
+    this.checked = checked; 
+    if (this.cards) {      
+      this.cards.forEach(card => { 
+        card.checked = false;
+      });
+    }   
   }
+
+
+
+
+
 
   selectStatus(status: string) {
     const alert = this.alertCtrl.create();
@@ -131,6 +141,7 @@ export class ListPage {
       handler: (data: any) => {
         console.log('status data:', data);  
         this.updateStatus(this.cards, data);
+        this.clearCheck(false);           
       }
     });
     alert.present();
@@ -163,6 +174,7 @@ export class ListPage {
           flag = true;
         }
         this.updateShare(this.cards, flag);
+        this.clearCheck(false);           
       }
     });
     alert.present();

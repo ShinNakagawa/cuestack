@@ -4,12 +4,14 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>Cues
-      <button *ngIf="currentUser" ion-button small icon-center (click)="openModalAddCue()">
-        <ion-icon name='add-circle'></ion-icon>
-      </button>
-      <button ion-button small icon-center (click)="showRates()">
-        <ion-icon name='ribbon'></ion-icon>
-      </button>
+      <ion-buttons end>
+        <button ion-button icon-only (click)="showRates()">
+          <ion-icon name='ribbon'></ion-icon>
+        </button>
+        <button *ngIf="currentUser" ion-button icon-only (click)="openModalAddCue()">
+          <ion-icon name='add'></ion-icon>
+        </button>     
+      </ion-buttons>
     </ion-title>
   </ion-navbar>
 </ion-header>

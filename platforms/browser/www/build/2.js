@@ -69,19 +69,14 @@ var EditCuePage = (function () {
         this.navParams = navParams;
         this.fb = fb;
         this.cueStack = cueStack;
-        var question = navParams.get('question');
-        var answer = navParams.get('answer');
-        var id = navParams.get('id');
-        var imageUrl = navParams.get('imageUrl');
-        var idrate = navParams.get('idrate');
-        var rate = navParams.get('rate');
+        var data = navParams.get('card');
         this.card = {
-            id: id,
-            question: question,
-            answer: answer,
-            imageUrl: imageUrl,
-            idrate: idrate,
-            rate: rate,
+            id: data.id,
+            question: data.question,
+            answer: data.answer,
+            imageUrl: data.imageUrl,
+            idrate: data.idrate,
+            rate: data.rate,
         };
         this.editCueForm = this.fb.group({
             'question': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],

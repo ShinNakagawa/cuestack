@@ -33,34 +33,54 @@ export class CuesPage {
     public navParams: NavParams, 
     public modalCtrl: ModalController,
     private cueStack: CueStackProvider) {
-      this.stackid = [];
       this.stackid = navParams.get('id');
       this.userid = navParams.get('userid');
       this.currentUser = navParams.get('currentUser');
-      let index = 0;      
+
+      let cues = this.cueStack.getCuesMultiStacks(this.stackid);
       this.cards = [];
-      this.stackid.forEach(data =>{
-        let cues = this.cueStack.getCues(data.id);
-        cues.subscribe(res => {
-          res.forEach(cue => {
-            index++;
-            this.cards.push({
-              front:{ stackid: data.id,
-                      id: cue.id,
-                      count: String(index),
-                      idrate: '',
-                      rate: '',
-                      timeStart: '',
-                      title: "front-title: " + data.title,
-                      subtitle: "front-subtitle: " + cue.question,
-                      imageUrl: cue.imageUrl },
-              back: { title: "back-title: " + data.title,
-                      imageUrl: cue.imageUrl,
-                      subtitle: "back-subtitle(question): " + cue.question,
-                      content: "back-content(answer): " + cue.answer }
-            })
-          })
+      cues.subscribe(res => {
+        let index = 0;      
+        res.forEach(cue => {
+          index++;
+          this.cards.push({
+            front:{ stackid: cue.stackid,
+                    id: cue.id,
+                    count: String(index),
+                    idrate: '',
+                    rate: '',
+                    timeStart: '',
+                    title: "front-title: " + cue.stackid,
+                    subtitle: "front-subtitle: " + cue.question,
+                    imageUrl: cue.imageUrl },
+            back: { title: "back-title: " + 'title',
+                    imageUrl: cue.imageUrl,
+                    subtitle: "back-subtitle(question): " + cue.question,
+                    content: "back-content(answer): " + cue.answer }
         })
+      })
+      // this.stackid.forEach(data =>{
+      //   let cues = this.cueStack.getCues(data.id);
+      //   cues.subscribe(res => {
+      //     res.forEach(cue => {
+      //       index++;
+      //       this.cards.push({
+      //         front:{ stackid: data.id,
+      //                 id: cue.id,
+      //                 count: String(index),
+      //                 idrate: '',
+      //                 rate: '',
+      //                 timeStart: '',
+      //                 title: "front-title: " + data.title,
+      //                 subtitle: "front-subtitle: " + cue.question,
+      //                 imageUrl: cue.imageUrl },
+      //         back: { title: "back-title: " + data.title,
+      //                 imageUrl: cue.imageUrl,
+      //                 subtitle: "back-subtitle(question): " + cue.question,
+      //                 content: "back-content(answer): " + cue.answer }
+      //       })
+      //     })
+      //   })
       })
 
   }

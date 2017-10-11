@@ -21,19 +21,14 @@ export class EditCuePage {
     public navParams: NavParams,     
     public fb: FormBuilder,
     public cueStack: CueStackProvider) {
-      let question = navParams.get('question');
-      let answer = navParams.get('answer');
-      let id = navParams.get('id');
-      let imageUrl = navParams.get('imageUrl');
-      let idrate = navParams.get('idrate');
-      let rate = navParams.get('rate');
+      let data = navParams.get('card');
       this.card = {
-        id: id,
-        question: question,
-        answer: answer,
-        imageUrl: imageUrl,
-        idrate: idrate,
-        rate: rate,
+        id: data.id,
+        question: data.question,
+        answer: data.answer,
+        imageUrl: data.imageUrl,
+        idrate: data.idrate,
+        rate: data.rate,
       }
       this.editCueForm = this.fb.group({  
         'question': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
