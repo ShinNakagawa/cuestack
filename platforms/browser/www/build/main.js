@@ -1141,8 +1141,14 @@ var CueStackProvider = (function () {
         var data = {
             rate: rate,
         };
-        this.db.object(path).update(data)
-            .catch(function (error) { return console.log(error); });
+        var checkOb = this.db.object(path);
+        if (checkOb === null || checkOb === undefined) {
+            console.log('error: no data CueRate with id=', id);
+        }
+        else {
+            this.db.object(path).update(data)
+                .catch(function (error) { return console.log(error); });
+        }
     };
     CueStackProvider.prototype.getCueRates = function () {
         return this.db.list('cuerates', {

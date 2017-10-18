@@ -87,8 +87,14 @@ export class CueStackProvider {
       rate: rate,
       //timeStart: firebase.database.ServerValue.TIMESTAMP,
     };
-    this.db.object(path).update(data)
+
+    let checkOb = this.db.object(path);
+    if (checkOb === null || checkOb === undefined){
+      console.log('error: no data CueRate with id=', id);
+    } else {
+      this.db.object(path).update(data)
       .catch(error => console.log(error));
+    }
   }
 
   getCueRates(): FirebaseListObservable<CueRate[]> {

@@ -18,7 +18,7 @@ under the License.
 */
 
 // Note, these will be updated automatically at build time
-var CACHE_VERSION = '1508342612470';
+var CACHE_VERSION = '1508348716851';
 var CACHE_LIST = [
     "/assets/fonts/ionicons.woff",
     "/assets/fonts/ionicons.woff2",
