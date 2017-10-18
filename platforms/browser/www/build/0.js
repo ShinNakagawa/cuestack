@@ -2714,8 +2714,7 @@ var ReportsPage = (function () {
             _this.rates.push({ name: 'never show', count: neverCue.length });
         });
         //get all stacks to classify
-        this.userid = navParams.get('userid');
-        var stacks = this.cueStack.getStacks(this.userid);
+        var stacks = this.cueStack.getStacks();
         stacks.subscribe(function (data) {
             _this.status = [];
             var favoriteStack = data.filter(function (item) { return item.status === 'favorite'; });

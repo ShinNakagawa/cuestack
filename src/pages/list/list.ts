@@ -10,7 +10,6 @@ import { ListCuePage } from '../list-cue/list-cue';
 })
 export class ListPage {
   cards: Array<{title: string, imageUrl: string, description: string, id: string, status: string, shareflag: boolean, checked: boolean}>;
-  userid : string;
   checked: boolean;
   value: string;
 
@@ -23,36 +22,32 @@ export class ListPage {
     private auth: AuthProvider) {
       this.checked = false;
       this.value = '1';
-      let user = this.auth.authUser();
-      user.subscribe(data => {
-        if (data) {
-          this.userid = data.uid;
-          let stacks = this.cueStack.getStacks(this.userid);
-          stacks.subscribe(res => {
-            this.cards = [];   
-            res.forEach(stack => {
-              this.cards.push({
-                title: stack.title,
-                description: stack.description,
-                imageUrl: stack.imageUrl,
-                id: stack.id,
-                status: stack.status,
-                shareflag: stack.shareflag,
-                checked: false
-              })
-            });
+      if (this.auth.currentUser) {
+        let stacks = this.cueStack.getStacks();
+        stacks.subscribe(res => {
+          this.cards = [];   
+          res.forEach(stack => {
+            this.cards.push({
+              title: stack.title,
+              description: stack.description,
+              imageUrl: stack.imageUrl,
+              id: stack.id,
+              status: stack.status,
+              shareflag: stack.shareflag,
+              checked: false
+            })
           });
-        }
-      });
+        });
+      }
 
    }
 
   cardTapped(event, card) {
-    this.navCtrl.push(ListCuePage, {title: card.title, id: card.id, userid: this.userid});    
+    this.navCtrl.push(ListCuePage, {title: card.title, id: card.id});    
   }
 
   reportsPage(card) {
-    this.modalCtrl.create('ReportsPage', {title: card.title, id: card.id, userid: this.userid}, { cssClass: 'inset-modal' })
+    this.modalCtrl.create('ReportsPage', {title: card.title, id: card.id}, { cssClass: 'inset-modal' })
     .present();
   }
 

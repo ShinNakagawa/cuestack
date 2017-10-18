@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { ModalController, ActionSheetController, NavParams } from 'ionic-angular';
 import { CueStackProvider } from '../../providers/cuestack/cuestack';
+import moment from 'moment';
 
 @Component({
   selector: 'page-list-cue',
   templateUrl: 'list-cue.html'
 })
 export class ListCuePage {
-  cards: Array<{id: string, idrate: string, question: string, answer: string, imageUrl: string, rate: string, checked: boolean}>;
+  cards: Array<{id: string, idrate: string, question: string, answer: string, imageUrl: string, rate: string, timeStart: string, checked: boolean}>;
   stackid: string;
-  userid: string;
   checked: boolean;
   value: string;
 
@@ -21,7 +21,6 @@ export class ListCuePage {
       this.checked = false;
       this.value = '1';
       this.stackid = navParams.get('id');
-      this.userid = navParams.get('userid');
       let cues = this.cueStack.getCues(this.stackid);
       cues.subscribe(res => {
         this.cards = [];   
@@ -33,6 +32,7 @@ export class ListCuePage {
             id: cue.id,
             idrate: '',
             rate: '',
+            timeStart: '',
             checked: false
           })
         })
@@ -40,19 +40,35 @@ export class ListCuePage {
   }
 
   showRates() {
+    let cuerates = [];
+    let list = this.cueStack.getCueRatesByUserID();
+    if (list) {
+      list.subscribe(result => {cuerates.push(result)});
+    }
+
     this.cards.forEach(card =>{
-      //console.log("no=" + card.front.count + ', id=' + card.front.id);
-      let cuerates = this.cueStack.getCueRates(card.id);
-      cuerates.subscribe(resRate => {
-        //console.log('resRate length=' + String(resRate.length));
-        let cuerate = resRate.find(item => item.userid === this.userid);
-        //console.log('cuerate.id=' + cuerate.id + ', rate=' + cuerate.rate);
-        if (cuerate) {
-          card.idrate = cuerate.id;
-          card.rate = cuerate.rate;
-        }
-      })
+      console.log('cue id=' + card.id);
+      let cuerate = cuerates.find(item => item.cueid === card.id);
+      if (cuerate) {
+        console.log('found cuerate.id=' + cuerate.id + ', rate=' + cuerate.rate);
+        card.idrate = cuerate.id;
+        card.rate = cuerate.rate;
+        card.timeStart = this.setRateTime(cuerate.rate, cuerate.timeStart);
+      }
     })
+  }
+
+  setRateTime(rate: string, timestamp: any) {
+    let days = 0;
+    if ( rate == 'good' ) {
+      days = 100;
+    } else if ( rate == 'bad' ) {
+      days = 1;
+    } else {
+      days = 1000;
+    }
+    let timeStart = moment(timestamp, 'YYYY-MM-DD').add(days, 'days').calendar();  
+    return timeStart;    
   }
 
   cardTapped(event, card) {    

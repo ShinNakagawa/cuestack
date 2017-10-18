@@ -38,8 +38,7 @@ export class ReportsPage {
         this.rates.push({name: 'never show', count: neverCue.length})
       });
       //get all stacks to classify
-      this.userid = navParams.get('userid');
-      let stacks = this.cueStack.getStacks(this.userid);
+      let stacks = this.cueStack.getStacks();
       stacks.subscribe(data => {
         this.status = [];   
         let favoriteStack = data.filter(item => item.status === 'favorite');                

@@ -4,8 +4,6 @@ import { NavController, ModalController, AlertController, ActionSheetController 
 import { AuthProvider } from '../../providers/auth/auth';
 import { CueStackProvider } from '../../providers/cuestack/cuestack';
 import moment from 'moment';
-import { Observable } from 'rxjs/Observable';
-import * as firebase from 'firebase/app';
 
 @Component({
   selector: 'page-home',
@@ -16,9 +14,7 @@ export class HomePage {
   status: string;
   checked: boolean;
   value: string;
-  userid: string;
-  private user: Observable<firebase.User>;
-  
+ 
   constructor(
     private navCtrl: NavController,
     private modalCtrl: ModalController,
@@ -29,59 +25,44 @@ export class HomePage {
       this.status = 'all';
       this.checked = false;
       this.value = '1';
-      this.user = this.auth.authUser();
-      this.user.subscribe(data => {
-        if (data) {
-          this.userid = data.uid;
-          console.log('userid=' + this.userid);
-          let stacks = this.cueStack.getStacks(this.userid);
-          stacks.subscribe(res => {
-            this.cards = [];   
-            res.forEach(stack => {
-              this.cards.push({
-                id: stack.id,
-                checked: false,
-                title: stack.title,
-                description: stack.description,
-                imageUrl: stack.imageUrl,
-                status: stack.status,
-                shareflag: stack.shareflag,
-                timeStart: moment(stack.timeStart, 'YYYY-MM-DD').calendar()
-                //timeStart: moment(stack.timeStart, 'YYYY-MM-DD').add(5, 'days').calendar()
-              })
-            });
-          });
-        }
-      });
-
    }
 
 //   https://www.w3schools.com/css/img_lights.jpg
 //   http://i.dailymail.co.uk/i/pix/2017/01/16/20/332EE38400000578-4125738-image-a-132_1484600112489.jpg   
 //   https://cdn.eso.org/images/thumb700x/eso1238a.jpg
 
-  showSharedStacks() {
-    let sharedStacks = this.cueStack.getShareStacks(true);
-    sharedStacks.subscribe(res => {
-      //console.log('shared length=' + res.length);
-      res.forEach(data =>{
-        let stack = this.cards.find(item => item.id === data.id);
-        if (!stack) {
-          //console.log('found id=' + data.id);          
-          this.cards.push({
-            id: data.id,
-            checked: false,
-            title: data.title,
-            description: data.description,
-            imageUrl: data.imageUrl,
-            status: data.status,
-            shareflag: data.shareflag,
-            timeStart: moment(data.timeStart, 'YYYY-MM-DD').calendar()
-          })
-        }
+  showStacks() {
+    this.cards = [];   
+    let all = this.cueStack.getAllStacks();
+    all.subscribe(stacks => {
+      stacks.subscribe(res => {
+        console.log('res.length=', res.length);
+        res.forEach(stack => {
+          let checkData = this.cards.filter(item => item.id === stack.id);
+          if (checkData.length > 0) {
+            console.log('exits duplicated stack id=', stack.id);
+          } else if (stack.id === undefined) {
+            console.log('stack.id is undefined');
+          } else if (stack.id === 'temp-key') {
+            console.log('stack.id is temp-key');
+          } else {
+            this.cards.push({
+              id: stack.id,
+              checked: false,
+              title: stack.title,
+              description: stack.description,
+              imageUrl: stack.imageUrl,
+              status: stack.status,
+              shareflag: stack.shareflag,
+              timeStart: moment(stack.timeStart, 'YYYY-MM-DD').calendar()
+              //timeStart: moment(stack.timeStart, 'YYYY-MM-DD').add(5, 'days').calendar()
+            })
+          }
+        })
       })
+    }, getAllStacksError => {
+      console.log(getAllStacksError);
     });
-
   }
 
   openModalAddStack() {
@@ -89,19 +70,27 @@ export class HomePage {
   }
 
   openModalLogin() {
-    this.openModal('LoginPage');
+    //this.openModal('LoginPage');
+    let loginModel = this.modalCtrl.create('LoginPage', null, { cssClass: 'inset-modal' });
+    loginModel.onDidDismiss(data => {
+      if (data) {
+        console.log("HomePage::uid=" + data.uid);
+        this.showStacks();
+      }
+    });
+    loginModel.present();
   }
 
   openModalSignup() {
-    this.openModal('SignupPage');
-  //   let signupModel = this.modalCtrl.create('SignupPage', null, { cssClass: 'inset-modal' });
-  //   signupModel.onDidDismiss(data => {
-  //     if (data) {
-  //       console.log("HomePage::uid=" + data.uid);
-  //       //this.userid = data.uid;
-  //     }
-  //   });
-  //   signupModel.present();
+    //this.openModal('SignupPage');
+    let signupModel = this.modalCtrl.create('SignupPage', null, { cssClass: 'inset-modal' });
+    signupModel.onDidDismiss(data => {
+      if (data) {
+        console.log("HomePage::uid=" + data.uid);
+        this.showStacks();
+      }
+    });
+    signupModel.present();
   }
 
   openModal(pageName) {
@@ -110,14 +99,15 @@ export class HomePage {
   }
 
   logout(): void {
-    this.cards = [];
     this.auth.logout();
+    this.cueStack.logout();
+    this.showStacks();
   }
 
   cardTapped(event, card) {
     let ids = [];
     ids.push({id: card.id, title: card.title});
-    this.navCtrl.push(CuesPage, {id: ids, userid: this.userid, currentUser: this.auth.currentUser});    
+    this.navCtrl.push(CuesPage, {id: ids, currentUser: this.auth.currentUser});    
   }
 
   startStudy() {
@@ -129,7 +119,7 @@ export class HomePage {
     });
     //clear check
     this.clearCheck(false);   
-    this.navCtrl.push(CuesPage, {id: ids, userid: this.userid, currentUser: this.auth.currentUser});    
+    this.navCtrl.push(CuesPage, {id: ids, currentUser: this.auth.currentUser});    
   }
 
   checkMode() {    

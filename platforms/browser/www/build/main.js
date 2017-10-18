@@ -25,102 +25,101 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 var CuesPage = (function () {
     function CuesPage(navCtrl, navParams, modalCtrl, cueStack) {
-        var _this = this;
         this.navCtrl = navCtrl;
         this.navParams = navParams;
         this.modalCtrl = modalCtrl;
         this.cueStack = cueStack;
         this.stackid = navParams.get('id');
-        this.userid = navParams.get('userid');
         this.currentUser = navParams.get('currentUser');
-        var cues = this.cueStack.getCuesMultiStacks(this.stackid);
-        this.cards = [];
-        cues.subscribe(function (res) {
-            var index = 0;
-            res.forEach(function (cue) {
-                index++;
-                _this.cards.push({
-                    front: { stackid: cue.stackid,
-                        id: cue.id,
-                        count: String(index),
-                        idrate: '',
-                        rate: '',
-                        timeStart: '',
-                        title: "front-title: " + cue.stackid,
-                        subtitle: "front-subtitle: " + cue.question,
-                        imageUrl: cue.imageUrl },
-                    back: { title: "back-title: " + 'title',
-                        imageUrl: cue.imageUrl,
-                        subtitle: "back-subtitle(question): " + cue.question,
-                        content: "back-content(answer): " + cue.answer }
-                });
-            });
-            // this.stackid.forEach(data =>{
-            //   let cues = this.cueStack.getCues(data.id);
-            //   cues.subscribe(res => {
-            //     res.forEach(cue => {
-            //       index++;
-            //       this.cards.push({
-            //         front:{ stackid: data.id,
-            //                 id: cue.id,
-            //                 count: String(index),
-            //                 idrate: '',
-            //                 rate: '',
-            //                 timeStart: '',
-            //                 title: "front-title: " + data.title,
-            //                 subtitle: "front-subtitle: " + cue.question,
-            //                 imageUrl: cue.imageUrl },
-            //         back: { title: "back-title: " + data.title,
-            //                 imageUrl: cue.imageUrl,
-            //                 subtitle: "back-subtitle(question): " + cue.question,
-            //                 content: "back-content(answer): " + cue.answer }
-            //       })
-            //     })
-            //   })
-        });
+        //this.loadCards();
     }
     //   https://static.pexels.com/photos/34950/pexels-photo.jpg
     //   http://www.nhm.ac.uk/content/dam/nhmwww/visit/Exhibitions/art-of-british-natural-history/magpie-illustration-keulemans-two-column.jpg
     //   http://i.telegraph.co.uk/multimedia/archive/03598/lightning-10_3598416k.jpg
-    CuesPage.prototype.showRates = function () {
+    CuesPage.prototype.loadCards = function () {
         var _this = this;
-        this.cards.forEach(function (card) {
-            console.log("no=" + card.front.count + ', id=' + card.front.id);
-            var cuerates = _this.cueStack.getCueRates(card.front.id);
-            cuerates.subscribe(function (resRate) {
-                console.log('resRate length=' + String(resRate.length));
-                var cuerate = resRate.find(function (item) { return item.userid === _this.userid; });
-                if (cuerate) {
-                    console.log('found cuerate.id=' + cuerate.id + ', rate=' + cuerate.rate);
-                    card.front.idrate = cuerate.id;
-                    card.front.rate = cuerate.rate;
-                    card.front.timeStart = _this.setRateTime(cuerate.rate, cuerate.timeStart);
-                }
-                else {
-                    console.log('not found cuerate: userid=[' + _this.userid + '], card.front.id=[' + card.front.id + ']');
-                    //add cuerate
-                    _this.cueStack.addCueRate(_this.userid, card.front.stackid, card.front.id, card.front.idrate);
-                }
+        var cuerates = [];
+        var list = this.cueStack.getCueRatesByUserID();
+        if (list) {
+            list.subscribe(function (result) {
+                console.log("result=", result);
+                result.forEach(function (rate) {
+                    cuerates.push(rate);
+                    console.log('got result');
+                });
             });
+        }
+        this.cueStack.getCuesMultiStacks(this.stackid).subscribe(function (success) {
+            var index = 0;
+            _this.cards = [];
+            success.subscribe(function (cues) {
+                console.log('loadCards()::cues::length=', cues.length);
+                cues.forEach(function (cue) {
+                    var checkData = _this.cards.filter(function (item) { return item.front.id === cue.id; });
+                    if (checkData.length > 0) {
+                        console.log('exits duplicated cue id=', cue.id);
+                    }
+                    else if (cue.id === undefined) {
+                        console.log('cue.id is undefined');
+                    }
+                    else {
+                        // get rate data
+                        var cuerate = cuerates.find(function (data) { return data.cueid === cue.id; });
+                        var idrate = '';
+                        var rate = '';
+                        var timeStart = '';
+                        if (cuerate) {
+                            console.log('found cuerate.id=' + cuerate.id + ', rate=' + cuerate.rate);
+                            idrate = cuerate.id;
+                            rate = cuerate.rate;
+                            timeStart = _this.setRateTime(cuerate.rate, cuerate.timeStart);
+                        }
+                        else {
+                            console.log('not found cuerate with userid: cueid=' + cue.id);
+                            //add cuerate
+                            rate = 'new';
+                            idrate = _this.cueStack.addCueRate(cue.stackid, cue.id, rate);
+                        }
+                        console.log(cuerate);
+                        // store cue data
+                        index++;
+                        _this.cards.push({
+                            front: { stackid: cue.stackid,
+                                id: cue.id,
+                                count: String(index),
+                                idrate: idrate,
+                                rate: rate,
+                                timeStart: timeStart,
+                                title: "front-title: " + cue.stackid,
+                                subtitle: "front-subtitle: " + cue.question,
+                                imageUrl: cue.imageUrl },
+                            back: { title: "back-title: " + 'title',
+                                imageUrl: cue.imageUrl,
+                                subtitle: "back-subtitle(question): " + cue.question,
+                                content: "back-content(answer): " + cue.answer }
+                        });
+                    }
+                });
+            });
+        }, function (getCuesMultiStacksError) {
+            console.log(getCuesMultiStacksError);
         });
     };
     CuesPage.prototype.ionViewDidLoad = function () {
         console.log('ionViewDidLoad CuesPage');
     };
     CuesPage.prototype.openModalAddCue = function () {
-        var _this = this;
         var addCueModel = this.modalCtrl.create('AddCuePage', { id: this.stackid[0].id }, { cssClass: 'inset-modal' });
         addCueModel.onDidDismiss(function (data) {
             console.log(data);
             if (data) {
                 console.log("added cue");
-                _this.showRates();
             }
         });
         addCueModel.present();
     };
     CuesPage.prototype.updateCueRate = function (card) {
-        //console.log("card.front.id=" + card.front.id + ', rate to [' + card.front.rate + '].');
+        console.log("card.front.id=" + card.front.id + ', rate to [' + card.front.rate + '].');
         this.cueStack.updateCueRate(card.front.idrate, card.front.rate);
     };
     CuesPage.prototype.setRateTime = function (rate, timestamp) {
@@ -142,7 +141,7 @@ var CuesPage = (function () {
 CuesPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* IonicPage */])(),
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-cues',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\cues\cues.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Cues\n      <ion-buttons end>\n        <button ion-button icon-only (click)="showRates()">\n          <ion-icon name=\'ribbon\'></ion-icon>\n        </button>\n        <button *ngIf="currentUser" ion-button icon-only (click)="openModalAddCue()">\n          <ion-icon name=\'add\'></ion-icon>\n        </button>     \n      </ion-buttons>\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <ion-slides>\n    <ion-slide *ngFor="let card of cards">\n      <flash-card>\n        <div class="fc-front">\n          <p>{{card.front.count}} of {{cards.length}}</p>              \n          <img *ngIf="card.front.imageUrl"  [src]="card.front.imageUrl" />\n          <h2 text-center>{{card.front.title}}</h2>\n          <h3 text-center>{{card.front.subtitle}}</h3>\n          <hr />\n          <p *ngIf="card.front.title" >{{card.front.content}}</p>\n          <p>{{card.front.timeStart}}</p>              \n        </div>\n        <div class="fc-back">\n          <p>{{card.front.count}} of {{cards.length}}</p>              \n          <img *ngIf="card.back.imageUrl"  [src]="card.back.imageUrl" />\n          <h2 text-center>{{card.back.title}}</h2>\n          <h3 text-center>{{card.back.subtitle}}</h3>\n          <hr />\n          <p *ngIf="card.back.title" >{{card.back.content}}</p>\n        </div>\n      </flash-card>\n      <ion-row no-padding>\n        <ion-item>\n          <ion-label>Rate: </ion-label>\n          <ion-select [(ngModel)]="card.front.rate" block (ionChange)="updateCueRate(card)">\n            <ion-option value="bad">Bad</ion-option>\n            <ion-option value="good">Good</ion-option>\n            <ion-option value="never show">Never Show</ion-option>\n          </ion-select>\n        </ion-item>\n      </ion-row>\n    </ion-slide>\n  </ion-slides>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\cues\cues.html"*/,
+        selector: 'page-cues',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\cues\cues.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Cues\n      <ion-buttons end>\n        <button ion-button icon-only (click)="loadCards()">\n          <ion-icon name=\'share-alt\'></ion-icon>\n        </button>\n        <button *ngIf="currentUser" ion-button icon-only (click)="openModalAddCue()">\n          <ion-icon name=\'add\'></ion-icon>\n        </button>     \n      </ion-buttons>\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n\n  <ion-slides>\n    <ion-slide *ngFor="let card of cards">\n      <flash-card>\n        <div class="fc-front">\n          <p>{{card.front.count}} of {{cards.length}}</p>              \n          <img *ngIf="card.front.imageUrl"  [src]="card.front.imageUrl" />\n          <h2 text-center>{{card.front.title}}</h2>\n          <h3 text-center>{{card.front.subtitle}}</h3>\n          <hr />\n          <p *ngIf="card.front.title" >{{card.front.content}}</p>\n          <p>{{card.front.timeStart}}</p>              \n        </div>\n        <div class="fc-back">\n          <p>{{card.front.count}} of {{cards.length}}</p>              \n          <img *ngIf="card.back.imageUrl"  [src]="card.back.imageUrl" />\n          <h2 text-center>{{card.back.title}}</h2>\n          <h3 text-center>{{card.back.subtitle}}</h3>\n          <hr />\n          <p *ngIf="card.back.title" >{{card.back.content}}</p>\n        </div>\n      </flash-card>\n      <ion-row no-padding>\n        <ion-item>\n          <ion-label>Rate: </ion-label>\n          <ion-select [(ngModel)]="card.front.rate" block (ionChange)="updateCueRate(card)">\n            <ion-option value="bad">Bad</ion-option>\n            <ion-option value="good">Good</ion-option>\n            <ion-option value="never show">Never Show</ion-option>\n          </ion-select>\n        </ion-item>\n      </ion-row>\n    </ion-slide>\n  </ion-slides>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\cues\cues.html"*/,
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavController */],
         __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* NavParams */],
@@ -253,7 +252,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 var HomePage = (function () {
     function HomePage(navCtrl, modalCtrl, cueStack, alertCtrl, actionsheetCtrl, auth) {
-        var _this = this;
         this.navCtrl = navCtrl;
         this.modalCtrl = modalCtrl;
         this.cueStack = cueStack;
@@ -263,15 +261,29 @@ var HomePage = (function () {
         this.status = 'all';
         this.checked = false;
         this.value = '1';
-        this.user = this.auth.authUser();
-        this.user.subscribe(function (data) {
-            if (data) {
-                _this.userid = data.uid;
-                console.log('userid=' + _this.userid);
-                var stacks = _this.cueStack.getStacks(_this.userid);
-                stacks.subscribe(function (res) {
-                    _this.cards = [];
-                    res.forEach(function (stack) {
+    }
+    //   https://www.w3schools.com/css/img_lights.jpg
+    //   http://i.dailymail.co.uk/i/pix/2017/01/16/20/332EE38400000578-4125738-image-a-132_1484600112489.jpg   
+    //   https://cdn.eso.org/images/thumb700x/eso1238a.jpg
+    HomePage.prototype.showStacks = function () {
+        var _this = this;
+        this.cards = [];
+        var all = this.cueStack.getAllStacks();
+        all.subscribe(function (stacks) {
+            stacks.subscribe(function (res) {
+                console.log('res.length=', res.length);
+                res.forEach(function (stack) {
+                    var checkData = _this.cards.filter(function (item) { return item.id === stack.id; });
+                    if (checkData.length > 0) {
+                        console.log('exits duplicated stack id=', stack.id);
+                    }
+                    else if (stack.id === undefined) {
+                        console.log('stack.id is undefined');
+                    }
+                    else if (stack.id === 'temp-key') {
+                        console.log('stack.id is temp-key');
+                    }
+                    else {
                         _this.cards.push({
                             id: stack.id,
                             checked: false,
@@ -283,66 +295,53 @@ var HomePage = (function () {
                             timeStart: __WEBPACK_IMPORTED_MODULE_5_moment___default()(stack.timeStart, 'YYYY-MM-DD').calendar()
                             //timeStart: moment(stack.timeStart, 'YYYY-MM-DD').add(5, 'days').calendar()
                         });
-                    });
+                    }
                 });
-            }
-        });
-    }
-    //   https://www.w3schools.com/css/img_lights.jpg
-    //   http://i.dailymail.co.uk/i/pix/2017/01/16/20/332EE38400000578-4125738-image-a-132_1484600112489.jpg   
-    //   https://cdn.eso.org/images/thumb700x/eso1238a.jpg
-    HomePage.prototype.showSharedStacks = function () {
-        var _this = this;
-        var sharedStacks = this.cueStack.getShareStacks(true);
-        sharedStacks.subscribe(function (res) {
-            //console.log('shared length=' + res.length);
-            res.forEach(function (data) {
-                var stack = _this.cards.find(function (item) { return item.id === data.id; });
-                if (!stack) {
-                    //console.log('found id=' + data.id);          
-                    _this.cards.push({
-                        id: data.id,
-                        checked: false,
-                        title: data.title,
-                        description: data.description,
-                        imageUrl: data.imageUrl,
-                        status: data.status,
-                        shareflag: data.shareflag,
-                        timeStart: __WEBPACK_IMPORTED_MODULE_5_moment___default()(data.timeStart, 'YYYY-MM-DD').calendar()
-                    });
-                }
             });
+        }, function (getAllStacksError) {
+            console.log(getAllStacksError);
         });
     };
     HomePage.prototype.openModalAddStack = function () {
         this.openModal('AddStackPage');
     };
     HomePage.prototype.openModalLogin = function () {
-        this.openModal('LoginPage');
+        var _this = this;
+        //this.openModal('LoginPage');
+        var loginModel = this.modalCtrl.create('LoginPage', null, { cssClass: 'inset-modal' });
+        loginModel.onDidDismiss(function (data) {
+            if (data) {
+                console.log("HomePage::uid=" + data.uid);
+                _this.showStacks();
+            }
+        });
+        loginModel.present();
     };
     HomePage.prototype.openModalSignup = function () {
-        this.openModal('SignupPage');
-        //   let signupModel = this.modalCtrl.create('SignupPage', null, { cssClass: 'inset-modal' });
-        //   signupModel.onDidDismiss(data => {
-        //     if (data) {
-        //       console.log("HomePage::uid=" + data.uid);
-        //       //this.userid = data.uid;
-        //     }
-        //   });
-        //   signupModel.present();
+        var _this = this;
+        //this.openModal('SignupPage');
+        var signupModel = this.modalCtrl.create('SignupPage', null, { cssClass: 'inset-modal' });
+        signupModel.onDidDismiss(function (data) {
+            if (data) {
+                console.log("HomePage::uid=" + data.uid);
+                _this.showStacks();
+            }
+        });
+        signupModel.present();
     };
     HomePage.prototype.openModal = function (pageName) {
         this.modalCtrl.create(pageName, null, { cssClass: 'inset-modal' })
             .present();
     };
     HomePage.prototype.logout = function () {
-        this.cards = [];
         this.auth.logout();
+        this.cueStack.logout();
+        this.showStacks();
     };
     HomePage.prototype.cardTapped = function (event, card) {
         var ids = [];
         ids.push({ id: card.id, title: card.title });
-        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_1__cues_cues__["a" /* CuesPage */], { id: ids, userid: this.userid, currentUser: this.auth.currentUser });
+        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_1__cues_cues__["a" /* CuesPage */], { id: ids, currentUser: this.auth.currentUser });
     };
     HomePage.prototype.startStudy = function () {
         var ids = [];
@@ -353,7 +352,7 @@ var HomePage = (function () {
         });
         //clear check
         this.clearCheck(false);
-        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_1__cues_cues__["a" /* CuesPage */], { id: ids, userid: this.userid, currentUser: this.auth.currentUser });
+        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_1__cues_cues__["a" /* CuesPage */], { id: ids, currentUser: this.auth.currentUser });
     };
     HomePage.prototype.checkMode = function () {
         this.clearCheck(false);
@@ -443,7 +442,7 @@ var HomePage = (function () {
 }());
 HomePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-home',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\home\home.html"*/'<ion-header>\n  <ion-navbar>\n    <div [ngSwitch]="value">\n      <div *ngSwitchCase="1">\n        <button ion-button menuToggle left>\n          <ion-icon name="menu"></ion-icon>\n        </button>\n        <ion-title text-align-center>Cue Stacks</ion-title>\n        <ion-buttons end>\n          <button ion-button icon-only (click)="searchMode()">\n            <ion-icon name=\'search\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="checkMode()">\n            <ion-icon name=\'list\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="showSharedStacks()">\n            <ion-icon name=\'share-alt\'></ion-icon>\n          </button>\n          <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">\n            <ion-icon name=\'add\'></ion-icon>\n          </button>     \n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="2">\n        <ion-buttons end>\n          <button ion-button icon-only (click)="actionSheet1()">\n            <ion-icon name=\'beer\'></ion-icon>\n          </button>   \n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="3">\n        <ion-searchbar (ionInput)="getItems($event)" placeholder="search}"></ion-searchbar>         \n        <!-- <ion-searchbar\n          [(ngModel)]="myInput"\n          [showCancelButton]="shouldShowCancel"\n          (ionInput)="onInput($event)"\n          (ionCancel)="onCancel($event)">\n        </ion-searchbar> -->\n        <ion-buttons end>\n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>         \n      </div>\n      <div *ngSwitchDefault>Default Template</div>\n    </div>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <h3>Stacks</h3>\n  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div>                \n  \n<!--  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div> \n  <button ion-button round color="danger" (click)="showSharedStacks()">Show Shared Stacks</button>   \n  <ion-row no-padding>\n    <button *ngIf="checked == false; else selectcheck;" ion-button round (click)="checkSelect()">Select</button>\n    <ng-template #selectcheck>\n      <button ion-button round color="danger" (click)="checkSelect()">Close</button>\n      <button ion-button round color="secondary" (click)="actionSheet1()">Action</button>\n    </ng-template>\n  </ion-row>\n-->\n  <ion-card *ngFor="let card of cards" >\n    <div *ngIf="card.status == status || card.status == \'all\' || status == \'all\'">\n      <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>     \n      <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />\n      <ion-card-content>\n        <h2 class="card-title" (click)="cardTapped($event, card)">\n          {{card.title}}\n        </h2>\n        <p>\n          {{card.description}}\n        </p>\n        <p>\n          {{card.status}}\n        </p>  \n        <p>\n          {{card.timeStart}}\n        </p>  \n        <p>\n          {{card.shareflag}}\n        </p>  \n        </ion-card-content>\n    </div>\n  </ion-card>\n\n  <!-- Float Action Buttons -->\n  <ion-fab bottom right >\n    <button ion-fab class="pop-in" color="danger">Accout</button>\n    <ion-fab-list side="top">\n      <button ion-fab color="primary" (click)="openModalLogin()">\n        <ion-icon  name="log-in"></ion-icon>\n      </button>\n      <button ion-fab color="secondary" (click)="logout()">\n        <ion-icon name="log-out"></ion-icon>\n      </button>\n      <button ion-fab color="danger" (click)="openModalSignup()">\n        <ion-icon name="link"></ion-icon>\n      </button>\n    </ion-fab-list>\n    <ion-fab-list side="left">\n      <button ion-fab>\n        <ion-icon name="logo-github"></ion-icon>\n      </button>\n    </ion-fab-list>\n  </ion-fab>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\home\home.html"*/
+        selector: 'page-home',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\home\home.html"*/'<ion-header>\n  <ion-navbar>\n    <div [ngSwitch]="value">\n      <div *ngSwitchCase="1">\n        <button ion-button menuToggle left>\n          <ion-icon name="menu"></ion-icon>\n        </button>\n        <ion-title text-align-center>Cue Stacks</ion-title>\n        <ion-buttons end>\n          <button ion-button icon-only (click)="searchMode()">\n            <ion-icon name=\'search\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="checkMode()">\n            <ion-icon name=\'list\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="showStacks()">\n            <ion-icon name=\'share-alt\'></ion-icon>\n          </button>\n          <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">\n            <ion-icon name=\'add\'></ion-icon>\n          </button>     \n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="2">\n        <ion-buttons end>\n          <button ion-button icon-only (click)="actionSheet1()">\n            <ion-icon name=\'beer\'></ion-icon>\n          </button>   \n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="3">\n        <ion-searchbar (ionInput)="getItems($event)" placeholder="search()"></ion-searchbar>         \n        <!-- <ion-searchbar\n          [(ngModel)]="myInput"\n          [showCancelButton]="shouldShowCancel"\n          (ionInput)="onInput($event)"\n          (ionCancel)="onCancel($event)">\n        </ion-searchbar> -->\n        <ion-buttons end>\n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>         \n      </div>\n      <div *ngSwitchDefault>Default Template</div>\n    </div>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <h3>Stacks</h3>\n  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div>                \n  \n<!--  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div> \n  <button ion-button round color="danger" (click)="showSharedStacks()">Show Shared Stacks</button>   \n  <ion-row no-padding>\n    <button *ngIf="checked == false; else selectcheck;" ion-button round (click)="checkSelect()">Select</button>\n    <ng-template #selectcheck>\n      <button ion-button round color="danger" (click)="checkSelect()">Close</button>\n      <button ion-button round color="secondary" (click)="actionSheet1()">Action</button>\n    </ng-template>\n  </ion-row>\n-->\n  <ion-card *ngFor="let card of cards" >\n    <div *ngIf="card.status == status || card.status == \'all\' || status == \'all\'">\n      <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>     \n      <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />\n      <ion-card-content>\n        <h2 class="card-title" (click)="cardTapped($event, card)">\n          {{card.title}}\n        </h2>\n        <p>\n          {{card.description}}\n        </p>\n        <p>\n          {{card.status}}\n        </p>  \n        <p>\n          {{card.timeStart}}\n        </p>  \n        <p>\n          {{card.shareflag}}\n        </p>  \n        </ion-card-content>\n    </div>\n  </ion-card>\n\n  <!-- Float Action Buttons -->\n  <ion-fab bottom right >\n    <button ion-fab class="pop-in" color="danger">Accout</button>\n    <ion-fab-list side="top">\n      <button ion-fab color="primary" (click)="openModalLogin()">\n        <ion-icon  name="log-in"></ion-icon>\n      </button>\n      <button ion-fab color="secondary" (click)="logout()">\n        <ion-icon name="log-out"></ion-icon>\n      </button>\n      <button ion-fab color="danger" (click)="openModalSignup()">\n        <ion-icon name="link"></ion-icon>\n      </button>\n    </ion-fab-list>\n    <ion-fab-list side="left">\n      <button ion-fab>\n        <ion-icon name="logo-github"></ion-icon>\n      </button>\n    </ion-fab-list>\n  </ion-fab>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\home\home.html"*/
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavController */],
         __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["h" /* ModalController */],
@@ -492,33 +491,29 @@ var ListPage = (function () {
         this.auth = auth;
         this.checked = false;
         this.value = '1';
-        var user = this.auth.authUser();
-        user.subscribe(function (data) {
-            if (data) {
-                _this.userid = data.uid;
-                var stacks = _this.cueStack.getStacks(_this.userid);
-                stacks.subscribe(function (res) {
-                    _this.cards = [];
-                    res.forEach(function (stack) {
-                        _this.cards.push({
-                            title: stack.title,
-                            description: stack.description,
-                            imageUrl: stack.imageUrl,
-                            id: stack.id,
-                            status: stack.status,
-                            shareflag: stack.shareflag,
-                            checked: false
-                        });
+        if (this.auth.currentUser) {
+            var stacks = this.cueStack.getStacks();
+            stacks.subscribe(function (res) {
+                _this.cards = [];
+                res.forEach(function (stack) {
+                    _this.cards.push({
+                        title: stack.title,
+                        description: stack.description,
+                        imageUrl: stack.imageUrl,
+                        id: stack.id,
+                        status: stack.status,
+                        shareflag: stack.shareflag,
+                        checked: false
                     });
                 });
-            }
-        });
+            });
+        }
     }
     ListPage.prototype.cardTapped = function (event, card) {
-        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_4__list_cue_list_cue__["a" /* ListCuePage */], { title: card.title, id: card.id, userid: this.userid });
+        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_4__list_cue_list_cue__["a" /* ListCuePage */], { title: card.title, id: card.id });
     };
     ListPage.prototype.reportsPage = function (card) {
-        this.modalCtrl.create('ReportsPage', { title: card.title, id: card.id, userid: this.userid }, { cssClass: 'inset-modal' })
+        this.modalCtrl.create('ReportsPage', { title: card.title, id: card.id }, { cssClass: 'inset-modal' })
             .present();
     };
     ListPage.prototype.edit = function (card) {
@@ -703,6 +698,8 @@ ListPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_cuestack_cuestack__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_moment__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_moment__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -712,6 +709,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 
 
 
@@ -725,7 +723,6 @@ var ListCuePage = (function () {
         this.checked = false;
         this.value = '1';
         this.stackid = navParams.get('id');
-        this.userid = navParams.get('userid');
         var cues = this.cueStack.getCues(this.stackid);
         cues.subscribe(function (res) {
             _this.cards = [];
@@ -737,6 +734,7 @@ var ListCuePage = (function () {
                     id: cue.id,
                     idrate: '',
                     rate: '',
+                    timeStart: '',
                     checked: false
                 });
             });
@@ -744,19 +742,35 @@ var ListCuePage = (function () {
     }
     ListCuePage.prototype.showRates = function () {
         var _this = this;
+        var cuerates = [];
+        var list = this.cueStack.getCueRatesByUserID();
+        if (list) {
+            list.subscribe(function (result) { cuerates.push(result); });
+        }
         this.cards.forEach(function (card) {
-            //console.log("no=" + card.front.count + ', id=' + card.front.id);
-            var cuerates = _this.cueStack.getCueRates(card.id);
-            cuerates.subscribe(function (resRate) {
-                //console.log('resRate length=' + String(resRate.length));
-                var cuerate = resRate.find(function (item) { return item.userid === _this.userid; });
-                //console.log('cuerate.id=' + cuerate.id + ', rate=' + cuerate.rate);
-                if (cuerate) {
-                    card.idrate = cuerate.id;
-                    card.rate = cuerate.rate;
-                }
-            });
+            console.log('cue id=' + card.id);
+            var cuerate = cuerates.find(function (item) { return item.cueid === card.id; });
+            if (cuerate) {
+                console.log('found cuerate.id=' + cuerate.id + ', rate=' + cuerate.rate);
+                card.idrate = cuerate.id;
+                card.rate = cuerate.rate;
+                card.timeStart = _this.setRateTime(cuerate.rate, cuerate.timeStart);
+            }
         });
+    };
+    ListCuePage.prototype.setRateTime = function (rate, timestamp) {
+        var days = 0;
+        if (rate == 'good') {
+            days = 100;
+        }
+        else if (rate == 'bad') {
+            days = 1;
+        }
+        else {
+            days = 1000;
+        }
+        var timeStart = __WEBPACK_IMPORTED_MODULE_3_moment___default()(timestamp, 'YYYY-MM-DD').add(days, 'days').calendar();
+        return timeStart;
     };
     ListCuePage.prototype.cardTapped = function (event, card) {
         var _this = this;
@@ -1039,8 +1053,10 @@ AppModule = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_angularfire2_database__ = __webpack_require__(110);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_angularfire2_auth__ = __webpack_require__(119);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_moment__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_moment__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_Observable__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_Observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_Observable__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_moment__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_moment__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1054,7 +1070,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var CueStackProvider = (function () {
+    // cues: FirebaseListObservable<Cue[]>;
+    // cuerates: FirebaseListObservable<CueRate[]>;
+    // stacks: FirebaseListObservable<Stack[]>;
     function CueStackProvider(db, afAuth) {
         var _this = this;
         this.db = db;
@@ -1064,25 +1084,17 @@ var CueStackProvider = (function () {
                 _this.user = auth;
                 console.log("CueStackProvider::userid=" + auth.uid);
             }
-            _this.getUser().subscribe(function (a) {
-                _this.userName = a.displayName;
-            });
         });
     }
-    CueStackProvider.prototype.getUser = function () {
-        var userId = this.user.uid;
-        var path = "/users/" + userId;
-        return this.db.object(path);
-    };
-    CueStackProvider.prototype.getUsers = function () {
-        var path = '/users';
-        return this.db.list(path);
+    CueStackProvider.prototype.logout = function () {
+        this.user = null;
+        console.log("CueStackProvider::logout");
     };
     CueStackProvider.prototype.addCue = function (stackid, question, answer, imageUrl, rate) {
-        var timestamp = __WEBPACK_IMPORTED_MODULE_3_moment___default()(new Date()).format('YYYY-MM-DD');
+        var timestamp = __WEBPACK_IMPORTED_MODULE_4_moment___default()(new Date()).format('YYYY-MM-DD');
         var userid = this.user.uid;
-        this.cues = this.getCues(stackid);
-        var key = this.cues.push({
+        var list = this.getCues(stackid);
+        var key = list.push({
             userid: userid,
             stackid: stackid,
             question: question,
@@ -1092,7 +1104,7 @@ var CueStackProvider = (function () {
             timeStart: timestamp,
         }).key;
         this.updateCueID(key);
-        this.addCueRate(userid, stackid, key, rate);
+        this.addCueRate(stackid, key, rate);
     };
     CueStackProvider.prototype.updateCueID = function (key) {
         var path = "cues/" + key;
@@ -1102,10 +1114,11 @@ var CueStackProvider = (function () {
         this.db.object(path).update(data)
             .catch(function (error) { return console.log(error); });
     };
-    CueStackProvider.prototype.addCueRate = function (userid, stackid, cueid, rate) {
-        var timestamp = __WEBPACK_IMPORTED_MODULE_3_moment___default()(new Date()).format('YYYY-MM-DD');
-        this.cuerates = this.getCueRates(cueid);
-        var key = this.cuerates.push({
+    CueStackProvider.prototype.addCueRate = function (stackid, cueid, rate) {
+        var userid = this.user.uid;
+        var timestamp = __WEBPACK_IMPORTED_MODULE_4_moment___default()(new Date()).format('YYYY-MM-DD');
+        var list = this.getCueRates();
+        var key = list.push({
             userid: userid,
             stackid: stackid,
             cueid: cueid,
@@ -1113,6 +1126,7 @@ var CueStackProvider = (function () {
             timeStart: timestamp
         }).key;
         this.updateCueRateID(key);
+        return key;
     };
     CueStackProvider.prototype.updateCueRateID = function (key) {
         var path = "cuerates/" + key;
@@ -1130,14 +1144,28 @@ var CueStackProvider = (function () {
         this.db.object(path).update(data)
             .catch(function (error) { return console.log(error); });
     };
-    CueStackProvider.prototype.getCueRates = function (cueid) {
+    CueStackProvider.prototype.getCueRates = function () {
         return this.db.list('cuerates', {
             query: {
                 limitToLast: 25,
-                orderByChild: 'cueid',
-                equalTo: cueid,
+                orderByChild: 'userid',
+                equalTo: this.user.uid,
             }
         });
+    };
+    CueStackProvider.prototype.getCueRatesByUserID = function () {
+        if (this.user) {
+            return this.db.list('cuerates', {
+                query: {
+                    limitToLast: 25,
+                    orderByChild: 'userid',
+                    equalTo: this.user.uid,
+                }
+            });
+        }
+        else {
+            return null;
+        }
     };
     CueStackProvider.prototype.getCues = function (stackid) {
         return this.db.list('cues', {
@@ -1148,38 +1176,26 @@ var CueStackProvider = (function () {
             }
         });
     };
+    // http://reactivex.io/rxjs/manual/overview.html#creating-observables
+    // https://github.com/angular/angularfire2/issues/162
     CueStackProvider.prototype.getCuesMultiStacks = function (stackid) {
         var _this = this;
-        var refData;
-        stackid.forEach(function (data) {
-            console.log('getCuesMultiStacks::stackid=' + data.id);
-            if (refData) {
-                refData.push(_this.db.list('cues', {
-                    query: {
-                        limitToLast: 25,
-                        orderByChild: 'stackid',
-                        equalTo: data.id,
-                    }
-                }));
-            }
-            else {
-                refData = _this.db.list('cues', {
+        return __WEBPACK_IMPORTED_MODULE_3_rxjs_Observable__["Observable"].create(function (observer) {
+            stackid.forEach(function (data) {
+                var refData1;
+                console.log('getCuesMultiStacks::stackid=', data.id);
+                refData1 = _this.db.list('cues', {
                     query: {
                         limitToLast: 25,
                         orderByChild: 'stackid',
                         equalTo: data.id,
                     }
                 });
-            }
+                observer.next(refData1);
+            }), function (error) {
+                observer.error(error);
+            };
         });
-        // Promise.all([refData]).then(values => {
-        //   values.forEach(ref1 => {
-        //     refReturn = ref1[0];        
-        //   })
-        // }).catch(reason => { 
-        //   console.log(reason)
-        // });
-        return refData;
     };
     CueStackProvider.prototype.updateCue = function (cue) {
         var path = "cues/" + cue.id;
@@ -1191,34 +1207,26 @@ var CueStackProvider = (function () {
         this.db.object(path).update(data)
             .catch(function (error) { return console.log(error); });
     };
-    CueStackProvider.prototype.deleteCue = function (key) {
-        var path = "cues/" + key;
-        this.db.object(path).remove()
-            .catch(function (error) { return console.log(error); });
-    };
-    CueStackProvider.prototype.deleteCueRate = function (key) {
-        var path = "cuerates/" + key;
-        this.db.object(path).remove()
-            .catch(function (error) { return console.log(error); });
-    };
     CueStackProvider.prototype.addStack = function (title, description, imageUrl, status) {
-        var timestamp = __WEBPACK_IMPORTED_MODULE_3_moment___default()(new Date()).format('YYYY-MM-DD');
+        var timestamp = __WEBPACK_IMPORTED_MODULE_4_moment___default()(new Date()).format('YYYY-MM-DD');
         //const timestamp = new Date();
         var userid = this.user.uid;
-        this.stacks = this.getStacks(userid);
-        var key = this.stacks.push({
+        var list = this.getStacks();
+        var key = list.push({
             userid: userid,
             id: 'temp-key',
             title: title,
             description: description,
             imageUrl: imageUrl,
-            status: status,
+            status: '',
             timeStart: timestamp,
             shareflag: false,
         }).key;
         this.updateStackID(key);
+        this.addStackStatus(key, status);
     };
-    CueStackProvider.prototype.getStacks = function (userid) {
+    CueStackProvider.prototype.getStacks = function () {
+        var userid = this.user.uid;
         return this.db.list('stacks', {
             query: {
                 limitToLast: 25,
@@ -1227,13 +1235,41 @@ var CueStackProvider = (function () {
             }
         });
     };
-    CueStackProvider.prototype.getShareStacks = function (shareflag) {
-        return this.db.list('stacks', {
-            query: {
-                limitToLast: 25,
-                orderByChild: 'shareflag',
-                equalTo: shareflag,
+    // getShareStacks(shareflag: boolean): FirebaseListObservable<Stack[]> {
+    //   return this.db.list('stacks', {
+    //     query: {
+    //       limitToLast: 25,
+    //       orderByChild: 'shareflag',
+    //       equalTo: shareflag,
+    //     }
+    //   });
+    // }
+    CueStackProvider.prototype.getAllStacks = function () {
+        var _this = this;
+        return __WEBPACK_IMPORTED_MODULE_3_rxjs_Observable__["Observable"].create(function (observer) {
+            if (_this.user) {
+                var refData1 = void 0;
+                refData1 = _this.db.list('stacks', {
+                    query: {
+                        limitToLast: 25,
+                        orderByChild: 'userid',
+                        equalTo: _this.user.uid,
+                    }
+                });
+                observer.next(refData1);
+                console.log('got stacks with this.user.uid=', _this.user.uid);
             }
+            var refData2;
+            refData2 = _this.db.list('stacks', {
+                query: {
+                    limitToLast: 25,
+                    orderByChild: 'shareflag',
+                    equalTo: true,
+                }
+            });
+            observer.next(refData2);
+            console.log('got shared stacks');
+            observer.complete();
         });
     };
     CueStackProvider.prototype.updateStackShare = function (stackid, shareflag) {
@@ -1273,9 +1309,108 @@ var CueStackProvider = (function () {
             .catch(function (error) { return console.log(error); });
     };
     CueStackProvider.prototype.deleteStack = function (key) {
+        var _this = this;
+        // delete cues
+        var list;
+        list = this.db.list('cues', {
+            query: {
+                limitToLast: 25,
+                orderByChild: 'stackid',
+                equalTo: key,
+            }
+        });
+        list.subscribe(function (items) {
+            // Remove the matching item:
+            if (items.length) {
+                _this.deleteCue(items[0].id);
+            }
+        });
+        // delete stack status
+        var listS;
+        listS = this.db.list('statckstatus', {
+            query: {
+                limitToLast: 25,
+                orderByChild: 'stackid',
+                equalTo: key,
+            }
+        });
+        listS.subscribe(function (items) {
+            // Remove the matching item:
+            if (items.length) {
+                _this.deleteCue(items[0].id);
+            }
+        });
+        // delete stack
         var path = "stacks/" + key;
         this.db.object(path).remove()
             .catch(function (error) { return console.log(error); });
+    };
+    CueStackProvider.prototype.deleteCue = function (key) {
+        // delete cuerate data on this cue
+        var list;
+        list = this.db.list('cuerates', {
+            query: {
+                limitToLast: 25,
+                orderByChild: 'cueid',
+                equalTo: key,
+            }
+        });
+        list.subscribe(function (items) {
+            // Remove the matching item:
+            if (items.length) {
+                list.remove(items[0].id)
+                    .then(function () { return console.log('removed ' + items[0].id); })
+                    .catch(function (error) { return console.log(error); });
+            }
+        });
+        // delete cue
+        var path = "cues/" + key;
+        this.db.object(path).remove()
+            .catch(function (error) { return console.log(error); });
+    };
+    CueStackProvider.prototype.addStackStatus = function (stackid, status) {
+        var userid = this.user.uid;
+        var timestamp = __WEBPACK_IMPORTED_MODULE_4_moment___default()(new Date()).format('YYYY-MM-DD');
+        var list = this.getStackStatus();
+        var key = list.push({
+            userid: userid,
+            stackid: stackid,
+            status: status,
+            timeStart: timestamp
+        }).key;
+        this.updateStackStatusID(key);
+        return key;
+    };
+    CueStackProvider.prototype.updateStackStatusID = function (key) {
+        var path = "stackstatus/" + key;
+        var data = {
+            id: key
+        };
+        this.db.object(path).update(data)
+            .catch(function (error) { return console.log(error); });
+    };
+    // updateStackStatus(id: string, status: string): void {
+    //   const path = `stackstatus/${id}`;
+    //   const data = {
+    //     status: status,
+    //     //timeStart: firebase.database.ServerValue.TIMESTAMP,
+    //   };
+    //   this.db.object(path).update(data)
+    //     .catch(error => console.log(error));
+    // }
+    CueStackProvider.prototype.getStackStatus = function () {
+        if (this.user) {
+            return this.db.list('stackstatus', {
+                query: {
+                    limitToLast: 25,
+                    orderByChild: 'userid',
+                    equalTo: this.user.uid,
+                }
+            });
+        }
+        else {
+            return null;
+        }
     };
     return CueStackProvider;
 }());

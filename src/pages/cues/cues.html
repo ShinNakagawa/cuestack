@@ -5,8 +5,8 @@
     </button>
     <ion-title>Cues
       <ion-buttons end>
-        <button ion-button icon-only (click)="showRates()">
-          <ion-icon name='ribbon'></ion-icon>
+        <button ion-button icon-only (click)="loadCards()">
+          <ion-icon name='share-alt'></ion-icon>
         </button>
         <button *ngIf="currentUser" ion-button icon-only (click)="openModalAddCue()">
           <ion-icon name='add'></ion-icon>
@@ -17,6 +17,7 @@
 </ion-header>
 
 <ion-content padding>
+
   <ion-slides>
     <ion-slide *ngFor="let card of cards">
       <flash-card>

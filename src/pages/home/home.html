@@ -13,7 +13,7 @@
           <button ion-button icon-only (click)="checkMode()">
             <ion-icon name='list'></ion-icon>
           </button>
-          <button ion-button icon-only (click)="showSharedStacks()">
+          <button ion-button icon-only (click)="showStacks()">
             <ion-icon name='share-alt'></ion-icon>
           </button>
           <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">
@@ -32,7 +32,7 @@
         </ion-buttons>       
       </div>
       <div *ngSwitchCase="3">
-        <ion-searchbar (ionInput)="getItems($event)" placeholder="search}"></ion-searchbar>         
+        <ion-searchbar (ionInput)="getItems($event)" placeholder="search()"></ion-searchbar>         
         <!-- <ion-searchbar
           [(ngModel)]="myInput"
           [showCancelButton]="shouldShowCancel"

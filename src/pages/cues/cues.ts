@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { CueStackProvider } from '../../providers/cuestack/cuestack';
 import moment from 'moment';
+import { CueRate } from '../../models/cuerate.model';
 
 @IonicPage()
 @Component({
@@ -11,7 +12,6 @@ import moment from 'moment';
 export class CuesPage {
   stackid: any;
   currentUser: string;
-  userid: string;
   cards: Array<{front: {
                   stackid: string, 
                   id: string,
@@ -34,54 +34,8 @@ export class CuesPage {
     public modalCtrl: ModalController,
     private cueStack: CueStackProvider) {
       this.stackid = navParams.get('id');
-      this.userid = navParams.get('userid');
       this.currentUser = navParams.get('currentUser');
-
-      let cues = this.cueStack.getCuesMultiStacks(this.stackid);
-      this.cards = [];
-      cues.subscribe(res => {
-        let index = 0;      
-        res.forEach(cue => {
-          index++;
-          this.cards.push({
-            front:{ stackid: cue.stackid,
-                    id: cue.id,
-                    count: String(index),
-                    idrate: '',
-                    rate: '',
-                    timeStart: '',
-                    title: "front-title: " + cue.stackid,
-                    subtitle: "front-subtitle: " + cue.question,
-                    imageUrl: cue.imageUrl },
-            back: { title: "back-title: " + 'title',
-                    imageUrl: cue.imageUrl,
-                    subtitle: "back-subtitle(question): " + cue.question,
-                    content: "back-content(answer): " + cue.answer }
-        })
-      })
-      // this.stackid.forEach(data =>{
-      //   let cues = this.cueStack.getCues(data.id);
-      //   cues.subscribe(res => {
-      //     res.forEach(cue => {
-      //       index++;
-      //       this.cards.push({
-      //         front:{ stackid: data.id,
-      //                 id: cue.id,
-      //                 count: String(index),
-      //                 idrate: '',
-      //                 rate: '',
-      //                 timeStart: '',
-      //                 title: "front-title: " + data.title,
-      //                 subtitle: "front-subtitle: " + cue.question,
-      //                 imageUrl: cue.imageUrl },
-      //         back: { title: "back-title: " + data.title,
-      //                 imageUrl: cue.imageUrl,
-      //                 subtitle: "back-subtitle(question): " + cue.question,
-      //                 content: "back-content(answer): " + cue.answer }
-      //       })
-      //     })
-      //   })
-      })
+      //this.loadCards();
 
   }
 
@@ -89,25 +43,72 @@ export class CuesPage {
 //   http://www.nhm.ac.uk/content/dam/nhmwww/visit/Exhibitions/art-of-british-natural-history/magpie-illustration-keulemans-two-column.jpg
 //   http://i.telegraph.co.uk/multimedia/archive/03598/lightning-10_3598416k.jpg
 
-  showRates() {
-    this.cards.forEach(card =>{
-      console.log("no=" + card.front.count + ', id=' + card.front.id);
-      let cuerates = this.cueStack.getCueRates(card.front.id);
-      cuerates.subscribe(resRate => {
-        console.log('resRate length=' + String(resRate.length));
-        let cuerate = resRate.find(item => item.userid === this.userid);
-        if (cuerate) {
-          console.log('found cuerate.id=' + cuerate.id + ', rate=' + cuerate.rate);
-          card.front.idrate = cuerate.id;
-          card.front.rate = cuerate.rate;
-          card.front.timeStart = this.setRateTime(cuerate.rate, cuerate.timeStart);
-        } else {
-          console.log('not found cuerate: userid=[' + this.userid + '], card.front.id=[' + card.front.id + ']');
-          //add cuerate
-          this.cueStack.addCueRate(this.userid, card.front.stackid, card.front.id, card.front.idrate);            
-        }
+  loadCards() {
+    let cuerates: CueRate[] = [];
+    let list = this.cueStack.getCueRatesByUserID();
+    if (list) {
+      list.subscribe(result => {
+        console.log("result=", result);
+        result.forEach(rate => {
+          cuerates.push(rate);
+          console.log('got result')
+        })
       })
-    })
+    }
+
+    this.cueStack.getCuesMultiStacks(this.stackid).subscribe(success => {
+      let index = 0;      
+      this.cards = [];
+      success.subscribe(cues => {
+        console.log('loadCards()::cues::length=', cues.length);
+        cues.forEach(cue => {
+          let checkData = this.cards.filter(item => item.front.id === cue.id);
+          if (checkData.length > 0) {
+            console.log('exits duplicated cue id=', cue.id);
+          } else if (cue.id === undefined){
+            console.log('cue.id is undefined');
+          } else {
+            // get rate data
+            let cuerate = cuerates.find(data => data.cueid === cue.id);
+            let idrate = '';
+            let rate = '';
+            let timeStart = '';
+            if (cuerate) {
+              console.log('found cuerate.id=' + cuerate.id + ', rate=' + cuerate.rate);
+              idrate = cuerate.id;
+              rate = cuerate.rate;
+              timeStart = this.setRateTime(cuerate.rate, cuerate.timeStart);
+            } else {
+              console.log('not found cuerate with userid: cueid=' + cue.id);
+              //add cuerate
+              rate = 'new';
+              idrate = this.cueStack.addCueRate(cue.stackid, cue.id, rate);            
+            }
+            console.log(cuerate);
+            // store cue data
+            index++;
+            this.cards.push({
+              front:{ stackid: cue.stackid,
+                      id: cue.id,
+                      count: String(index),
+                      idrate: idrate,
+                      rate: rate,
+                      timeStart: timeStart,
+                      title: "front-title: " + cue.stackid,
+                      subtitle: "front-subtitle: " + cue.question,
+                      imageUrl: cue.imageUrl },
+              back: { title: "back-title: " + 'title',
+                      imageUrl: cue.imageUrl,
+                      subtitle: "back-subtitle(question): " + cue.question,
+                      content: "back-content(answer): " + cue.answer }
+            })
+          }
+        })
+      })
+    }, getCuesMultiStacksError => {
+      console.log(getCuesMultiStacksError);
+    });
+
   }
 
   ionViewDidLoad() {
@@ -120,14 +121,13 @@ export class CuesPage {
       console.log(data);
       if (data) {
         console.log("added cue");
-        this.showRates();
       }
     });
     addCueModel.present();
   }
 
   updateCueRate(card) {
-    //console.log("card.front.id=" + card.front.id + ', rate to [' + card.front.rate + '].');
+    console.log("card.front.id=" + card.front.id + ', rate to [' + card.front.rate + '].');
     this.cueStack.updateCueRate(card.front.idrate, card.front.rate);
   }
 
