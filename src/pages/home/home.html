@@ -13,12 +13,12 @@
           <button ion-button icon-only (click)="checkMode()">
             <ion-icon name='list'></ion-icon>
           </button>
-          <button ion-button icon-only (click)="showStacks()">
+          <button ion-button icon-only (click)="loadCards()">
             <ion-icon name='share-alt'></ion-icon>
           </button>
-          <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">
+          <!-- <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">
             <ion-icon name='add'></ion-icon>
-          </button>     
+          </button>      -->
         </ion-buttons>       
       </div>
       <div *ngSwitchCase="2">
@@ -53,17 +53,6 @@
 <ion-content padding>
   <h3>Stacks</h3>
   <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div>                
-  
-<!--  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div> 
-  <button ion-button round color="danger" (click)="showSharedStacks()">Show Shared Stacks</button>   
-  <ion-row no-padding>
-    <button *ngIf="checked == false; else selectcheck;" ion-button round (click)="checkSelect()">Select</button>
-    <ng-template #selectcheck>
-      <button ion-button round color="danger" (click)="checkSelect()">Close</button>
-      <button ion-button round color="secondary" (click)="actionSheet1()">Action</button>
-    </ng-template>
-  </ion-row>
--->
   <ion-card *ngFor="let card of cards" >
     <div *ngIf="card.status == status || card.status == 'all' || status == 'all'">
       <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>     

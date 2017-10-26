@@ -1,7 +1,4 @@
-export class CueRate {
-    id?: string;
-    stackid?: string;    
-    cueid?: string;    
+export class CueRate {  
     userid?: string;
     rate?: string;
     timeStart?: string;    

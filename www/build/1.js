@@ -1,14 +1,14 @@
 webpackJsonp([1],{
 
-/***/ 531:
+/***/ 536:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AddStackPageModule", function() { return AddStackPageModule; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__edit_stack__ = __webpack_require__(549);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__edit_stack__ = __webpack_require__(556);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(42);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -41,13 +41,13 @@ AddStackPageModule = __decorate([
 
 /***/ }),
 
-/***/ 549:
+/***/ 556:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EditStackPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(42);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__providers_cuestack_cuestack__ = __webpack_require__(49);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -75,9 +75,10 @@ var EditStackPage = (function () {
             title: data.title,
             description: data.description,
             imageUrl: data.imageUrl,
-            status: data.status,
-            shareflag: data.shareflag
+            shareflag: data.shareflag,
         };
+        this.edstatus = data.status;
+        this.idstatus = data.idstatus;
         this.editStackForm = this.fb.group({
             'title': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],
             'description': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],
@@ -95,13 +96,25 @@ var EditStackPage = (function () {
         this.viewCtrl.dismiss();
     };
     EditStackPage.prototype.update = function () {
-        this.card.title = this.title.value;
+        if (this.title.value !== undefined && this.title.value !== '') {
+            this.card.title = this.title.value;
+        }
         this.card.description = this.description.value;
         this.card.imageUrl = this.imageUrl.value;
-        this.card.status = this.status.value;
-        this.card.shareflag = this.shareflag.value;
+        if (this.status.value !== undefined && this.status.value !== '') {
+            this.edstatus = this.status.value;
+        }
+        if (this.shareflag.value !== undefined && this.shareflag.value !== '') {
+            if (this.shareflag.value === 'public') {
+                this.card.shareflag = true;
+            }
+            else {
+                this.card.shareflag = false;
+            }
+        }
         //send message to add it into firebase
         this.cueStack.updateStack(this.card);
+        this.cueStack.updateStackStatus(this.card.id, this.edstatus, this.idstatus);
         this.viewCtrl.dismiss({ title: "new stack was added" });
     };
     return EditStackPage;

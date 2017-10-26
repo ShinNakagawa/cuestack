@@ -3,13 +3,23 @@ import { NavController, ModalController, AlertController, ActionSheetController 
 import { AuthProvider } from '../../providers/auth/auth';
 import { CueStackProvider } from '../../providers/cuestack/cuestack';
 import { ListCuePage } from '../list-cue/list-cue';
+import moment from 'moment';
+import { StackStatus } from '../../models/stackstatus.model';
 
 @Component({
   selector: 'page-list',
   templateUrl: 'list.html'
 })
 export class ListPage {
-  cards: Array<{title: string, imageUrl: string, description: string, id: string, status: string, shareflag: boolean, checked: boolean}>;
+  cards: Array<{id: string, 
+                checked: boolean, 
+                title: string, 
+                imageUrl: string, 
+                description: string, 
+                status: string, 
+                idstatus: string, 
+                timeStart: any, 
+                shareflag: boolean}>;
   checked: boolean;
   value: string;
 
@@ -22,25 +32,49 @@ export class ListPage {
     private auth: AuthProvider) {
       this.checked = false;
       this.value = '1';
-      if (this.auth.currentUser) {
-        let stacks = this.cueStack.getStacks();
-        stacks.subscribe(res => {
-          this.cards = [];   
-          res.forEach(stack => {
+      this.loadCards();
+   }
+
+  loadCards() {
+    if (this.auth.currentUser) {       
+      let stacks = this.cueStack.getStacks();
+      stacks.subscribe(res => {
+        this.cards = [];   
+        res.forEach(stack => {
+          if (stack.statusAry === null || stack.statusAry === undefined){
+            console.log('skip to add stack[', stack.id, '] into cards because stack.statusAry is null or undefined.')
+          } else {
+            let userid = this.cueStack.currentUserId;
+            let status = '';
+            let idstatus = '';
+            Object.keys(stack.statusAry).map(function(statusIndex){
+              let stackStatus = new StackStatus;
+              stackStatus = stack.statusAry[statusIndex];
+              console.log('stackStatus in loop=', stackStatus);
+              console.log('stackStatus.status=', stackStatus.status);
+              if (stackStatus.userid === userid){
+                status = stackStatus.status;
+                idstatus = statusIndex;
+              }
+            })
+            // add stack into cards
             this.cards.push({
+              id: stack.id,
+              checked: false,
               title: stack.title,
               description: stack.description,
               imageUrl: stack.imageUrl,
-              id: stack.id,
-              status: stack.status,
+              status: status,
+              idstatus: idstatus,
               shareflag: stack.shareflag,
-              checked: false
+              timeStart: moment(stack.timeStart, 'YYYY-MM-DD').calendar()
+              //timeStart: moment(stack.timeStart, 'YYYY-MM-DD').add(5, 'days').calendar()
             })
-          });
+          }
         });
-      }
-
-   }
+      });
+    }
+  }
 
   cardTapped(event, card) {
     this.navCtrl.push(ListCuePage, {title: card.title, id: card.id});    
@@ -56,14 +90,15 @@ export class ListPage {
     .present();
   }
 
-  updateStatus(cards, status: string) {
-    cards.forEach(card => {    
-      if (card.checked) {
-        this.cueStack.updateStackStatus(card.id, status);
+  openModalAddStack() {
+    let addStackModel = this.modalCtrl.create('AddStackPage', null, { cssClass: 'inset-modal' });
+    addStackModel.onDidDismiss(data => {
+      if (data) {
+        console.log("ListPage::openModalAddStack new stack was added");
+        this.loadCards();
       }
     });
-    //clear check
-    this.clearCheck(false);        
+    addStackModel.present();
   }
 
   deleteChecked(cards) {
@@ -100,12 +135,7 @@ export class ListPage {
     }   
   }
 
-
-
-
-
-
-  selectStatus(status: string) {
+  setStatus(status: string) {
     const alert = this.alertCtrl.create();
     alert.setTitle('Set Status');
 
@@ -142,7 +172,7 @@ export class ListPage {
     alert.present();
   }
 
-  selectShare(sharedflag: boolean) {
+  setShare(sharedflag: boolean) {
     const alert = this.alertCtrl.create();
     alert.setTitle('Set Share');
     alert.addInput({
@@ -175,6 +205,16 @@ export class ListPage {
     alert.present();
   }
 
+  updateStatus(cards, status: string) {
+    cards.forEach(card => {    
+      if (card.checked) {
+        card.idstatus = this.cueStack.updateStackStatus(card.id, status, card.idstatus);
+      }
+    });
+    //clear check
+    this.clearCheck(false);        
+  }
+
   updateShare(cards, sharedflag: boolean) {
     cards.forEach(card => {    
       if (card.checked) {
@@ -193,14 +233,14 @@ export class ListPage {
           text: 'update status',
           icon: 'text',
           handler: () => {
-            this.selectStatus('all');
+            this.setStatus('all');
           }
         },
         {
           text: 'share stacks',
           icon: 'text',
           handler: () => {
-            this.selectShare(false);
+            this.setShare(false);
           }
         },
         {

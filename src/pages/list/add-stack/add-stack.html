@@ -1,0 +1,45 @@
+<ion-content>
+  <h3>Add a new Stack</h3>
+  <form [formGroup]="stackForm" (ngSubmit)="submit()" novalidate>      
+    <ion-row>
+      <ion-item>
+        <ion-label for="title"></ion-label>
+        <ion-input type="title" value="" placeholder="Title" formControlName="title"></ion-input>
+      </ion-item>
+    </ion-row> 
+    <ion-row>         
+      <ion-item>
+        <ion-label for="description"></ion-label>
+        <ion-input type="description" value="" placeholder="Description" formControlName="description"></ion-input>
+      </ion-item>
+    </ion-row>
+    <ion-row>         
+      <ion-item>
+        <ion-label for="imageUrl"></ion-label>
+        <ion-input type="imageUrl" value="" placeholder="ImageUrl" formControlName="imageUrl"></ion-input>
+      </ion-item>
+    </ion-row>
+    <ion-row>         
+      <ion-item>
+        <ion-label for="status"></ion-label>
+        <ion-select placeholder="Status" formControlName="status">
+          <ion-option selected value="all">All</ion-option>
+          <ion-option value="favorite">Favorite</ion-option>
+          <ion-option value="study">Study</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-row>
+  </form>
+  <ion-row no-padding>
+    <ion-col>
+      <button ion-button block (click)="add()">
+        Add
+      </button>
+    </ion-col>
+    <ion-col text-right>
+      <button ion-button block color="danger" (click)="dismiss()">
+        Cancel
+      </button>
+    </ion-col>
+  </ion-row>
+</ion-content>

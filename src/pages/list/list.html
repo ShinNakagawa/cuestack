@@ -13,7 +13,10 @@
             <button ion-button icon-only (click)="checkMode()">
               <ion-icon name='list'></ion-icon>
             </button>
-          </ion-buttons>
+            <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">
+              <ion-icon name='add'></ion-icon>
+            </button>     
+            </ion-buttons>
         </ion-title>
       </div>
       <div *ngSwitchCase="2">

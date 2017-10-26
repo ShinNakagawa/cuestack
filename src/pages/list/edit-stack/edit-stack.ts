@@ -17,6 +17,8 @@ export class EditStackPage {
   status: AbstractControl;
   shareflag: AbstractControl;
   card: Stack;
+  edstatus: string;
+  idstatus: string;
 
   constructor(
     public viewCtrl: ViewController, 
@@ -29,9 +31,10 @@ export class EditStackPage {
         title: data.title,
         description: data.description,
         imageUrl: data.imageUrl,
-        status: data.status,
-        shareflag: data.shareflag
+        shareflag: data.shareflag,
       }
+      this.edstatus = data.status;
+      this.idstatus = data.idstatus;
       this.editStackForm = this.fb.group({  
         'title': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
         'description': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
@@ -50,15 +53,27 @@ export class EditStackPage {
     this.viewCtrl.dismiss();
   }
 
-  update(): void{    
-    this.card.title = this.title.value;
+  update(): void{
+    if (this.title.value !== undefined && this.title.value !== '') {
+      this.card.title = this.title.value;      
+    }        
+    
     this.card.description = this.description.value;
     this.card.imageUrl = this.imageUrl.value;
-    this.card.status = this.status.value;
-    this.card.shareflag = this.shareflag.value;
+    if (this.status.value !== undefined && this.status.value !== '') {
+      this.edstatus = this.status.value;      
+    }        
+    if (this.shareflag.value !== undefined && this.shareflag.value !== '') {
+      if (this.shareflag.value === 'public') {
+        this.card.shareflag = true;
+      } else {
+        this.card.shareflag = false;      
+      }
+    }
 
     //send message to add it into firebase
     this.cueStack.updateStack(this.card);
+    this.cueStack.updateStackStatus(this.card.id, this.edstatus, this.idstatus);    
     this.viewCtrl.dismiss({title: "new stack was added"});
   }
 }

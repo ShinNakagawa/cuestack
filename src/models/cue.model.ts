@@ -1,3 +1,4 @@
+import { CueRate } from '../models/cuerate.model';
 export class Cue {
     id?: string;
     stackid?: string;
@@ -5,6 +6,6 @@ export class Cue {
     question?: string;
     answer?: string;
     imageUrl?: string;
-    rate?: string;
     timeStart?: string;
+    rateAry?: Array<CueRate>;  
 }

@@ -2,6 +2,8 @@ import { Component, ViewChild } from '@angular/core';
 import { ViewController, NavController, IonicPage, NavParams } from 'ionic-angular';
 import { CueStackProvider } from '../../../providers/cuestack/cuestack';
 import chartJs from 'chart.js';
+import { StackStatus } from '../../../models/stackstatus.model';
+import { CueRate } from '../../../models/cuerate.model';
 
 @IonicPage()
 @Component({
@@ -25,28 +27,59 @@ export class ReportsPage {
     public navCtrl: NavController,
     private cueStack: CueStackProvider) {
       this.title = navParams.get('title');
+      let stackid = navParams.get('id');
+      this.rates = [];
+      this.status = [];
       //get all cues to classify
-      let id = navParams.get('id');
-      let cues = this.cueStack.getCues(id);
-      cues.subscribe(data => {
-        this.rates = [];
-        let goodCue = data.filter(item => item.rate === 'good');                
-        this.rates.push({name: 'good', count: goodCue.length})
-        let badCue = data.filter(item => item.rate === 'bad');
-        this.rates.push({name: 'bad', count: badCue.length})
-        let neverCue = data.filter(item => item.rate === 'never show');
-        this.rates.push({name: 'never show', count: neverCue.length})
-      });
+      let goodCueIndex = 0;
+      let badCueIndex = 0;
+      let neverCueIndex = 0;
+      this.cueStack.getCues(stackid).subscribe(data => {
+        data.forEach(cue => {
+          let rate = '';
+          Object.keys(cue.rateAry).map(function(rateIndex){
+            let cueRate = new CueRate;
+            cueRate = cue.rateAry[rateIndex];
+            console.log('cueRate.rate=', cueRate.rate);
+            rate = cueRate.rate;
+          })
+          if (rate === 'good'){
+            goodCueIndex++;
+          } else if (rate === 'bad'){
+            badCueIndex++;
+          } else {
+            neverCueIndex++;
+          }
+        })   
+        console.log('good=', String(goodCueIndex), ', bad=', String(badCueIndex), ', never=', String(neverCueIndex));
+        this.rates.push({name: 'good', count: goodCueIndex});
+        this.rates.push({name: 'bad', count: badCueIndex});
+        this.rates.push({name: 'never show', count: neverCueIndex});
+        });
       //get all stacks to classify
-      let stacks = this.cueStack.getStacks();
-      stacks.subscribe(data => {
-        this.status = [];   
-        let favoriteStack = data.filter(item => item.status === 'favorite');                
-        this.status.push({name: 'favorite', count: favoriteStack.length})
-        let studyStack = data.filter(item => item.status === 'study');
-        this.status.push({name: 'study', count: studyStack.length})
-        let allStack = data.filter(item => item.status === 'all');
-        this.status.push({name: 'all', count: allStack.length})
+      let favorStackIndex = 0;
+      let studyStackIndex = 0;
+      let allStackIndex = 0;
+      this.cueStack.getStacks().subscribe(data => {
+        data.forEach(stack => {
+          let status = '';
+          Object.keys(stack.statusAry).map(function(statusIndex){
+            let stackStatus = new StackStatus;
+            stackStatus = stack.statusAry[statusIndex];
+            status = stackStatus.status;
+          })
+          if (status === 'favorite'){
+            favorStackIndex++;
+          } else if (status === 'study'){
+            studyStackIndex++;
+          } else {
+            allStackIndex++;
+          }
+        })
+        console.log('favor=', String(favorStackIndex), ', study=', String(studyStackIndex), ', all=', String(allStackIndex));
+        this.status.push({name: 'favorite', count: favorStackIndex});
+        this.status.push({name: 'study', count: studyStackIndex});
+        this.status.push({name: 'all', count: allStackIndex});
       });      
   }
 

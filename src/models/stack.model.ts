@@ -1,10 +1,11 @@
+import { StackStatus } from '../models/stackstatus.model';
 export class Stack {
     id?: string;
     title?: string;
     description?: string;
     imageUrl?: string;
     userid?: string;
-    status?: string;
     timeStart?: string; 
-    shareflag?: boolean;   
+    shareflag?: boolean;
+    statusAry?: Array<StackStatus>;  
 }

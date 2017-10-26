@@ -9,14 +9,16 @@ import { CueRate } from '../../models/cuerate.model';
 import { StackStatus } from '../../models/stackstatus.model';
 import moment from 'moment';
 
+import { Headers, Http, RequestOptions } from '@angular/http';
+import 'rxjs/add/operator/map';
+
 @Injectable()
 export class CueStackProvider {
   user: firebase.User;
-  // cues: FirebaseListObservable<Cue[]>;
-  // cuerates: FirebaseListObservable<CueRate[]>;
-  // stacks: FirebaseListObservable<Stack[]>;
-
+  private _serviceUrl = 'https://cuestacks.firebaseapp.com/';
+  
   constructor(private db: AngularFireDatabase,
+              private http: Http,
               private afAuth: AngularFireAuth ) {
     this.afAuth.authState.subscribe(auth => {
       if (auth !== undefined && auth !== null) {
@@ -30,7 +32,57 @@ export class CueStackProvider {
     this.user = null;
     console.log("CueStackProvider::logout");
   }
-  
+
+  get currentUserId(): string {
+    return this.user !== null ? this.user.uid : '';   
+    //return this.user.uid;
+  }
+
+  //// ------------ CueRate Table --------------
+  addCueRate(cueid: string, rate: string): string {
+    const userid = this.user.uid;
+    const timestamp = moment(new Date()).format('YYYY-MM-DD');
+    let list = this.getCueRates(cueid);
+    let key = list.push({
+      userid: userid,
+      cueid: cueid,
+      rate: rate,
+      timeStart: timestamp
+    }).key;
+    return key;
+  }
+
+  updateCueRate(cueid: string, rate: string, idrate: string): string {
+    if (idrate === undefined || idrate ==='') {
+      console.log('error in updateCueRate:: no data CueRate cueID=', cueid, ', userID=', this.user.uid);
+      return this.addCueRate(cueid, rate);        
+    } else {
+      const path = `cues/${cueid}/rateAry/${idrate}`;
+      const data = {
+        rate: rate,
+      };
+      this.db.object(path).update(data)
+        .catch(error => console.log(error));
+      return idrate;
+    }
+  }
+
+  getCueRates(cueid: string): FirebaseListObservable<CueRate[]> {
+    if (this.user) {
+        return this.db.list(`cues/${cueid}/rateAry`, {
+        query: {
+          limitToLast: 25,
+          orderByChild: 'userid',
+          equalTo: this.user.uid,
+        }
+      });
+    } else {
+      return null;
+    }
+  }
+  //// ------------ CueRate Table --------------
+
+  //// ------------ Cue Table --------------
   addCue(stackid: string, question: string, answer: string, imageUrl: string, rate: string) {  
     const timestamp = moment(new Date()).format('YYYY-MM-DD');
     const userid = this.user.uid;
@@ -41,11 +93,10 @@ export class CueStackProvider {
       question: question,
       answer: answer,
       imageUrl: imageUrl,
-      //rate: rate,
       timeStart: timestamp,
     }).key;
     this.updateCueID(key);
-    this.addCueRate(stackid, key, rate); 
+    this.addCueRate(key, rate); 
   }
 
   updateCueID(key: string): void {
@@ -57,70 +108,6 @@ export class CueStackProvider {
       .catch(error => console.log(error));
   }
 
-  addCueRate(stackid: string, cueid: string, rate: string): string {
-    const userid = this.user.uid;
-    const timestamp = moment(new Date()).format('YYYY-MM-DD');
-    let list = this.getCueRates();
-    let key = list.push({
-      userid: userid,
-      stackid: stackid,
-      cueid: cueid,
-      rate: rate,
-      timeStart: timestamp
-    }).key;
-    this.updateCueRateID(key);
-    return key;
-  }
-
-  updateCueRateID(key: string): void {
-    const path = `cuerates/${key}`;
-    const data = {
-      id: key
-    };
-    this.db.object(path).update(data)
-      .catch(error => console.log(error));
-  }
-
-  updateCueRate(id: string, rate: string): void {
-    const path = `cuerates/${id}`;
-    const data = {
-      rate: rate,
-      //timeStart: firebase.database.ServerValue.TIMESTAMP,
-    };
-
-    let checkOb = this.db.object(path);
-    if (checkOb === null || checkOb === undefined){
-      console.log('error: no data CueRate with id=', id);
-    } else {
-      this.db.object(path).update(data)
-      .catch(error => console.log(error));
-    }
-  }
-
-  getCueRates(): FirebaseListObservable<CueRate[]> {
-    return this.db.list('cuerates', {
-      query: {
-        limitToLast: 25,
-        orderByChild: 'userid',
-        equalTo: this.user.uid,
-      }
-    });
-  }
-
-  getCueRatesByUserID(): FirebaseListObservable<CueRate[]> {
-    if (this.user) {
-      return this.db.list('cuerates', {
-        query: {
-          limitToLast: 25,
-          orderByChild: 'userid',
-          equalTo: this.user.uid,
-        }
-      });
-    } else {
-      return null;
-    }
-  }
-
   getCues(stackid: string): FirebaseListObservable<Cue[]> {
     return this.db.list('cues', {
       query: {
@@ -130,9 +117,6 @@ export class CueStackProvider {
       }
     });
   }
-
-  // http://reactivex.io/rxjs/manual/overview.html#creating-observables
-  // https://github.com/angular/angularfire2/issues/162
 
   getCuesMultiStacks(stackid: any): Observable<FirebaseListObservable<Cue[]>> {
     return Observable.create(observer => {
@@ -161,15 +145,23 @@ export class CueStackProvider {
       answer: cue.answer,
       imageUrl: cue.imageUrl
     };
-    this.db.object(path).update(data)
-      .catch(error => console.log(error));
-  }
 
+    let checkOb = this.db.object(path);
+    if (checkOb === null || checkOb === undefined){
+      console.log('error in updateCue:: no data Cue with id=', cue.id);
+    } else {
+      this.db.object(path).update(data)
+      .catch(error => console.log(error));
+    }
+  }
+  //// ------------ Cue Table --------------
+
+  //// ------------ Stack Table --------------
   addStack(title: string, description: string, imageUrl: string, status: string) {  
     const timestamp = moment(new Date()).format('YYYY-MM-DD');
     //const timestamp = new Date();
     const userid = this.user.uid;
-    let list = this.getStacks();
+    let list = this.getStacks();    
     let key = list.push({
       userid: userid,
       id: 'temp-key',
@@ -195,17 +187,20 @@ export class CueStackProvider {
     });
   }
 
-  // getShareStacks(shareflag: boolean): FirebaseListObservable<Stack[]> {
-  //   return this.db.list('stacks', {
-  //     query: {
-  //       limitToLast: 25,
-  //       orderByChild: 'shareflag',
-  //       equalTo: shareflag,
-  //     }
-  //   });
-  // }
+  getAllStacks(): Observable<Stack[]> {
+    let headers = new Headers();
+    headers.append('Accept', 'application/json');
+    headers.append('Content-Type', 'application/json');
 
-  getAllStacks(): Observable<FirebaseListObservable<Stack[]>> {
+    headers.append('Access-Control-Allow-Origin', 'https://cuestacks.firebaseapp.com');
+    headers.append('Access-Control-Allow-Credentials', 'true');
+    
+    let options = new RequestOptions({ headers: headers });
+    let url = this._serviceUrl;
+    return this.http.get(url, options).map(res => res.json() );
+  }
+
+  getAllStacks1(): Observable<FirebaseListObservable<Stack[]>> {
     return Observable.create(observer => {
       if (this.user) {
         let refData1: FirebaseListObservable<Stack[]>;
@@ -239,8 +234,14 @@ export class CueStackProvider {
     const data = {
       shareflag: shareflag
     };
-    this.db.object(path).update(data)
+
+    let checkOb = this.db.object(path);
+    if (checkOb === null || checkOb === undefined){
+      console.log('error in updateStackShare:: no data Stack with id=', stackid);
+    } else {
+      this.db.object(path).update(data)
       .catch(error => console.log(error));
+    }
   }
 
   updateStackID(key: string): void {
@@ -252,27 +253,24 @@ export class CueStackProvider {
       .catch(error => console.log(error));
   }
 
-  updateStackStatus(stackid: string, status: string): void {
-    const path = `stacks/${stackid}`;
-    const data = {
-      status: status
-    };
-    this.db.object(path).update(data)
-      .catch(error => console.log(error));
-  }
-
   updateStack(stack: Stack): void {
     const path = `stacks/${stack.id}`;
     const data = {
       title: stack.title,
       description: stack.description,
       imageUrl: stack.imageUrl,
-      status: stack.status,
       shareflag: stack.shareflag
     };
-    this.db.object(path).update(data)
+
+    let checkOb = this.db.object(path);
+    if (checkOb === null || checkOb === undefined){
+      console.log('error in updateStack:: no data Stack with id=', stack.id);
+    } else {
+      this.db.object(path).update(data)
       .catch(error => console.log(error));
+    }
   }
+  //// ------------ Stack Table --------------
 
   deleteStack(key: string): void {
     // delete cues
@@ -285,26 +283,10 @@ export class CueStackProvider {
       }
     });
     list.subscribe((items) => {     
-        // Remove the matching item:
-        if (items.length) {
-          this.deleteCue(items[0].id);
-        }
-    });
-
-    // delete stack status
-    let listS: FirebaseListObservable<StackStatus[]>;
-    listS = this.db.list('statckstatus', {
-      query: {
-      limitToLast: 25,
-      orderByChild: 'stackid',
-      equalTo: key,
+      // Remove the matching item:
+      if (items.length) {
+        this.deleteCue(items[0].id);
       }
-    });
-    listS.subscribe((items) => {     
-        // Remove the matching item:
-        if (items.length) {
-          this.deleteCue(items[0].id);
-        }
     });
 
     // delete stack
@@ -314,83 +296,42 @@ export class CueStackProvider {
   }
 
   deleteCue(key: string): void {
-    // delete cuerate data on this cue
-    let list: FirebaseListObservable<CueRate[]>;
-    list = this.db.list('cuerates', {
-      query: {
-      limitToLast: 25,
-      orderByChild: 'cueid',
-      equalTo: key,
-      }
-    });
-    list.subscribe((items) => {     
-        // Remove the matching item:
-        if (items.length) {
-          list.remove(items[0].id)
-            .then(() => console.log('removed ' + items[0].id))
-            .catch((error) => console.log(error));
-        }
-    });
-    // delete cue
     const path = `cues/${key}`;
     this.db.object(path).remove()
       .catch(error => console.log(error));
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   addStackStatus(stackid: string, status: string): string {
     const userid = this.user.uid;
     const timestamp = moment(new Date()).format('YYYY-MM-DD');
-    let list = this.getStackStatus();
+    let list = this.getStackStatus(stackid);
     let key = list.push({
       userid: userid,
-      stackid: stackid,
       status: status,
       timeStart: timestamp
     }).key;
-    this.updateStackStatusID(key);
     return key;
   }
 
-  updateStackStatusID(key: string): void {
-    const path = `stackstatus/${key}`;
-    const data = {
-      id: key
-    };
-    this.db.object(path).update(data)
-      .catch(error => console.log(error));
+  updateStackStatus(stackid: string, status: string, idstatus: string): string {
+    if (idstatus === undefined || idstatus ==='') {
+      console.log('error in updateStackStatus:: no data CueRate stackid=', stackid, ', userID=', this.user.uid);
+      return this.addStackStatus(stackid, status);        
+    } else {
+      const path = `stacks/${stackid}/statusAry/${idstatus}`;
+      const data = {
+        status: status,
+      };
+      this.db.object(path).update(data)
+        .catch(error => console.log(error));
+      return idstatus;
+    }
   }
 
-  // updateStackStatus(id: string, status: string): void {
-  //   const path = `stackstatus/${id}`;
-  //   const data = {
-  //     status: status,
-  //     //timeStart: firebase.database.ServerValue.TIMESTAMP,
-  //   };
-  //   this.db.object(path).update(data)
-  //     .catch(error => console.log(error));
-  // }
-
-  getStackStatus(): FirebaseListObservable<StackStatus[]> {
+  getStackStatus(stackid: string): FirebaseListObservable<StackStatus[]> {
     if (this.user) {
-      return this.db.list('stackstatus', {
+      return this.db.list(`stacks/${stackid}/statusAry`, {
         query: {
           limitToLast: 25,
           orderByChild: 'userid',
@@ -401,14 +342,6 @@ export class CueStackProvider {
       return null;
     }
   }
-
-
-
-  // deleteCueRate(key: string): void {
-  //   const path = `cuerates/${key}`;
-  //   this.db.object(path).remove()
-  //     .catch(error => console.log(error));
-  // }
 
   // getTimeStamp() {
   //   const now = new Date();

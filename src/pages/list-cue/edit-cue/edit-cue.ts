@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ViewController, IonicPage, NavParams } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { CueStackProvider } from '../../../providers/cuestack/cuestack';
+import { Cue } from '../../../models/cue.model';
 
 @IonicPage()
 @Component({
@@ -14,7 +15,9 @@ export class EditCuePage {
   answer: AbstractControl;
   imageUrl: AbstractControl;
   rate: AbstractControl;
-  card: {id: string, idrate: string, question: string, answer: string, imageUrl: string, rate: string};
+  card: Cue;
+  idrate: string;
+  edrate: string;
 
   constructor(
     public viewCtrl: ViewController, 
@@ -27,9 +30,9 @@ export class EditCuePage {
         question: data.question,
         answer: data.answer,
         imageUrl: data.imageUrl,
-        idrate: data.idrate,
-        rate: data.rate,
       }
+      this.idrate = data.idrate;
+      this.edrate = data.rate;
       this.editCueForm = this.fb.group({  
         'question': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
         'answer': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
@@ -50,11 +53,13 @@ export class EditCuePage {
     this.card.question = this.question.value;
     this.card.answer = this.answer.value;
     this.card.imageUrl = this.imageUrl.value;
-    this.card.rate = this.rate.value;
+    if (this.rate.value !== undefined && this.rate.value !== '') {
+      this.edrate = this.rate.value;      
+    }    
 
     //send message to add it into firebase
     this.cueStack.updateCue(this.card);
-    this.cueStack.updateCueRate(this.card.idrate, this.card.rate);
+    this.cueStack.updateCueRate(this.card.id, this.edrate, this.idrate);
     this.viewCtrl.dismiss({title: "cue was modified"});   
   }
 }
