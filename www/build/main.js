@@ -35,7 +35,10 @@ var CuesPage = (function () {
         this.cueStack = cueStack;
         this.auth = auth;
         this.stackid = navParams.get('id');
-        this.currentUser = navParams.get('currentUser');
+        this.currentUserId = '';
+        if (this.auth.currentUser) {
+            this.currentUserId = this.cueStack.currentUserId;
+        }
         this.loadCards();
     }
     //   https://static.pexels.com/photos/34950/pexels-photo.jpg
@@ -43,7 +46,7 @@ var CuesPage = (function () {
     //   http://i.telegraph.co.uk/multimedia/archive/03598/lightning-10_3598416k.jpg
     CuesPage.prototype.loadCards = function () {
         var _this = this;
-        var userid = this.cueStack.currentUserId;
+        var userid = this.currentUserId;
         var index = 0;
         this.cards = [];
         this.cueStack.getCuesMultiStacks(this.stackid).subscribe(function (success) {
@@ -132,7 +135,6 @@ var CuesPage = (function () {
         var _this = this;
         var addCueModel = this.modalCtrl.create('AddCuePage', { id: this.stackid[0].id }, { cssClass: 'inset-modal' });
         addCueModel.onDidDismiss(function (data) {
-            //console.log(data);
             if (data) {
                 console.log("CuesPage::openModelAddCue() added cue");
                 _this.loadCards();
@@ -141,11 +143,7 @@ var CuesPage = (function () {
         addCueModel.present();
     };
     CuesPage.prototype.updateCueRate = function (card) {
-        var userid = '';
-        if (this.auth.currentUser) {
-            userid = this.cueStack.currentUserId;
-        }
-        if (userid !== '') {
+        if (this.currentUserId !== '') {
             console.log("card.front.id=" + card.front.id + ', rate to [' + card.front.rate + '].');
             card.front.idrate = this.cueStack.updateCueRate(card.front.id, card.front.rate, card.front.idrate);
         }
@@ -334,6 +332,15 @@ var HomePage = (function () {
         this.status = 'all';
         this.checked = false;
         this.value = '1';
+        this.currentUserId = '';
+        if (this.auth.currentUser) {
+            console.log('this.auth.currentUser=', this.auth.currentUser);
+            this.currentUserId = this.cueStack.currentUserId;
+            console.log('userid=', this.cueStack.currentUserId);
+        }
+        else {
+            this.openModalLogin();
+        }
         this.loadCards();
     }
     //   https://www.w3schools.com/css/img_lights.jpg
@@ -341,11 +348,7 @@ var HomePage = (function () {
     //   https://cdn.eso.org/images/thumb700x/eso1238a.jpg
     HomePage.prototype.loadCards = function () {
         var _this = this;
-        var userid = '';
-        if (this.auth.currentUser) {
-            userid = this.cueStack.currentUserId;
-            console.log('userid=', this.cueStack.currentUserId);
-        }
+        var userid = this.currentUserId;
         this.cueStack.getAllStacks1().subscribe(function (data) {
             _this.cards = [];
             data.subscribe(function (res) {
@@ -487,7 +490,6 @@ var HomePage = (function () {
     };
     HomePage.prototype.openModalSignup = function () {
         var _this = this;
-        //this.openModal('SignupPage');
         var signupModel = this.modalCtrl.create('SignupPage', null, { cssClass: 'inset-modal' });
         signupModel.onDidDismiss(function (data) {
             if (data) {
@@ -497,10 +499,6 @@ var HomePage = (function () {
         });
         signupModel.present();
     };
-    // openModal(pageName) {
-    //   this.modalCtrl.create(pageName, null, { cssClass: 'inset-modal' })
-    //                 .present();
-    // }
     HomePage.prototype.logout = function () {
         this.auth.logout();
         this.cueStack.logout();
@@ -509,7 +507,7 @@ var HomePage = (function () {
     HomePage.prototype.cardTapped = function (event, card) {
         var ids = [];
         ids.push({ id: card.id, title: card.title });
-        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_1__cues_cues__["a" /* CuesPage */], { id: ids, currentUser: this.auth.currentUser });
+        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_1__cues_cues__["a" /* CuesPage */], { id: ids });
     };
     HomePage.prototype.startStudy = function () {
         var ids = [];
@@ -518,9 +516,8 @@ var HomePage = (function () {
                 ids.push({ id: card.id, title: card.title });
             }
         });
-        //clear check
         this.clearCheck(false);
-        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_1__cues_cues__["a" /* CuesPage */], { id: ids, currentUser: null });
+        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_1__cues_cues__["a" /* CuesPage */], { id: ids });
     };
     HomePage.prototype.checkMode = function () {
         this.clearCheck(false);
@@ -582,7 +579,6 @@ var HomePage = (function () {
                 card.idstatus = _this.cueStack.updateStackStatus(card.id, status, card.idstatus);
             }
         });
-        //clear check
         this.clearCheck(false);
     };
     HomePage.prototype.setStatus = function (status) {
@@ -634,15 +630,8 @@ var HomePage = (function () {
                     text: 'update status',
                     icon: 'text',
                     handler: function () {
-                        var userid = '';
-                        if (_this.auth.currentUser) {
-                            userid = _this.cueStack.currentUserId;
-                            if (userid !== '') {
-                                _this.setStatus('all');
-                            }
-                            else {
-                                alert('Please log in to update status.');
-                            }
+                        if (_this.currentUserId !== '') {
+                            _this.setStatus('all');
                         }
                         else {
                             alert('Please log in to update status.');
@@ -798,7 +787,6 @@ var ListPage = (function () {
                 _this.cueStack.deleteStack(card.id);
             }
         });
-        //clear check
         this.clearCheck(false);
     };
     ListPage.prototype.checkMode = function () {
@@ -892,7 +880,6 @@ var ListPage = (function () {
                 card.idstatus = _this.cueStack.updateStackStatus(card.id, status, card.idstatus);
             }
         });
-        //clear check
         this.clearCheck(false);
     };
     ListPage.prototype.updateShare = function (cards, sharedflag) {
@@ -902,7 +889,6 @@ var ListPage = (function () {
                 _this.cueStack.updateStackShare(card.id, sharedflag);
             }
         });
-        //clear check
         this.clearCheck(false);
     };
     ListPage.prototype.actionSheet1 = function () {
@@ -1066,7 +1052,6 @@ var ListCuePage = (function () {
                 _this.cueStack.deleteCue(card.id);
             }
         });
-        //clear check
         this.clearCheck(false);
     };
     ListCuePage.prototype.checkMode = function () {
@@ -1536,6 +1521,16 @@ var CueStackProvider = (function () {
     CueStackProvider.prototype.getAllStacks1 = function () {
         var _this = this;
         return __WEBPACK_IMPORTED_MODULE_3_rxjs_Observable__["Observable"].create(function (observer) {
+            var refData2;
+            refData2 = _this.db.list('stacks', {
+                query: {
+                    limitToLast: 25,
+                    orderByChild: 'shareflag',
+                    equalTo: true,
+                }
+            });
+            observer.next(refData2);
+            console.log('got shared stacks');
             if (_this.user) {
                 var refData1 = void 0;
                 refData1 = _this.db.list('stacks', {
@@ -1548,16 +1543,6 @@ var CueStackProvider = (function () {
                 observer.next(refData1);
                 console.log('got stacks with this.user.uid=', _this.user.uid);
             }
-            var refData2;
-            refData2 = _this.db.list('stacks', {
-                query: {
-                    limitToLast: 25,
-                    orderByChild: 'shareflag',
-                    equalTo: true,
-                }
-            });
-            observer.next(refData2);
-            console.log('got shared stacks');
             observer.complete();
         });
     };

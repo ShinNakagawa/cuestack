@@ -100,7 +100,6 @@ export class ListCuePage {
         this.cueStack.deleteCue(card.id);
       }
     });
-    //clear check
     this.clearCheck(false);        
   }
 

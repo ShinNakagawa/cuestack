@@ -23,6 +23,7 @@ export class HomePage {
   status: string;
   checked: boolean;
   value: string;
+  currentUserId: string;
   
   constructor(
     private navCtrl: NavController,
@@ -34,19 +35,23 @@ export class HomePage {
       this.status = 'all';
       this.checked = false;
       this.value = '1';
+      this.currentUserId = '';
+      if (this.auth.currentUser) {       
+        console.log('this.auth.currentUser=', this.auth.currentUser);
+        this.currentUserId = this.cueStack.currentUserId;
+        console.log('userid=', this.cueStack.currentUserId);    
+      } else {
+        this.openModalLogin();       
+      }
       this.loadCards();
-   }
+  }
 
 //   https://www.w3schools.com/css/img_lights.jpg
 //   http://i.dailymail.co.uk/i/pix/2017/01/16/20/332EE38400000578-4125738-image-a-132_1484600112489.jpg   
 //   https://cdn.eso.org/images/thumb700x/eso1238a.jpg
 
 loadCards() {
-  let userid = '';
-  if (this.auth.currentUser) {       
-    userid = this.cueStack.currentUserId;
-    console.log('userid=', this.cueStack.currentUserId);
-  }    
+  let userid = this.currentUserId;
   this.cueStack.getAllStacks1().subscribe(data => {
     this.cards = [];
     data.subscribe(res => {
@@ -186,7 +191,6 @@ loadCards() {
   }
 
   openModalSignup() {
-    //this.openModal('SignupPage');
     let signupModel = this.modalCtrl.create('SignupPage', null, { cssClass: 'inset-modal' });
     signupModel.onDidDismiss(data => {
       if (data) {
@@ -197,11 +201,6 @@ loadCards() {
     signupModel.present();
   }
 
-  // openModal(pageName) {
-  //   this.modalCtrl.create(pageName, null, { cssClass: 'inset-modal' })
-  //                 .present();
-  // }
-
   logout(): void {
     this.auth.logout();
     this.cueStack.logout();
@@ -211,7 +210,7 @@ loadCards() {
   cardTapped(event, card) {
     let ids = [];
     ids.push({id: card.id, title: card.title});
-    this.navCtrl.push(CuesPage, {id: ids, currentUser: this.auth.currentUser});    
+    this.navCtrl.push(CuesPage, {id: ids});    
   }
 
   startStudy() {
@@ -221,9 +220,8 @@ loadCards() {
         ids.push({id: card.id, title: card.title})
       }
     });
-    //clear check
     this.clearCheck(false);   
-    this.navCtrl.push(CuesPage, {id: ids, currentUser: null});    
+    this.navCtrl.push(CuesPage, {id: ids});    
   }
 
   checkMode() {    
@@ -293,7 +291,6 @@ loadCards() {
         card.idstatus = this.cueStack.updateStackStatus(card.id, status, card.idstatus);
       }
     });
-    //clear check
     this.clearCheck(false);        
   }
 
@@ -349,17 +346,11 @@ loadCards() {
           text: 'update status',
           icon: 'text',
           handler: () => {
-            let userid = '';
-            if (this.auth.currentUser) {       
-              userid = this.cueStack.currentUserId;
-              if (userid !== '') {
-                this.setStatus('all');                
-              } else {
-                alert('Please log in to update status.');                
-              }
+            if (this.currentUserId !== '') {
+              this.setStatus('all');                
             } else {
               alert('Please log in to update status.');                
-            }    
+            }
           }
         },
         {

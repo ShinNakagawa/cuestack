@@ -12,7 +12,7 @@ import { CueRate } from '../../models/cuerate.model';
 })
 export class CuesPage {
   stackid: any;
-  currentUser: string;
+  currentUserId: string;
   cards: Array<{front: {
                   stackid: string, 
                   id: string,
@@ -36,7 +36,10 @@ export class CuesPage {
     private cueStack: CueStackProvider,
     private auth: AuthProvider) {
       this.stackid = navParams.get('id');
-      this.currentUser = navParams.get('currentUser');
+      this.currentUserId = '';
+      if (this.auth.currentUser) {       
+        this.currentUserId = this.cueStack.currentUserId;
+      }
       this.loadCards();
   }
 
@@ -45,7 +48,7 @@ export class CuesPage {
 //   http://i.telegraph.co.uk/multimedia/archive/03598/lightning-10_3598416k.jpg
 
   loadCards() {
-    let userid = this.cueStack.currentUserId;
+    let userid = this.currentUserId;
     let index = 0;      
     this.cards = [];
     this.cueStack.getCuesMultiStacks(this.stackid).subscribe(success => {
@@ -131,7 +134,6 @@ export class CuesPage {
   openModalAddCue() {
     let addCueModel = this.modalCtrl.create('AddCuePage', {id: this.stackid[0].id}, { cssClass: 'inset-modal' });
     addCueModel.onDidDismiss(data => {
-      //console.log(data);
       if (data) {
         console.log("CuesPage::openModelAddCue() added cue");
         this.loadCards();
@@ -141,11 +143,7 @@ export class CuesPage {
   }
 
   updateCueRate(card) {
-    let userid = '';
-    if (this.auth.currentUser) {       
-      userid = this.cueStack.currentUserId;
-    }
-    if (userid !== '') {       
+    if (this.currentUserId !== '') {       
       console.log("card.front.id=" + card.front.id + ', rate to [' + card.front.rate + '].');
       card.front.idrate = this.cueStack.updateCueRate(card.front.id, card.front.rate, card.front.idrate);
     } else {

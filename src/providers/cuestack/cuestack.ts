@@ -202,6 +202,16 @@ export class CueStackProvider {
 
   getAllStacks1(): Observable<FirebaseListObservable<Stack[]>> {
     return Observable.create(observer => {
+      let refData2: FirebaseListObservable<Stack[]>;
+      refData2 = this.db.list('stacks', {
+        query: {
+          limitToLast: 25,
+          orderByChild: 'shareflag',
+          equalTo: true,
+        }
+      })
+      observer.next(refData2);
+      console.log('got shared stacks');
       if (this.user) {
         let refData1: FirebaseListObservable<Stack[]>;
         refData1 = this.db.list('stacks', {
@@ -214,19 +224,8 @@ export class CueStackProvider {
         observer.next(refData1);
         console.log('got stacks with this.user.uid=', this.user.uid);
       }
-      let refData2: FirebaseListObservable<Stack[]>;
-      refData2 = this.db.list('stacks', {
-        query: {
-          limitToLast: 25,
-          orderByChild: 'shareflag',
-          equalTo: true,
-        }
-      })
-      observer.next(refData2);
-      console.log('got shared stacks');
       observer.complete();  
     });
-
   }
 
   updateStackShare(stackid: string, shareflag: boolean): void {

@@ -107,7 +107,6 @@ export class ListPage {
         this.cueStack.deleteStack(card.id);
       }
     });
-    //clear check
     this.clearCheck(false);        
   }
 
@@ -211,7 +210,6 @@ export class ListPage {
         card.idstatus = this.cueStack.updateStackStatus(card.id, status, card.idstatus);
       }
     });
-    //clear check
     this.clearCheck(false);        
   }
 
@@ -221,7 +219,6 @@ export class ListPage {
         this.cueStack.updateStackShare(card.id, sharedflag);
       }
     });
-    //clear check
     this.clearCheck(false);        
   }
 
@@ -262,8 +259,5 @@ export class ListPage {
     });
     return actionsheet.present();
   }
-
-
-
 
 }
