@@ -30,12 +30,7 @@
         </ion-buttons>       
       </div>
       <div *ngSwitchCase="3">
-        <ion-searchbar
-          [(ngModel)]="myInput"
-          [showCancelButton]="shouldShowCancel"
-          (ionInput)="onInput($event)"
-          (ionCancel)="onCancel($event)">
-        </ion-searchbar>
+        <ion-searchbar (ionInput)="getItems($event)" placeholder="Search"></ion-searchbar>
         <ion-buttons end>
           <button ion-button icon-only (click)="closeMode()">
             <ion-icon name='close'></ion-icon>

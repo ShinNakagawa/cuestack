@@ -2841,7 +2841,7 @@ ReportsPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
         selector: 'page-reports',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\list\reports\reports.html"*/'<ion-content>\n  <ion-card>\n    <ion-card>\n      <ion-card-header>\n        Stack Report: user[{{userid}}]\n      </ion-card-header>\n      <ion-card-content>\n        <canvas #barCanvas></canvas>\n      </ion-card-content>\n    </ion-card>\n    <ion-card-header>\n      Cue Report: Stack[{{title}}]\n    </ion-card-header>\n    <ion-card-content>\n      <canvas #pieCanvas></canvas>\n    </ion-card-content>\n  </ion-card>\n  <button ion-button block color="danger" (click)="dismiss()">Dismiss</button>  \n</ion-content>'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\list\reports\reports.html"*/
     }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["m" /* ViewController */],
+    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["n" /* ViewController */],
         __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* NavParams */],
         __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavController */],
         __WEBPACK_IMPORTED_MODULE_2__providers_cuestack_cuestack__["a" /* CueStackProvider */]])

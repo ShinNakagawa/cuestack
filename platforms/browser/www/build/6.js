@@ -95,7 +95,7 @@ LoginPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
         selector: 'page-login',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\home\login\login.html"*/'<ion-content>\n  <form [formGroup]="loginForm" (ngSubmit)="submit()" novalidate>      \n    <ion-row>\n      <ion-item>\n        <ion-label for="email"></ion-label>\n          <ion-input type="email" value="" placeholder="Email" formControlName="email"></ion-input>\n        </ion-item>\n    </ion-row>\n    <ion-row>\n      <ion-item>\n        <ion-label for="password"></ion-label>\n        <ion-input type="password" placeholder="Password" formControlName="password"></ion-input>\n      </ion-item>\n    </ion-row>\n  </form>\n  <ion-row no-padding>\n    <ion-col>\n      <button ion-button block (click)="login()">\n        Log in\n      </button>\n    </ion-col>\n    <ion-col text-right>\n      <button ion-button block color="danger" (click)="dismiss()">\n        Cancel\n      </button>\n    </ion-col>\n  </ion-row>\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\home\login\login.html"*/
     }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["m" /* ViewController */],
+    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["n" /* ViewController */],
         __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
         __WEBPACK_IMPORTED_MODULE_3__providers_auth_auth__["a" /* AuthProvider */]])
 ], LoginPage);

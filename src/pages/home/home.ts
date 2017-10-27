@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CuesPage } from '../cues/cues';
-import { NavController, ModalController, AlertController, ActionSheetController } from 'ionic-angular';
+import { NavController, ModalController, AlertController, ActionSheetController, ToastController } from 'ionic-angular';
 import { AuthProvider } from '../../providers/auth/auth';
 import { CueStackProvider } from '../../providers/cuestack/cuestack';
 import moment from 'moment';
@@ -31,6 +31,7 @@ export class HomePage {
     private cueStack: CueStackProvider,
     public alertCtrl: AlertController,
     public actionsheetCtrl: ActionSheetController,
+    private toastCtrl: ToastController,
     private auth: AuthProvider) {      
       this.status = 'all';
       this.checked = false;
@@ -41,7 +42,13 @@ export class HomePage {
         this.currentUserId = this.cueStack.currentUserId;
         console.log('userid=', this.cueStack.currentUserId);    
       } else {
-        this.openModalLogin();       
+        let toast = this.toastCtrl.create({
+          message: 'Unable to login, please wait for a while.',
+          duration: 3000,
+          position: 'top'
+        });
+        toast.present();
+        this.openModalLogin();
       }
       this.loadCards();
   }
@@ -235,7 +242,8 @@ loadCards() {
   }
 
   closeMode() {
-    this.clearCheck(false);           
+    this.clearCheck(false);
+    this.loadCards();          
   }
 
   clearCheck(checked: boolean) {
@@ -373,5 +381,31 @@ loadCards() {
     return actionsheet.present();
   }
 
+  // Search functions=======================================
+  getItems(event) {
+    let val = event.target.value;
+    if (!val || !val.trim()) {
+      this.loadCards();
+      return;
+    }
+    this.cards = this.query({title: val});
+  }
 
+  query(params?: any) {
+    if (!params) {
+      return this.cards;
+    }
+    return this.cards.filter(item => {
+      for (let key in params) {
+        let field = item[key];
+        if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
+          return item;
+        } else if (field == params[key]) {
+          return item;
+        }
+      }
+      return null;
+    });
+  }
+  // Search functions=======================================
 }

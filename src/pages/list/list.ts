@@ -122,6 +122,7 @@ export class ListPage {
 
   closeMode() {
     this.clearCheck(false);           
+    this.loadCards();          
   }
 
   clearCheck(checked: boolean) {
@@ -259,5 +260,33 @@ export class ListPage {
     });
     return actionsheet.present();
   }
+
+  // Search functions=======================================
+  getItems(event) {
+    let val = event.target.value;
+    if (!val || !val.trim()) {
+      this.loadCards();
+      return;
+    }
+    this.cards = this.query({title: val});
+  }
+
+  query(params?: any) {
+    if (!params) {
+      return this.cards;
+    }
+    return this.cards.filter(item => {
+      for (let key in params) {
+        let field = item[key];
+        if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
+          return item;
+        } else if (field == params[key]) {
+          return item;
+        }
+      }
+      return null;
+    });
+  }
+  // Search functions=======================================  
 
 }
