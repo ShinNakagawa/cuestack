@@ -268,7 +268,7 @@ export class ListPage {
       this.loadCards();
       return;
     }
-    this.cards = this.query({title: val});
+    this.cards = this.query({title: val, description: val});
   }
 
   query(params?: any) {

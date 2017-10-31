@@ -5,6 +5,7 @@ import { AuthProvider } from '../../providers/auth/auth';
 import { CueStackProvider } from '../../providers/cuestack/cuestack';
 import moment from 'moment';
 import { StackStatus } from '../../models/stackstatus.model';
+import { Stack } from '../../models/stack.model';
 
 @Component({
   selector: 'page-home',
@@ -120,60 +121,49 @@ loadCards() {
   });
 }
 
-//   showStacks() {
-//     this.cards = []; 
-//     let data = this.cueStack.getAllStacks();
-//       data.subscribe(result => {
-//         console.log('result=', result);
-//         console.log('result.length=', result.length);
-//         let stacks: Stack[];
-//         stacks = [];
-//         Object.keys(result).map(function(arrayIndex){
-//           let array = result[arrayIndex];
-//           console.log('array in loop=', array);
+loadCards1() {
+    this.cards = []; 
+  let data = this.cueStack.getAllStacks();
+    data.subscribe(result => {
+      console.log('result=', result);
+      console.log('result.length=', result.length);
+      let stacks: Stack[];
+      stacks = [];
+      Object.keys(result).map(function(arrayIndex){
+        let array = result[arrayIndex];
+        console.log('array in loop=', array);
 
-//           Object.keys(array).map(function(stackIndex){
-//             let stack = new Stack;
-//             stack = array[stackIndex];
-//             console.log('stack in loop=', stack);
-//             console.log('stack.id=', stack.id);
+        Object.keys(array).map(function(stackIndex){
+          let stack = new Stack;
+          stack = array[stackIndex];
+          console.log('stack in loop=', stack);
+          console.log('stack.id=', stack.id);
 
-//             Object.keys(stack.statusAry).map(function(statusIndex){
-//               let stackStatus = new StackStatus;
-//               stackStatus = stack.statusAry[statusIndex];
-//               console.log('stackStatus in loop=', stackStatus);
-//               console.log('stackStatus.status=', stackStatus.status);
-//             })
-//             stacks.push(stack);
-//           })
-//         });
-//         stacks.forEach(stack => {
-//           this.cards.push({
-//             id: stack.id,
-//             checked: false,
-//             title: stack.title,
-//             description: stack.description,
-//             imageUrl: stack.imageUrl,
-//             status: status,
-//             shareflag: stack.shareflag,
-//             timeStart: moment(stack.timeStart, 'YYYY-MM-DD').calendar()
-//             //timeStart: moment(stack.timeStart, 'YYYY-MM-DD').add(5, 'days').calendar()
-//           })
-//         })       
-// //         this.stacks.forEach(stack => {
-// //           let checkData = this.cards.filter(item => item.id === stack.id);
-// //           if (checkData.length > 0) {
-// //             console.log('exits duplicated stack id=', stack.id);
-// //           } else if (stack.id === undefined) {
-// //             console.log('stack.id is undefined');
-// //           } else if (stack.id === 'temp-key') {
-// //             console.log('stack.id is temp-key');
-// //           } else {
-//       })
-// //    }, getAllStacksError => {
-// //      console.log(getAllStacksError);
-// //    });
-//   }
+          Object.keys(stack.statusAry).map(function(statusIndex){
+            let stackStatus = new StackStatus;
+            stackStatus = stack.statusAry[statusIndex];
+            console.log('stackStatus in loop=', stackStatus);
+            console.log('stackStatus.status=', stackStatus.status);
+          })
+          stacks.push(stack);
+        })
+      });
+      stacks.forEach(stack => {
+        this.cards.push({
+          id: stack.id,
+          checked: false,
+          title: stack.title,
+          description: stack.description,
+          imageUrl: stack.imageUrl,
+          idstatus: '',
+          status: status,
+          shareflag: stack.shareflag,
+          timeStart: moment(stack.timeStart, 'YYYY-MM-DD').calendar()
+        })
+      })       
+    })
+
+  }
 
   openModalAddStack() {
     let addStackModel = this.modalCtrl.create('AddStackPage', null, { cssClass: 'inset-modal' });
@@ -388,7 +378,7 @@ loadCards() {
       this.loadCards();
       return;
     }
-    this.cards = this.query({title: val});
+    this.cards = this.query({title: val, description: val});
   }
 
   query(params?: any) {

@@ -159,7 +159,7 @@ export class ListCuePage {
       this.loadCards();
       return;
     }
-    this.cards = this.query({question: val});
+    this.cards = this.query({question: val, answer: val});
   }
 
   query(params?: any) {

@@ -47,7 +47,6 @@ var CuesPage = (function () {
     CuesPage.prototype.loadCards = function () {
         var _this = this;
         var userid = this.currentUserId;
-        var index = 0;
         this.cards = [];
         this.cueStack.getCuesMultiStacks(this.stackid).subscribe(function (success) {
             success.subscribe(function (cues) {
@@ -71,7 +70,12 @@ var CuesPage = (function () {
                             });
                             //update rate time start
                             if (checkData[0].front.rate !== '' && checkData[0].front.rate !== undefined) {
-                                checkData[0].front.timeStart = _this.setRateTime(checkData[0].front.rate, checkData[0].front.timeStart);
+                                if (_this.compareRateTime(checkData[0].front.rate, checkData[0].front.timeStart)) {
+                                    checkData[0].front.timeStart = _this.setRateTime(checkData[0].front.rate, checkData[0].front.timeStart);
+                                }
+                                else {
+                                    _this.cards.splice(_this.cards.indexOf(checkData[0]), 1);
+                                }
                             }
                         }
                     }
@@ -101,25 +105,25 @@ var CuesPage = (function () {
                             });
                             //update rate time start
                             if (rate_1 !== '' && idrate_1 !== '' && timeStart_1 !== '') {
-                                timeStart_1 = _this.setRateTime(rate_1, timeStart_1);
+                                if (_this.compareRateTime(rate_1, timeStart_1)) {
+                                    timeStart_1 = _this.setRateTime(rate_1, timeStart_1);
+                                    // store cue data
+                                    _this.cards.push({
+                                        front: { stackid: cue.stackid,
+                                            id: cue.id,
+                                            rate: rate_1,
+                                            idrate: idrate_1,
+                                            timeStart: timeStart_1,
+                                            title: "front-title: " + cue.stackid,
+                                            subtitle: "front-subtitle: " + cue.question,
+                                            imageUrl: cue.imageUrl },
+                                        back: { title: "back-title: " + 'title',
+                                            imageUrl: cue.imageUrl,
+                                            subtitle: "back-subtitle(question): " + cue.question,
+                                            content: "back-content(answer): " + cue.answer }
+                                    });
+                                }
                             }
-                            // store cue data
-                            index++;
-                            _this.cards.push({
-                                front: { stackid: cue.stackid,
-                                    id: cue.id,
-                                    count: String(index),
-                                    rate: rate_1,
-                                    idrate: idrate_1,
-                                    timeStart: timeStart_1,
-                                    title: "front-title: " + cue.stackid,
-                                    subtitle: "front-subtitle: " + cue.question,
-                                    imageUrl: cue.imageUrl },
-                                back: { title: "back-title: " + 'title',
-                                    imageUrl: cue.imageUrl,
-                                    subtitle: "back-subtitle(question): " + cue.question,
-                                    content: "back-content(answer): " + cue.answer }
-                            });
                         }
                     }
                 });
@@ -166,12 +170,27 @@ var CuesPage = (function () {
         var timeStart = __WEBPACK_IMPORTED_MODULE_4_moment___default()(timestamp, 'YYYY-MM-DD').add(days, 'days').calendar();
         return timeStart;
     };
+    CuesPage.prototype.compareRateTime = function (rate, timestamp) {
+        var days = 0;
+        if (rate == 'good') {
+            days = 100;
+        }
+        else if (rate == 'bad') {
+            days = 1;
+        }
+        else {
+            days = 1000;
+        }
+        var dateWithRate = __WEBPACK_IMPORTED_MODULE_4_moment___default()(timestamp, 'YYYY-MM-DD').add(days, 'days');
+        var currentDate = __WEBPACK_IMPORTED_MODULE_4_moment___default()(new Date()).format('YYYY-MM-DD');
+        return __WEBPACK_IMPORTED_MODULE_4_moment___default()(currentDate).isSameOrAfter(dateWithRate);
+    };
     return CuesPage;
 }());
 CuesPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* IonicPage */])(),
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-cues',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\cues\cues.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Cues\n      <!-- <ion-buttons end>\n        <button *ngIf="currentUser" ion-button icon-only (click)="openModalAddCue()">\n          <ion-icon name=\'add\'></ion-icon>\n        </button>     \n      </ion-buttons> -->\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n\n  <ion-slides>\n    <ion-slide *ngFor="let card of cards">\n      <flash-card>\n        <div class="fc-front">\n          <p>{{card.front.count}} of {{cards.length}}</p>              \n          <img *ngIf="card.front.imageUrl"  [src]="card.front.imageUrl" />\n          <h2 text-center>{{card.front.title}}</h2>\n          <h3 text-center>{{card.front.subtitle}}</h3>\n          <hr />\n          <p *ngIf="card.front.title" >{{card.front.content}}</p>\n          <p>{{card.front.timeStart}}</p>              \n        </div>\n        <div class="fc-back">\n          <p>{{card.front.count}} of {{cards.length}}</p>              \n          <img *ngIf="card.back.imageUrl"  [src]="card.back.imageUrl" />\n          <h2 text-center>{{card.back.title}}</h2>\n          <h3 text-center>{{card.back.subtitle}}</h3>\n          <hr />\n          <p *ngIf="card.back.title" >{{card.back.content}}</p>\n        </div>\n      </flash-card>\n      <ion-row no-padding>\n        <ion-item>\n          <ion-label>Rate: </ion-label>\n          <ion-select [(ngModel)]="card.front.rate" block (ionChange)="updateCueRate(card)">\n            <ion-option value="bad">Bad</ion-option>\n            <ion-option value="good">Good</ion-option>\n            <ion-option value="never show">Never Show</ion-option>\n          </ion-select>\n        </ion-item>\n      </ion-row>\n    </ion-slide>\n  </ion-slides>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\cues\cues.html"*/,
+        selector: 'page-cues',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\cues\cues.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Cues\n      <!-- <ion-buttons end>\n        <button *ngIf="currentUser" ion-button icon-only (click)="openModalAddCue()">\n          <ion-icon name=\'add\'></ion-icon>\n        </button>     \n      </ion-buttons> -->\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n\n  <ion-slides>\n    <ion-slide *ngFor="let card of cards; let i = index">\n      <flash-card>\n        <div class="fc-front">\n          <p>{{i+1}} of {{cards.length}}</p>              \n          <img *ngIf="card.front.imageUrl"  [src]="card.front.imageUrl" />\n          <h2 text-center>{{card.front.title}}</h2>\n          <h3 text-center>{{card.front.subtitle}}</h3>\n          <hr />\n          <p *ngIf="card.front.title" >{{card.front.content}}</p>\n          <p>{{card.front.timeStart}}</p>              \n        </div>\n        <div class="fc-back">\n          <p>{{i+1}} of {{cards.length}}</p>              \n          <img *ngIf="card.back.imageUrl"  [src]="card.back.imageUrl" />\n          <h2 text-center>{{card.back.title}}</h2>\n          <h3 text-center>{{card.back.subtitle}}</h3>\n          <hr />\n          <p *ngIf="card.back.title" >{{card.back.content}}</p>\n        </div>\n      </flash-card>\n      <ion-row no-padding>\n        <ion-item>\n          <ion-label>Rate: </ion-label>\n          <ion-select [(ngModel)]="card.front.rate" block (ionChange)="updateCueRate(card)">\n            <ion-option value="bad">Bad</ion-option>\n            <ion-option value="good">Good</ion-option>\n            <ion-option value="never show">Never Show</ion-option>\n          </ion-select>\n        </ion-item>\n      </ion-row>\n    </ion-slide>\n  </ion-slides>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\cues\cues.html"*/,
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavController */],
         __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* NavParams */],
@@ -236,43 +255,43 @@ webpackEmptyAsyncContext.id = 152;
 
 var map = {
 	"../pages/cues/add-cue/add-cue.module": [
-		531,
+		532,
 		8
 	],
 	"../pages/cues/cues.module": [
-		530,
+		531,
 		9
 	],
 	"../pages/home/add-stack/add-stack.module": [
-		532,
+		533,
 		7
 	],
 	"../pages/home/login/login.module": [
-		533,
+		534,
 		6
 	],
 	"../pages/home/signup/signup.module": [
-		534,
+		535,
 		5
 	],
 	"../pages/list-cue/add-cue/add-cue.module": [
-		538,
+		539,
 		4
 	],
 	"../pages/list-cue/edit-cue/edit-cue.module": [
-		539,
+		540,
 		3
 	],
 	"../pages/list/add-stack/add-stack.module": [
-		535,
+		536,
 		2
 	],
 	"../pages/list/edit-stack/edit-stack.module": [
-		536,
+		537,
 		1
 	],
 	"../pages/list/reports/reports.module": [
-		537,
+		538,
 		0
 	]
 };
@@ -305,6 +324,7 @@ module.exports = webpackAsyncContext;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_moment__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_moment__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__models_stackstatus_model__ = __webpack_require__(144);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__models_stack_model__ = __webpack_require__(529);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -314,6 +334,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 
 
 
@@ -421,58 +442,47 @@ var HomePage = (function () {
             console.log(getAllStacksError);
         });
     };
-    //   showStacks() {
-    //     this.cards = []; 
-    //     let data = this.cueStack.getAllStacks();
-    //       data.subscribe(result => {
-    //         console.log('result=', result);
-    //         console.log('result.length=', result.length);
-    //         let stacks: Stack[];
-    //         stacks = [];
-    //         Object.keys(result).map(function(arrayIndex){
-    //           let array = result[arrayIndex];
-    //           console.log('array in loop=', array);
-    //           Object.keys(array).map(function(stackIndex){
-    //             let stack = new Stack;
-    //             stack = array[stackIndex];
-    //             console.log('stack in loop=', stack);
-    //             console.log('stack.id=', stack.id);
-    //             Object.keys(stack.statusAry).map(function(statusIndex){
-    //               let stackStatus = new StackStatus;
-    //               stackStatus = stack.statusAry[statusIndex];
-    //               console.log('stackStatus in loop=', stackStatus);
-    //               console.log('stackStatus.status=', stackStatus.status);
-    //             })
-    //             stacks.push(stack);
-    //           })
-    //         });
-    //         stacks.forEach(stack => {
-    //           this.cards.push({
-    //             id: stack.id,
-    //             checked: false,
-    //             title: stack.title,
-    //             description: stack.description,
-    //             imageUrl: stack.imageUrl,
-    //             status: status,
-    //             shareflag: stack.shareflag,
-    //             timeStart: moment(stack.timeStart, 'YYYY-MM-DD').calendar()
-    //             //timeStart: moment(stack.timeStart, 'YYYY-MM-DD').add(5, 'days').calendar()
-    //           })
-    //         })       
-    // //         this.stacks.forEach(stack => {
-    // //           let checkData = this.cards.filter(item => item.id === stack.id);
-    // //           if (checkData.length > 0) {
-    // //             console.log('exits duplicated stack id=', stack.id);
-    // //           } else if (stack.id === undefined) {
-    // //             console.log('stack.id is undefined');
-    // //           } else if (stack.id === 'temp-key') {
-    // //             console.log('stack.id is temp-key');
-    // //           } else {
-    //       })
-    // //    }, getAllStacksError => {
-    // //      console.log(getAllStacksError);
-    // //    });
-    //   }
+    HomePage.prototype.loadCards1 = function () {
+        var _this = this;
+        this.cards = [];
+        var data = this.cueStack.getAllStacks();
+        data.subscribe(function (result) {
+            console.log('result=', result);
+            console.log('result.length=', result.length);
+            var stacks;
+            stacks = [];
+            Object.keys(result).map(function (arrayIndex) {
+                var array = result[arrayIndex];
+                console.log('array in loop=', array);
+                Object.keys(array).map(function (stackIndex) {
+                    var stack = new __WEBPACK_IMPORTED_MODULE_7__models_stack_model__["a" /* Stack */];
+                    stack = array[stackIndex];
+                    console.log('stack in loop=', stack);
+                    console.log('stack.id=', stack.id);
+                    Object.keys(stack.statusAry).map(function (statusIndex) {
+                        var stackStatus = new __WEBPACK_IMPORTED_MODULE_6__models_stackstatus_model__["a" /* StackStatus */];
+                        stackStatus = stack.statusAry[statusIndex];
+                        console.log('stackStatus in loop=', stackStatus);
+                        console.log('stackStatus.status=', stackStatus.status);
+                    });
+                    stacks.push(stack);
+                });
+            });
+            stacks.forEach(function (stack) {
+                _this.cards.push({
+                    id: stack.id,
+                    checked: false,
+                    title: stack.title,
+                    description: stack.description,
+                    imageUrl: stack.imageUrl,
+                    idstatus: '',
+                    status: status,
+                    shareflag: stack.shareflag,
+                    timeStart: __WEBPACK_IMPORTED_MODULE_5_moment___default()(stack.timeStart, 'YYYY-MM-DD').calendar()
+                });
+            });
+        });
+    };
     HomePage.prototype.openModalAddStack = function () {
         var _this = this;
         var addStackModel = this.modalCtrl.create('AddStackPage', null, { cssClass: 'inset-modal' });
@@ -672,7 +682,7 @@ var HomePage = (function () {
             this.loadCards();
             return;
         }
-        this.cards = this.query({ title: val });
+        this.cards = this.query({ title: val, description: val });
     };
     HomePage.prototype.query = function (params) {
         if (!params) {
@@ -972,7 +982,7 @@ var ListPage = (function () {
             this.loadCards();
             return;
         }
-        this.cards = this.query({ title: val });
+        this.cards = this.query({ title: val, description: val });
     };
     ListPage.prototype.query = function (params) {
         if (!params) {
@@ -1168,7 +1178,7 @@ var ListCuePage = (function () {
             this.loadCards();
             return;
         }
-        this.cards = this.query({ question: val });
+        this.cards = this.query({ question: val, answer: val });
     };
     ListCuePage.prototype.query = function (params) {
         if (!params) {
@@ -1292,7 +1302,7 @@ Object(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__["a" /* pl
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__pages_list_list__ = __webpack_require__(393);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__pages_list_cue_list_cue__ = __webpack_require__(394);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__components_flash_card_flash_card__ = __webpack_require__(395);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__pipes_moment_moment__ = __webpack_require__(529);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__pipes_moment_moment__ = __webpack_require__(530);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__ionic_native_status_bar__ = __webpack_require__(388);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__ionic_native_splash_screen__ = __webpack_require__(391);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__providers_auth_auth__ = __webpack_require__(50);
@@ -2194,6 +2204,21 @@ MyApp = __decorate([
 /***/ }),
 
 /***/ 529:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Stack; });
+var Stack = (function () {
+    function Stack() {
+    }
+    return Stack;
+}());
+
+//# sourceMappingURL=stack.model.js.map
+
+/***/ }),
+
+/***/ 530:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

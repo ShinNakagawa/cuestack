@@ -16,7 +16,6 @@ export class CuesPage {
   cards: Array<{front: {
                   stackid: string, 
                   id: string,
-                  count: string,
                   rate: string,
                   idrate: string,
                   timeStart: any,
@@ -49,7 +48,6 @@ export class CuesPage {
 
   loadCards() {
     let userid = this.currentUserId;
-    let index = 0;      
     this.cards = [];
     this.cueStack.getCuesMultiStacks(this.stackid).subscribe(success => {
       success.subscribe(cues => {
@@ -72,7 +70,11 @@ export class CuesPage {
               })
               //update rate time start
               if (checkData[0].front.rate !== '' && checkData[0].front.rate !== undefined) {
-                checkData[0].front.timeStart = this.setRateTime(checkData[0].front.rate, checkData[0].front.timeStart);
+                if (this.compareRateTime(checkData[0].front.rate, checkData[0].front.timeStart)) {
+                  checkData[0].front.timeStart = this.setRateTime(checkData[0].front.rate, checkData[0].front.timeStart);                  
+                } else {
+                  this.cards.splice(this.cards.indexOf(checkData[0]), 1);
+                }
               }
             }            
           } else if (cue.id === undefined){
@@ -99,25 +101,25 @@ export class CuesPage {
               })
               //update rate time start
               if (rate !== '' && idrate !== '' && timeStart !== '') {
-                timeStart = this.setRateTime(rate, timeStart);
+                if (this.compareRateTime(rate, timeStart)) {
+                  timeStart = this.setRateTime(rate, timeStart);
+                  // store cue data
+                  this.cards.push({
+                    front:{ stackid: cue.stackid,
+                            id: cue.id,
+                            rate: rate,
+                            idrate: idrate,
+                            timeStart: timeStart,
+                            title: "front-title: " + cue.stackid,
+                            subtitle: "front-subtitle: " + cue.question,
+                            imageUrl: cue.imageUrl },
+                    back: { title: "back-title: " + 'title',
+                            imageUrl: cue.imageUrl,
+                            subtitle: "back-subtitle(question): " + cue.question,
+                            content: "back-content(answer): " + cue.answer }
+                  })                  
+                }
               }             
-              // store cue data
-              index++;
-              this.cards.push({
-                front:{ stackid: cue.stackid,
-                        id: cue.id,
-                        count: String(index),
-                        rate: rate,
-                        idrate: idrate,
-                        timeStart: timeStart,
-                        title: "front-title: " + cue.stackid,
-                        subtitle: "front-subtitle: " + cue.question,
-                        imageUrl: cue.imageUrl },
-                back: { title: "back-title: " + 'title',
-                        imageUrl: cue.imageUrl,
-                        subtitle: "back-subtitle(question): " + cue.question,
-                        content: "back-content(answer): " + cue.answer }
-              })
             }
           }
         })
@@ -161,10 +163,23 @@ export class CuesPage {
     } else {
       days = 1000;
     }
-    let timeStart = moment(timestamp, 'YYYY-MM-DD').add(days, 'days').calendar();  
+    let timeStart = moment(timestamp, 'YYYY-MM-DD').add(days, 'days').calendar();     
     return timeStart;    
   }
 
+  compareRateTime(rate: string, timestamp: any) {
+    let days = 0;
+    if ( rate == 'good' ) {
+      days = 100;
+    } else if ( rate == 'bad' ) {
+      days = 1;
+    } else {
+      days = 1000;
+    }
+    let dateWithRate = moment(timestamp, 'YYYY-MM-DD').add(days, 'days');
+    let currentDate = moment(new Date()).format('YYYY-MM-DD');
+    return moment(currentDate).isSameOrAfter(dateWithRate);   
+  }
   // moment('2010-10-20').isSameOrAfter('2010-10-19'); // true
   // moment('2010-10-20').isSameOrAfter('2010-10-20'); // true
   // moment('2010-10-20').isSameOrAfter('2010-10-21'); // false
