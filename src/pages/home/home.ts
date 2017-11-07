@@ -25,6 +25,7 @@ export class HomePage {
   checked: boolean;
   value: string;
   currentUserId: string;
+  keptCards: any;
   
   constructor(
     private navCtrl: NavController,
@@ -38,6 +39,7 @@ export class HomePage {
       this.checked = false;
       this.value = '1';
       this.currentUserId = '';
+      this.keptCards = null;
       if (this.auth.currentUser) {       
         console.log('this.auth.currentUser=', this.auth.currentUser);
         this.currentUserId = this.cueStack.currentUserId;
@@ -372,20 +374,29 @@ loadCards1() {
   }
 
   // Search functions=======================================
-  getItems(event) {
-    let val = event.target.value;
-    if (!val || !val.trim()) {
-      this.loadCards();
-      return;
+  initializeSearch() {
+    if ( this.keptCards ) {
+      this.cards = this.keptCards;
+    } else {
+      this.keptCards = this.cards;
     }
-    this.cards = this.query({title: val, description: val});
   }
 
-  query(params?: any) {
-    if (!params) {
-      return this.cards;
+  getItems(event) {
+    this.initializeSearch();
+    let val = event.target.value;
+    if (!val || !val.trim()) {
+      this.initializeSearch();
+      return;
     }
-    return this.cards.filter(item => {
+    this.cards = this.query(this.cards, {title: val, description: val});
+  }
+
+  query(cards: any, params?: any) {
+    if (!params) {
+      return cards;
+    }
+    return cards.filter(item => {
       for (let key in params) {
         let field = item[key];
         if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
@@ -396,6 +407,11 @@ loadCards1() {
       }
       return null;
     });
+  }
+
+  onCancel(event) {
+    this.initializeSearch();
+    this.keptCards = null;
   }
   // Search functions=======================================
 }

@@ -355,6 +355,7 @@ var HomePage = (function () {
         this.checked = false;
         this.value = '1';
         this.currentUserId = '';
+        this.keptCards = null;
         if (this.auth.currentUser) {
             console.log('this.auth.currentUser=', this.auth.currentUser);
             this.currentUserId = this.cueStack.currentUserId;
@@ -676,19 +677,28 @@ var HomePage = (function () {
         return actionsheet.present();
     };
     // Search functions=======================================
+    HomePage.prototype.initializeSearch = function () {
+        if (this.keptCards) {
+            this.cards = this.keptCards;
+        }
+        else {
+            this.keptCards = this.cards;
+        }
+    };
     HomePage.prototype.getItems = function (event) {
+        this.initializeSearch();
         var val = event.target.value;
         if (!val || !val.trim()) {
-            this.loadCards();
+            this.initializeSearch();
             return;
         }
-        this.cards = this.query({ title: val, description: val });
+        this.cards = this.query(this.cards, { title: val, description: val });
     };
-    HomePage.prototype.query = function (params) {
+    HomePage.prototype.query = function (cards, params) {
         if (!params) {
-            return this.cards;
+            return cards;
         }
-        return this.cards.filter(function (item) {
+        return cards.filter(function (item) {
             for (var key in params) {
                 var field = item[key];
                 if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
@@ -701,11 +711,15 @@ var HomePage = (function () {
             return null;
         });
     };
+    HomePage.prototype.onCancel = function (event) {
+        this.initializeSearch();
+        this.keptCards = null;
+    };
     return HomePage;
 }());
 HomePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-home',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\home\home.html"*/'<ion-header>\n  <ion-navbar>\n    <div [ngSwitch]="value">\n      <div *ngSwitchCase="1">\n        <button ion-button menuToggle left>\n          <ion-icon name="menu"></ion-icon>\n        </button>\n        <ion-title text-align-center>Cue Stacks</ion-title>\n        <ion-buttons end>\n          <button ion-button icon-only (click)="searchMode()">\n            <ion-icon name=\'search\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="checkMode()">\n            <ion-icon name=\'list\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="loadCards()">\n            <ion-icon name=\'share-alt\'></ion-icon>\n          </button>\n          <!-- <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">\n            <ion-icon name=\'add\'></ion-icon>\n          </button>      -->\n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="2">\n        <ion-buttons end>\n          <button ion-button icon-only (click)="actionSheet1()">\n            <ion-icon name=\'beer\'></ion-icon>\n          </button>   \n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="3">\n        <ion-searchbar (ionInput)="getItems($event)" placeholder="Search"></ion-searchbar>         \n        <ion-buttons end>\n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>         \n      </div>\n      <div *ngSwitchDefault>Default Template</div>\n    </div>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <h3>Stacks</h3>\n  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div>                \n  <ion-card *ngFor="let card of cards" >\n    <div *ngIf="card.status == status || card.status == \'all\' || status == \'all\'">\n      <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>     \n      <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />\n      <ion-card-content>\n        <h2 class="card-title" (click)="cardTapped($event, card)">\n          {{card.title}}\n        </h2>\n        <p>\n          {{card.description}}\n        </p>\n        <p>\n          {{card.status}}\n        </p>  \n        <p>\n          {{card.timeStart}}\n        </p>  \n        <p>\n          {{card.shareflag}}\n        </p>  \n        </ion-card-content>\n    </div>\n  </ion-card>\n\n  <!-- Float Action Buttons -->\n  <ion-fab bottom right >\n    <button ion-fab class="pop-in" color="danger">Accout</button>\n    <ion-fab-list side="top">\n      <button ion-fab color="primary" (click)="openModalLogin()">\n        <ion-icon  name="log-in"></ion-icon>\n      </button>\n      <button ion-fab color="secondary" (click)="logout()">\n        <ion-icon name="log-out"></ion-icon>\n      </button>\n      <button ion-fab color="danger" (click)="openModalSignup()">\n        <ion-icon name="link"></ion-icon>\n      </button>\n    </ion-fab-list>\n    <ion-fab-list side="left">\n      <button ion-fab>\n        <ion-icon name="logo-github"></ion-icon>\n      </button>\n    </ion-fab-list>\n  </ion-fab>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\home\home.html"*/
+        selector: 'page-home',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\home\home.html"*/'<ion-header>\n  <ion-navbar>\n    <div [ngSwitch]="value">\n      <div *ngSwitchCase="1">\n        <button ion-button menuToggle left>\n          <ion-icon name="menu"></ion-icon>\n        </button>\n        <ion-title text-align-center>Cue Stacks</ion-title>\n        <ion-buttons end>\n          <button ion-button icon-only (click)="searchMode()">\n            <ion-icon name=\'search\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="checkMode()">\n            <ion-icon name=\'list\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="loadCards()">\n            <ion-icon name=\'share-alt\'></ion-icon>\n          </button>\n          <!-- <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">\n            <ion-icon name=\'add\'></ion-icon>\n          </button>      -->\n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="2">\n        <ion-buttons end>\n          <button ion-button icon-only (click)="actionSheet1()">\n            <ion-icon name=\'beer\'></ion-icon>\n          </button>   \n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="3">\n        <ion-searchbar (ionInput)="getItems($event)" placeholder="Search" (ionCancel)="onCancel($event)"></ion-searchbar>         \n        <ion-buttons end>\n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>         \n      </div>\n      <div *ngSwitchDefault>Default Template</div>\n    </div>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <h3>Stacks</h3>\n  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div>                \n  <ion-card *ngFor="let card of cards" >\n    <div *ngIf="card.status == status || card.status == \'all\' || status == \'all\'">\n      <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>     \n      <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />\n      <ion-card-content>\n        <h2 class="card-title" (click)="cardTapped($event, card)">\n          {{card.title}}\n        </h2>\n        <p>\n          {{card.description}}\n        </p>\n        <p>\n          {{card.status}}\n        </p>  \n        <p>\n          {{card.timeStart}}\n        </p>  \n        <p>\n          {{card.shareflag}}\n        </p>  \n        </ion-card-content>\n    </div>\n  </ion-card>\n\n  <!-- Float Action Buttons -->\n  <ion-fab bottom right >\n    <button ion-fab class="pop-in" color="danger">Accout</button>\n    <ion-fab-list side="top">\n      <button ion-fab color="primary" (click)="openModalLogin()">\n        <ion-icon  name="log-in"></ion-icon>\n      </button>\n      <button ion-fab color="secondary" (click)="logout()">\n        <ion-icon name="log-out"></ion-icon>\n      </button>\n      <button ion-fab color="danger" (click)="openModalSignup()">\n        <ion-icon name="link"></ion-icon>\n      </button>\n    </ion-fab-list>\n    <ion-fab-list side="left">\n      <button ion-fab>\n        <ion-icon name="logo-github"></ion-icon>\n      </button>\n    </ion-fab-list>\n  </ion-fab>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\home\home.html"*/
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavController */],
         __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["h" /* ModalController */],
@@ -759,6 +773,7 @@ var ListPage = (function () {
         this.auth = auth;
         this.checked = false;
         this.value = '1';
+        this.keptCards = null;
         this.loadCards();
     }
     ListPage.prototype.loadCards = function () {
@@ -976,19 +991,28 @@ var ListPage = (function () {
         return actionsheet.present();
     };
     // Search functions=======================================
+    ListPage.prototype.initializeSearch = function () {
+        if (this.keptCards) {
+            this.cards = this.keptCards;
+        }
+        else {
+            this.keptCards = this.cards;
+        }
+    };
     ListPage.prototype.getItems = function (event) {
+        this.initializeSearch();
         var val = event.target.value;
         if (!val || !val.trim()) {
-            this.loadCards();
+            this.initializeSearch();
             return;
         }
-        this.cards = this.query({ title: val, description: val });
+        this.cards = this.query(this.cards, { title: val, description: val });
     };
-    ListPage.prototype.query = function (params) {
+    ListPage.prototype.query = function (cards, params) {
         if (!params) {
-            return this.cards;
+            return cards;
         }
-        return this.cards.filter(function (item) {
+        return cards.filter(function (item) {
             for (var key in params) {
                 var field = item[key];
                 if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
@@ -1000,6 +1024,10 @@ var ListPage = (function () {
             }
             return null;
         });
+    };
+    ListPage.prototype.onCancel = function (event) {
+        this.initializeSearch();
+        this.keptCards = null;
     };
     return ListPage;
 }());
@@ -1053,6 +1081,7 @@ var ListCuePage = (function () {
         this.checked = false;
         this.value = '1';
         this.stackid = navParams.get('id');
+        this.keptCards = null;
         this.loadCards();
     }
     ListCuePage.prototype.loadCards = function () {
@@ -1172,19 +1201,28 @@ var ListCuePage = (function () {
         return actionsheet.present();
     };
     // Search functions=======================================
+    ListCuePage.prototype.initializeSearch = function () {
+        if (this.keptCards) {
+            this.cards = this.keptCards;
+        }
+        else {
+            this.keptCards = this.cards;
+        }
+    };
     ListCuePage.prototype.getItems = function (event) {
+        this.initializeSearch();
         var val = event.target.value;
         if (!val || !val.trim()) {
-            this.loadCards();
+            this.initializeSearch();
             return;
         }
-        this.cards = this.query({ question: val, answer: val });
+        this.cards = this.query(this.cards, { question: val, answer: val });
     };
-    ListCuePage.prototype.query = function (params) {
+    ListCuePage.prototype.query = function (cards, params) {
         if (!params) {
-            return this.cards;
+            return cards;
         }
-        return this.cards.filter(function (item) {
+        return cards.filter(function (item) {
             for (var key in params) {
                 var field = item[key];
                 if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {

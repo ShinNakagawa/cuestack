@@ -20,7 +20,8 @@ export class ListCuePage {
   stackid: string;
   checked: boolean;
   value: string;
-
+  keptCards: any;
+  
   constructor(
     private modalCtrl: ModalController,
     public navParams: NavParams,
@@ -30,6 +31,7 @@ export class ListCuePage {
       this.checked = false;
       this.value = '1';
       this.stackid = navParams.get('id');
+      this.keptCards = null;
       this.loadCards();
   }
 
@@ -153,20 +155,29 @@ export class ListCuePage {
   }
 
   // Search functions=======================================
+  initializeSearch() {
+    if ( this.keptCards ) {
+      this.cards = this.keptCards;
+    } else {
+      this.keptCards = this.cards;
+    }
+  }
+  
   getItems(event) {
+    this.initializeSearch();
     let val = event.target.value;
     if (!val || !val.trim()) {
-      this.loadCards();
+      this.initializeSearch();
       return;
     }
-    this.cards = this.query({question: val, answer: val});
+    this.cards = this.query(this.cards, {question: val, answer: val});
   }
 
-  query(params?: any) {
+  query(cards: any, params?: any) {
     if (!params) {
-      return this.cards;
+      return cards;
     }
-    return this.cards.filter(item => {
+    return cards.filter(item => {
       for (let key in params) {
         let field = item[key];
         if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {

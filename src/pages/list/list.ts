@@ -22,7 +22,8 @@ export class ListPage {
                 shareflag: boolean}>;
   checked: boolean;
   value: string;
-
+  keptCards: any;
+  
   constructor(
     private navCtrl: NavController,
     private modalCtrl: ModalController,
@@ -32,6 +33,7 @@ export class ListPage {
     private auth: AuthProvider) {
       this.checked = false;
       this.value = '1';
+      this.keptCards = null;
       this.loadCards();
    }
 
@@ -261,32 +263,46 @@ export class ListPage {
     return actionsheet.present();
   }
 
-  // Search functions=======================================
-  getItems(event) {
-    let val = event.target.value;
-    if (!val || !val.trim()) {
-      this.loadCards();
-      return;
-    }
-    this.cards = this.query({title: val, description: val});
-  }
-
-  query(params?: any) {
-    if (!params) {
-      return this.cards;
-    }
-    return this.cards.filter(item => {
-      for (let key in params) {
-        let field = item[key];
-        if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
-          return item;
-        } else if (field == params[key]) {
-          return item;
-        }
+    // Search functions=======================================
+    initializeSearch() {
+      if ( this.keptCards ) {
+        this.cards = this.keptCards;
+      } else {
+        this.keptCards = this.cards;
       }
-      return null;
-    });
-  }
-  // Search functions=======================================  
+    }
+  
+    getItems(event) {
+      this.initializeSearch();
+      let val = event.target.value;
+      if (!val || !val.trim()) {
+        this.initializeSearch();
+        return;
+      }
+      this.cards = this.query(this.cards, {title: val, description: val});
+    }
+  
+    query(cards: any, params?: any) {
+      if (!params) {
+        return cards;
+      }
+      return cards.filter(item => {
+        for (let key in params) {
+          let field = item[key];
+          if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
+            return item;
+          } else if (field == params[key]) {
+            return item;
+          }
+        }
+        return null;
+      });
+    }
+  
+    onCancel(event) {
+      this.initializeSearch();
+      this.keptCards = null;
+    }
+    // Search functions=======================================
 
 }
