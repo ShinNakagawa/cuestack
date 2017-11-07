@@ -83,6 +83,7 @@ export class ListCuePage {
       }
     });
     editCueModel.present();
+    this.closeMode();
   }
 
   openModalAddCue() {
@@ -188,6 +189,16 @@ export class ListCuePage {
       }
       return null;
     });
+  }
+
+  onClear(event) {
+    this.initializeSearch();
+    this.keptCards = null;
+  }
+
+  onCancel(event) {
+    this.initializeSearch();
+    this.keptCards = null;
   }
   // Search functions=======================================  
 }

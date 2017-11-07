@@ -79,7 +79,8 @@ export class ListPage {
   }
 
   cardTapped(event, card) {
-    this.navCtrl.push(ListCuePage, {title: card.title, id: card.id});    
+    this.navCtrl.push(ListCuePage, {title: card.title, id: card.id});
+    this.closeMode();    
   }
 
   reportsPage(card) {
@@ -297,6 +298,11 @@ export class ListPage {
         }
         return null;
       });
+    }
+  
+    onClear(event) {
+      this.initializeSearch();
+      this.keptCards = null;
     }
   
     onCancel(event) {

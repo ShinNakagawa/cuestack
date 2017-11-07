@@ -209,7 +209,8 @@ loadCards1() {
   cardTapped(event, card) {
     let ids = [];
     ids.push({id: card.id, title: card.title});
-    this.navCtrl.push(CuesPage, {id: ids});    
+    this.navCtrl.push(CuesPage, {id: ids});
+    this.closeMode();
   }
 
   startStudy() {
@@ -407,6 +408,11 @@ loadCards1() {
       }
       return null;
     });
+  }
+
+  onClear(event) {
+    this.initializeSearch();
+    this.keptCards = null;
   }
 
   onCancel(event) {
