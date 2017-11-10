@@ -388,6 +388,12 @@ var HomePage = (function () {
             console.log('userid=', this.cueStack.currentUserId);
             this.loadCards();
         }
+        else if (tick === 2) {
+            this.stopTimer();
+            // assuming no userID
+            console.log('assuming no userID');
+            this.loadCards();
+        }
     };
     // start timer
     HomePage.prototype.startTimer = function () {
