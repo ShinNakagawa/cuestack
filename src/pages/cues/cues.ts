@@ -11,7 +11,7 @@ import { CueRate } from '../../models/cuerate.model';
   templateUrl: 'cues.html',
 })
 export class CuesPage {
-  stackid: any;
+  stackData: any;
   currentUserId: string;
   cards: Array<{front: {
                   stackid: string, 
@@ -34,7 +34,7 @@ export class CuesPage {
     public modalCtrl: ModalController,
     private cueStack: CueStackProvider,
     private auth: AuthProvider) {
-      this.stackid = navParams.get('id');
+      this.stackData = navParams.get('stackData');
       this.currentUserId = '';
       if (this.auth.currentUser) {       
         this.currentUserId = this.cueStack.currentUserId;
@@ -49,7 +49,7 @@ export class CuesPage {
   loadCards() {
     let userid = this.currentUserId;
     this.cards = [];
-    this.cueStack.getCuesMultiStacks(this.stackid).subscribe(success => {
+    this.cueStack.getCuesMultiStacks(this.stackData).subscribe(success => {
       success.subscribe(cues => {
         cues.forEach(cue => {
           let checkData = this.cards.filter(item => item.front.id === cue.id);
@@ -100,26 +100,32 @@ export class CuesPage {
                 }
               })
               //update rate time start
+              let showFlag = true;
               if (rate !== '' && idrate !== '' && timeStart !== '') {
-                if (this.compareRateTime(rate, timeStart)) {
-                  timeStart = this.setRateTime(rate, timeStart);
-                  // store cue data
-                  this.cards.push({
-                    front:{ stackid: cue.stackid,
-                            id: cue.id,
-                            rate: rate,
-                            idrate: idrate,
-                            timeStart: timeStart,
-                            title: "front-title: " + cue.stackid,
-                            subtitle: "front-subtitle: " + cue.question,
-                            imageUrl: cue.imageUrl },
-                    back: { title: "back-title: " + 'title',
-                            imageUrl: cue.imageUrl,
-                            subtitle: "back-subtitle(question): " + cue.question,
-                            content: "back-content(answer): " + cue.answer }
-                  })                  
-                }
-              }             
+                showFlag = this.compareRateTime(rate, timeStart);
+                timeStart = this.setRateTime(rate, timeStart);
+              }
+              // get title
+              let title = '';
+              let titleData = this.stackData.filter(data => data.id === cue.stackid);
+              if (titleData.length > 0) {
+                title = titleData[0].title;
+              }
+              // store cue data
+              this.cards.push({
+                front:{ stackid: cue.stackid,
+                        id: cue.id,
+                        rate: rate,
+                        idrate: idrate,
+                        timeStart: timeStart,
+                        title: "Title: " + title,
+                        subtitle: "Question: " + cue.question,
+                        imageUrl: cue.imageUrl },
+                back: { title: "Title: " + title,
+                        imageUrl: cue.imageUrl,
+                        subtitle: "Question: " + cue.question,
+                        content: "Answer: " + cue.answer }
+              })                  
             }
           }
         })
@@ -134,7 +140,7 @@ export class CuesPage {
   }
 
   openModalAddCue() {
-    let addCueModel = this.modalCtrl.create('AddCuePage', {id: this.stackid[0].id}, { cssClass: 'inset-modal' });
+    let addCueModel = this.modalCtrl.create('AddCuePage', {id: this.stackData[0].id}, { cssClass: 'inset-modal' });
     addCueModel.onDidDismiss(data => {
       if (data) {
         console.log("CuesPage::openModelAddCue() added cue");

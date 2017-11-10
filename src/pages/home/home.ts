@@ -245,21 +245,21 @@ loadCards1() {
   }
 
   cardTapped(event, card) {
-    let ids = [];
-    ids.push({id: card.id, title: card.title});
-    this.navCtrl.push(CuesPage, {id: ids});
+    let stackData = [];
+    stackData.push({id: card.id, title: card.title});
+    this.navCtrl.push(CuesPage, {stackData: stackData});
     this.closeMode();
   }
 
   startStudy() {
-    let ids = [];
+    let stackData = [];
     this.cards.forEach(card => {    
       if (card.checked) {
-        ids.push({id: card.id, title: card.title})
+        stackData.push({id: card.id, title: card.title})
       }
     });
     this.clearCheck(false);   
-    this.navCtrl.push(CuesPage, {id: ids});    
+    this.navCtrl.push(CuesPage, {stackData: stackData});    
   }
 
   checkMode() {    

@@ -34,7 +34,7 @@ var CuesPage = (function () {
         this.modalCtrl = modalCtrl;
         this.cueStack = cueStack;
         this.auth = auth;
-        this.stackid = navParams.get('id');
+        this.stackData = navParams.get('stackData');
         this.currentUserId = '';
         if (this.auth.currentUser) {
             this.currentUserId = this.cueStack.currentUserId;
@@ -48,7 +48,7 @@ var CuesPage = (function () {
         var _this = this;
         var userid = this.currentUserId;
         this.cards = [];
-        this.cueStack.getCuesMultiStacks(this.stackid).subscribe(function (success) {
+        this.cueStack.getCuesMultiStacks(this.stackData).subscribe(function (success) {
             success.subscribe(function (cues) {
                 cues.forEach(function (cue) {
                     var checkData = _this.cards.filter(function (item) { return item.front.id === cue.id; });
@@ -104,26 +104,32 @@ var CuesPage = (function () {
                                 }
                             });
                             //update rate time start
+                            var showFlag = true;
                             if (rate_1 !== '' && idrate_1 !== '' && timeStart_1 !== '') {
-                                if (_this.compareRateTime(rate_1, timeStart_1)) {
-                                    timeStart_1 = _this.setRateTime(rate_1, timeStart_1);
-                                    // store cue data
-                                    _this.cards.push({
-                                        front: { stackid: cue.stackid,
-                                            id: cue.id,
-                                            rate: rate_1,
-                                            idrate: idrate_1,
-                                            timeStart: timeStart_1,
-                                            title: "front-title: " + cue.stackid,
-                                            subtitle: "front-subtitle: " + cue.question,
-                                            imageUrl: cue.imageUrl },
-                                        back: { title: "back-title: " + 'title',
-                                            imageUrl: cue.imageUrl,
-                                            subtitle: "back-subtitle(question): " + cue.question,
-                                            content: "back-content(answer): " + cue.answer }
-                                    });
-                                }
+                                showFlag = _this.compareRateTime(rate_1, timeStart_1);
+                                timeStart_1 = _this.setRateTime(rate_1, timeStart_1);
                             }
+                            // get title
+                            var title = '';
+                            var titleData = _this.stackData.filter(function (data) { return data.id === cue.stackid; });
+                            if (titleData.length > 0) {
+                                title = titleData[0].title;
+                            }
+                            // store cue data
+                            _this.cards.push({
+                                front: { stackid: cue.stackid,
+                                    id: cue.id,
+                                    rate: rate_1,
+                                    idrate: idrate_1,
+                                    timeStart: timeStart_1,
+                                    title: "Title: " + title,
+                                    subtitle: "Question: " + cue.question,
+                                    imageUrl: cue.imageUrl },
+                                back: { title: "Title: " + title,
+                                    imageUrl: cue.imageUrl,
+                                    subtitle: "Question: " + cue.question,
+                                    content: "Answer: " + cue.answer }
+                            });
                         }
                     }
                 });
@@ -137,7 +143,7 @@ var CuesPage = (function () {
     };
     CuesPage.prototype.openModalAddCue = function () {
         var _this = this;
-        var addCueModel = this.modalCtrl.create('AddCuePage', { id: this.stackid[0].id }, { cssClass: 'inset-modal' });
+        var addCueModel = this.modalCtrl.create('AddCuePage', { id: this.stackData[0].id }, { cssClass: 'inset-modal' });
         addCueModel.onDidDismiss(function (data) {
             if (data) {
                 console.log("CuesPage::openModelAddCue() added cue");
@@ -562,20 +568,20 @@ var HomePage = (function () {
         this.loadCards();
     };
     HomePage.prototype.cardTapped = function (event, card) {
-        var ids = [];
-        ids.push({ id: card.id, title: card.title });
-        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_1__cues_cues__["a" /* CuesPage */], { id: ids });
+        var stackData = [];
+        stackData.push({ id: card.id, title: card.title });
+        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_1__cues_cues__["a" /* CuesPage */], { stackData: stackData });
         this.closeMode();
     };
     HomePage.prototype.startStudy = function () {
-        var ids = [];
+        var stackData = [];
         this.cards.forEach(function (card) {
             if (card.checked) {
-                ids.push({ id: card.id, title: card.title });
+                stackData.push({ id: card.id, title: card.title });
             }
         });
         this.clearCheck(false);
-        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_1__cues_cues__["a" /* CuesPage */], { id: ids });
+        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_1__cues_cues__["a" /* CuesPage */], { stackData: stackData });
     };
     HomePage.prototype.checkMode = function () {
         this.clearCheck(false);
@@ -763,7 +769,7 @@ var HomePage = (function () {
 }());
 HomePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-home',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\home\home.html"*/'<ion-header>\n  <ion-navbar>\n    <div [ngSwitch]="value">\n      <div *ngSwitchCase="1">\n        <button ion-button menuToggle left>\n          <ion-icon name="menu"></ion-icon>\n        </button>\n        <ion-title text-align-center>Cue Stacks</ion-title>\n        <ion-buttons end>\n          <button ion-button icon-only (click)="searchMode()">\n            <ion-icon name=\'search\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="checkMode()">\n            <ion-icon name=\'list\'></ion-icon>\n          </button>\n          <!-- <button ion-button icon-only (click)="loadCards()">\n            <ion-icon name=\'share-alt\'></ion-icon>\n          </button> -->\n          <!-- <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">\n            <ion-icon name=\'add\'></ion-icon>\n          </button>      -->\n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="2">\n        <ion-buttons end>\n          <button ion-button icon-only (click)="actionSheet1()">\n            <ion-icon name=\'beer\'></ion-icon>\n          </button>   \n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="3">\n        <ion-searchbar\n          (ionInput)="getItems($event)"\n          (ionClear)="onClear($event)"\n          (ionCancel)="onCancel($event)"\n          placeholder="Search">\n        </ion-searchbar>\n        <ion-buttons end>\n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>         \n      </div>\n      <div *ngSwitchDefault>Default Template</div>\n    </div>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <h3>Stacks</h3>\n  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div>                \n  <ion-card *ngFor="let card of cards" >\n    <div *ngIf="card.status == status || card.status == \'all\' || status == \'all\'">\n      <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>     \n      <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />\n      <ion-card-content>\n        <h2 class="card-title" (click)="cardTapped($event, card)">\n          {{card.title}}\n        </h2>\n        <p>\n          {{card.description}}\n        </p>\n        <p>\n          {{card.status}}\n        </p>  \n        <p>\n          {{card.timeStart}}\n        </p>  \n        <p>\n          {{card.shareflag}}\n        </p>  \n        </ion-card-content>\n    </div>\n  </ion-card>\n\n  <!-- Float Action Buttons -->\n  <ion-fab bottom right >\n    <button ion-fab class="pop-in" color="danger">Accout</button>\n    <ion-fab-list side="top">\n      <button ion-fab color="primary" (click)="openModalLogin()">\n        <ion-icon  name="log-in"></ion-icon>\n      </button>\n      <button ion-fab color="secondary" (click)="logout()">\n        <ion-icon name="log-out"></ion-icon>\n      </button>\n      <button ion-fab color="danger" (click)="openModalSignup()">\n        <ion-icon name="link"></ion-icon>\n      </button>\n    </ion-fab-list>\n    <ion-fab-list side="left">\n      <button ion-fab>\n        <ion-icon name="logo-github"></ion-icon>\n      </button>\n    </ion-fab-list>\n  </ion-fab>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\home\home.html"*/
+        selector: 'page-home',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\home\home.html"*/'<ion-header>\n  <ion-navbar>\n    <div [ngSwitch]="value">\n      <div *ngSwitchCase="1">\n        <button ion-button menuToggle left>\n          <ion-icon name="menu"></ion-icon>\n        </button>\n        <ion-title text-align-center>Cue Stacks</ion-title>\n        <ion-buttons end>\n          <button ion-button icon-only (click)="searchMode()">\n            <ion-icon name=\'search\'></ion-icon>\n          </button>\n          <button ion-button icon-only (click)="checkMode()">\n            <ion-icon name=\'list\'></ion-icon>\n          </button>\n          <!-- <button ion-button icon-only (click)="loadCards()">\n            <ion-icon name=\'share-alt\'></ion-icon>\n          </button> -->\n          <!-- <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">\n            <ion-icon name=\'add\'></ion-icon>\n          </button>      -->\n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="2">\n        <ion-buttons end>\n          <button ion-button icon-only (click)="actionSheet1()">\n            <ion-icon name=\'beer\'></ion-icon>\n          </button>   \n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>       \n      </div>\n      <div *ngSwitchCase="3">\n        <ion-searchbar\n          (ionInput)="getItems($event)"\n          (ionClear)="onClear($event)"\n          (ionCancel)="onCancel($event)"\n          placeholder="Search">\n        </ion-searchbar>\n        <ion-buttons end>\n          <button ion-button icon-only (click)="closeMode()">\n            <ion-icon name=\'close\'></ion-icon>\n          </button>\n        </ion-buttons>         \n      </div>\n      <div *ngSwitchDefault>Default Template</div>\n    </div>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <h3>Stacks</h3>\n  <div *ngIf="auth.currentUser">current user is {{auth.currentUser}}</div>                \n  <ion-card *ngFor="let card of cards" >\n    <div *ngIf="card.status == status || card.status == \'all\' || status == \'all\'">\n      <ion-checkbox *ngIf="checked == true;" [(ngModel)]="card.checked"></ion-checkbox>     \n      <img *ngIf="card.imageUrl"  [src]="card.imageUrl" (click)="cardTapped($event, card)" />\n      <ion-card-content>\n        <h2 class="card-title" (click)="cardTapped($event, card)">\n          {{card.title}}\n        </h2>\n        <p>\n          {{card.description}}\n        </p>\n        <p>\n          {{card.status}}\n        </p>  \n        <p>\n          {{card.timeStart}}\n        </p>  \n        </ion-card-content>\n    </div>\n  </ion-card>\n\n  <!-- Float Action Buttons -->\n  <ion-fab bottom right >\n    <button ion-fab class="pop-in" color="danger">Accout</button>\n    <ion-fab-list side="top">\n      <button ion-fab color="primary" (click)="openModalLogin()">\n        <ion-icon  name="log-in"></ion-icon>\n      </button>\n      <button ion-fab color="secondary" (click)="logout()">\n        <ion-icon name="log-out"></ion-icon>\n      </button>\n      <button ion-fab color="danger" (click)="openModalSignup()">\n        <ion-icon name="link"></ion-icon>\n      </button>\n    </ion-fab-list>\n    <ion-fab-list side="left">\n      <button ion-fab>\n        <ion-icon name="logo-github"></ion-icon>\n      </button>\n    </ion-fab-list>\n  </ion-fab>\n\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\home\home.html"*/
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavController */],
         __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["h" /* ModalController */],
