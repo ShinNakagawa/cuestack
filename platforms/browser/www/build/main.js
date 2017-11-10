@@ -109,27 +109,30 @@ var CuesPage = (function () {
                                 showFlag = _this.compareRateTime(rate_1, timeStart_1);
                                 timeStart_1 = _this.setRateTime(rate_1, timeStart_1);
                             }
-                            // get title
-                            var title = '';
-                            var titleData = _this.stackData.filter(function (data) { return data.id === cue.stackid; });
-                            if (titleData.length > 0) {
-                                title = titleData[0].title;
+                            // show only rate & timestamp or empty data of cue 
+                            if (showFlag) {
+                                // get title
+                                var title = '';
+                                var titleData = _this.stackData.filter(function (data) { return data.id === cue.stackid; });
+                                if (titleData.length > 0) {
+                                    title = titleData[0].title;
+                                }
+                                // store cue data
+                                _this.cards.push({
+                                    front: { stackid: cue.stackid,
+                                        id: cue.id,
+                                        rate: rate_1,
+                                        idrate: idrate_1,
+                                        timeStart: timeStart_1,
+                                        title: "Title: " + title,
+                                        subtitle: "Question: " + cue.question,
+                                        imageUrl: cue.imageUrl },
+                                    back: { title: "Title: " + title,
+                                        imageUrl: cue.imageUrl,
+                                        subtitle: "Question: " + cue.question,
+                                        content: "Answer: " + cue.answer }
+                                });
                             }
-                            // store cue data
-                            _this.cards.push({
-                                front: { stackid: cue.stackid,
-                                    id: cue.id,
-                                    rate: rate_1,
-                                    idrate: idrate_1,
-                                    timeStart: timeStart_1,
-                                    title: "Title: " + title,
-                                    subtitle: "Question: " + cue.question,
-                                    imageUrl: cue.imageUrl },
-                                back: { title: "Title: " + title,
-                                    imageUrl: cue.imageUrl,
-                                    subtitle: "Question: " + cue.question,
-                                    content: "Answer: " + cue.answer }
-                            });
                         }
                     }
                 });
@@ -375,7 +378,7 @@ var HomePage = (function () {
         else {
             console.log('Unable to read userID, so add timer to wait for user ID');
             var toast = this.toastCtrl.create({
-                message: 'Unable to read userID, please wait for a while.',
+                message: 'Please wait for a second.',
                 duration: 3000,
                 position: 'top'
             });

@@ -105,27 +105,30 @@ export class CuesPage {
                 showFlag = this.compareRateTime(rate, timeStart);
                 timeStart = this.setRateTime(rate, timeStart);
               }
-              // get title
-              let title = '';
-              let titleData = this.stackData.filter(data => data.id === cue.stackid);
-              if (titleData.length > 0) {
-                title = titleData[0].title;
+              // show only rate & timestamp or empty data of cue 
+              if (showFlag) {
+                // get title
+                let title = '';
+                let titleData = this.stackData.filter(data => data.id === cue.stackid);
+                if (titleData.length > 0) {
+                  title = titleData[0].title;
+                }
+                // store cue data
+                this.cards.push({
+                  front:{ stackid: cue.stackid,
+                          id: cue.id,
+                          rate: rate,
+                          idrate: idrate,
+                          timeStart: timeStart,
+                          title: "Title: " + title,
+                          subtitle: "Question: " + cue.question,
+                          imageUrl: cue.imageUrl },
+                  back: { title: "Title: " + title,
+                          imageUrl: cue.imageUrl,
+                          subtitle: "Question: " + cue.question,
+                          content: "Answer: " + cue.answer }
+                })                  
               }
-              // store cue data
-              this.cards.push({
-                front:{ stackid: cue.stackid,
-                        id: cue.id,
-                        rate: rate,
-                        idrate: idrate,
-                        timeStart: timeStart,
-                        title: "Title: " + title,
-                        subtitle: "Question: " + cue.question,
-                        imageUrl: cue.imageUrl },
-                back: { title: "Title: " + title,
-                        imageUrl: cue.imageUrl,
-                        subtitle: "Question: " + cue.question,
-                        content: "Answer: " + cue.answer }
-              })                  
             }
           }
         })
