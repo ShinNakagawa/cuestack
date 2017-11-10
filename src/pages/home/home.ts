@@ -54,7 +54,7 @@ export class HomePage {
         console.log('Unable to read userID, so add timer to wait for user ID');       
         let toast = this.toastCtrl.create({
           message: 'Unable to read userID, please wait for a while.',
-          duration: 2000,
+          duration: 3000,
           position: 'top'
         });
         toast.present();
@@ -65,7 +65,7 @@ export class HomePage {
   tickerFunc(tick){
     console.log("tickerFunc tick=", tick);
     this.ticks = tick;
-    if ( tick === 1 ) {
+    if (this.auth.currentUser) {
       this.stopTimer();
       // get userID
       console.log('this.auth.currentUser=', this.auth.currentUser);

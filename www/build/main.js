@@ -380,7 +380,7 @@ var HomePage = (function () {
     HomePage.prototype.tickerFunc = function (tick) {
         console.log("tickerFunc tick=", tick);
         this.ticks = tick;
-        if (tick === 1) {
+        if (this.auth.currentUser) {
             this.stopTimer();
             // get userID
             console.log('this.auth.currentUser=', this.auth.currentUser);
@@ -393,7 +393,7 @@ var HomePage = (function () {
     HomePage.prototype.startTimer = function () {
         var _this = this;
         console.log("start timer");
-        //1 every second (2000ms), starting after 0.5 seconds
+        //1 every second (1000ms), starting after 0.5(500ms) seconds
         this.timer = __WEBPACK_IMPORTED_MODULE_8_rxjs_Rx__["Observable"].timer(500, 1000);
         // subscribing to a observable returns a subscription object
         this.sub = this.timer.subscribe(function (t) { return _this.tickerFunc(t); });
