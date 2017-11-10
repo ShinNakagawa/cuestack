@@ -6,6 +6,7 @@ import { CueStackProvider } from '../../providers/cuestack/cuestack';
 import moment from 'moment';
 import { StackStatus } from '../../models/stackstatus.model';
 import { Stack } from '../../models/stack.model';
+import { Observable, Subscription } from 'rxjs/Rx';
 
 @Component({
   selector: 'page-home',
@@ -26,14 +27,18 @@ export class HomePage {
   value: string;
   currentUserId: string;
   keptCards: any;
+
+  ticks = 0;
+  timer;
+  sub: Subscription;
   
   constructor(
     private navCtrl: NavController,
     private modalCtrl: ModalController,
     private cueStack: CueStackProvider,
     public alertCtrl: AlertController,
+    public toastCtrl: ToastController,
     public actionsheetCtrl: ActionSheetController,
-    private toastCtrl: ToastController,
     private auth: AuthProvider) {      
       this.status = 'all';
       this.checked = false;
@@ -43,17 +48,45 @@ export class HomePage {
       if (this.auth.currentUser) {       
         console.log('this.auth.currentUser=', this.auth.currentUser);
         this.currentUserId = this.cueStack.currentUserId;
-        console.log('userid=', this.cueStack.currentUserId);    
+        console.log('userid=', this.cueStack.currentUserId);
+        this.loadCards();    
       } else {
+        console.log('Unable to read userID, so add timer to wait for user ID');       
         let toast = this.toastCtrl.create({
-          message: 'Unable to login, please wait for a while.',
-          duration: 3000,
+          message: 'Unable to read userID, please wait for a while.',
+          duration: 2000,
           position: 'top'
         });
         toast.present();
-        this.openModalLogin();
+        this.startTimer();
       }
+  }
+
+  tickerFunc(tick){
+    console.log("tickerFunc tick=", tick);
+    this.ticks = tick;
+    if ( tick === 1 ) {
+      this.stopTimer();
+      // get userID
+      console.log('this.auth.currentUser=', this.auth.currentUser);
+      this.currentUserId = this.cueStack.currentUserId;
+      console.log('userid=', this.cueStack.currentUserId);
       this.loadCards();
+    }
+  }
+  // start timer
+  startTimer() {
+    console.log("start timer");
+    //1 every second (1000ms), starting after 0.5(500ms) seconds
+    this.timer = Observable.timer(500,1000);
+    // subscribing to a observable returns a subscription object
+    this.sub = this.timer.subscribe(t => this.tickerFunc(t));
+  };
+  // stops and resets the current timer
+  stopTimer() {
+    console.log("stop timer");
+    // unsubscribe here
+    this.sub.unsubscribe();
   }
 
 //   https://www.w3schools.com/css/img_lights.jpg

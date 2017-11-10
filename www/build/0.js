@@ -1,14 +1,14 @@
 webpackJsonp([0],{
 
-/***/ 538:
+/***/ 823:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ReportsPageModule", function() { return ReportsPageModule; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__reports__ = __webpack_require__(558);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__reports__ = __webpack_require__(843);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(54);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -41,27 +41,27 @@ ReportsPageModule = __decorate([
 
 /***/ }),
 
-/***/ 541:
+/***/ 826:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = __webpack_require__(546);
-module.exports.easing = __webpack_require__(561);
-module.exports.canvas = __webpack_require__(562);
-module.exports.options = __webpack_require__(563);
+module.exports = __webpack_require__(831);
+module.exports.easing = __webpack_require__(846);
+module.exports.canvas = __webpack_require__(847);
+module.exports.options = __webpack_require__(848);
 
 
 /***/ }),
 
-/***/ 542:
+/***/ 827:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(541);
+var helpers = __webpack_require__(826);
 
 module.exports = {
 	/**
@@ -75,14 +75,14 @@ module.exports = {
 
 /***/ }),
 
-/***/ 543:
+/***/ 828:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var color = __webpack_require__(547);
-var helpers = __webpack_require__(541);
+var color = __webpack_require__(832);
+var helpers = __webpack_require__(826);
 
 function interpolate(start, view, model, ease) {
 	var keys = Object.keys(model);
@@ -198,28 +198,28 @@ module.exports = Element;
 
 /***/ }),
 
-/***/ 544:
+/***/ 829:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {};
-module.exports.Arc = __webpack_require__(568);
-module.exports.Line = __webpack_require__(569);
-module.exports.Point = __webpack_require__(570);
-module.exports.Rectangle = __webpack_require__(571);
+module.exports.Arc = __webpack_require__(853);
+module.exports.Line = __webpack_require__(854);
+module.exports.Point = __webpack_require__(855);
+module.exports.Rectangle = __webpack_require__(856);
 
 
 /***/ }),
 
-/***/ 545:
+/***/ 830:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(541);
+var helpers = __webpack_require__(826);
 
 /**
  * Namespace to hold static tick generation functions
@@ -425,7 +425,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 546:
+/***/ 831:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -730,12 +730,12 @@ helpers.getValueAtIndexOrDefault = helpers.valueAtIndexOrDefault;
 
 /***/ }),
 
-/***/ 547:
+/***/ 832:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* MIT license */
-var convert = __webpack_require__(565);
-var string = __webpack_require__(567);
+var convert = __webpack_require__(850);
+var string = __webpack_require__(852);
 
 var Color = function (obj) {
 	if (obj instanceof Color) {
@@ -1222,11 +1222,11 @@ module.exports = Color;
 
 /***/ }),
 
-/***/ 548:
+/***/ 833:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* MIT license */
-var cssKeywords = __webpack_require__(549);
+var cssKeywords = __webpack_require__(834);
 
 // NOTE: conversions should only return primitive values (i.e. arrays, or
 //       values that give correct `typeof` results).
@@ -2090,7 +2090,7 @@ convert.rgb.gray = function (rgb) {
 
 /***/ }),
 
-/***/ 549:
+/***/ 834:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2250,13 +2250,13 @@ module.exports = {
 
 /***/ }),
 
-/***/ 550:
+/***/ 835:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(541);
+var helpers = __webpack_require__(826);
 
 /**
  * Helper function to get relative position for an event
@@ -2588,15 +2588,15 @@ module.exports = {
 
 /***/ }),
 
-/***/ 551:
+/***/ 836:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(541);
-var basic = __webpack_require__(572);
-var dom = __webpack_require__(573);
+var helpers = __webpack_require__(826);
+var basic = __webpack_require__(857);
+var dom = __webpack_require__(858);
 
 // @TODO Make possible to select another platform at build time.
 var implementation = dom._enabled ? dom : basic;
@@ -2670,18 +2670,18 @@ module.exports = helpers.extend({
 
 /***/ }),
 
-/***/ 558:
+/***/ 843:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ReportsPage; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(42);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_cuestack_cuestack__ = __webpack_require__(49);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_chart_js__ = __webpack_require__(559);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_cuestack_cuestack__ = __webpack_require__(62);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_chart_js__ = __webpack_require__(844);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_chart_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_chart_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__models_stackstatus_model__ = __webpack_require__(144);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__models_cuerate_model__ = __webpack_require__(143);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__models_stackstatus_model__ = __webpack_require__(171);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__models_cuerate_model__ = __webpack_require__(170);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2851,66 +2851,66 @@ ReportsPage = __decorate([
 
 /***/ }),
 
-/***/ 559:
+/***/ 844:
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
  * @namespace Chart
  */
-var Chart = __webpack_require__(560)();
+var Chart = __webpack_require__(845)();
 
-Chart.helpers = __webpack_require__(541);
+Chart.helpers = __webpack_require__(826);
 
 // @todo dispatch these helpers into appropriated helpers/helpers.* file and write unit tests!
-__webpack_require__(564)(Chart);
+__webpack_require__(849)(Chart);
 
-Chart.defaults = __webpack_require__(542);
-Chart.Element = __webpack_require__(543);
-Chart.elements = __webpack_require__(544);
-Chart.Interaction = __webpack_require__(550);
-Chart.platform = __webpack_require__(551);
+Chart.defaults = __webpack_require__(827);
+Chart.Element = __webpack_require__(828);
+Chart.elements = __webpack_require__(829);
+Chart.Interaction = __webpack_require__(835);
+Chart.platform = __webpack_require__(836);
 
-__webpack_require__(574)(Chart);
-__webpack_require__(575)(Chart);
-__webpack_require__(576)(Chart);
-__webpack_require__(577)(Chart);
-__webpack_require__(578)(Chart);
-__webpack_require__(579)(Chart);
-__webpack_require__(580)(Chart);
-__webpack_require__(581)(Chart);
+__webpack_require__(859)(Chart);
+__webpack_require__(860)(Chart);
+__webpack_require__(861)(Chart);
+__webpack_require__(862)(Chart);
+__webpack_require__(863)(Chart);
+__webpack_require__(864)(Chart);
+__webpack_require__(865)(Chart);
+__webpack_require__(866)(Chart);
 
-__webpack_require__(582)(Chart);
-__webpack_require__(583)(Chart);
-__webpack_require__(584)(Chart);
-__webpack_require__(585)(Chart);
-__webpack_require__(586)(Chart);
-__webpack_require__(587)(Chart);
+__webpack_require__(867)(Chart);
+__webpack_require__(868)(Chart);
+__webpack_require__(869)(Chart);
+__webpack_require__(870)(Chart);
+__webpack_require__(871)(Chart);
+__webpack_require__(872)(Chart);
 
 // Controllers must be loaded after elements
 // See Chart.core.datasetController.dataElementType
-__webpack_require__(588)(Chart);
-__webpack_require__(589)(Chart);
-__webpack_require__(590)(Chart);
-__webpack_require__(591)(Chart);
-__webpack_require__(592)(Chart);
-__webpack_require__(593)(Chart);
-__webpack_require__(594)(Chart);
+__webpack_require__(873)(Chart);
+__webpack_require__(874)(Chart);
+__webpack_require__(875)(Chart);
+__webpack_require__(876)(Chart);
+__webpack_require__(877)(Chart);
+__webpack_require__(878)(Chart);
+__webpack_require__(879)(Chart);
 
-__webpack_require__(595)(Chart);
-__webpack_require__(596)(Chart);
-__webpack_require__(597)(Chart);
-__webpack_require__(598)(Chart);
-__webpack_require__(599)(Chart);
-__webpack_require__(600)(Chart);
-__webpack_require__(601)(Chart);
+__webpack_require__(880)(Chart);
+__webpack_require__(881)(Chart);
+__webpack_require__(882)(Chart);
+__webpack_require__(883)(Chart);
+__webpack_require__(884)(Chart);
+__webpack_require__(885)(Chart);
+__webpack_require__(886)(Chart);
 
 // Loading built-it plugins
 var plugins = [];
 
 plugins.push(
-	__webpack_require__(602)(Chart),
-	__webpack_require__(603)(Chart),
-	__webpack_require__(604)(Chart)
+	__webpack_require__(887)(Chart),
+	__webpack_require__(888)(Chart),
+	__webpack_require__(889)(Chart)
 );
 
 Chart.plugins.register(plugins);
@@ -2936,13 +2936,13 @@ Chart.canvasHelpers = Chart.helpers.canvas;
 
 /***/ }),
 
-/***/ 560:
+/***/ 845:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
+var defaults = __webpack_require__(827);
 
 defaults._set('global', {
 	responsive: true,
@@ -2993,13 +2993,13 @@ module.exports = function() {
 
 /***/ }),
 
-/***/ 561:
+/***/ 846:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(546);
+var helpers = __webpack_require__(831);
 
 /**
  * Easing functions adapted from Robert Penner's easing equations.
@@ -3251,13 +3251,13 @@ helpers.easingEffects = effects;
 
 /***/ }),
 
-/***/ 562:
+/***/ 847:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(546);
+var helpers = __webpack_require__(831);
 
 /**
  * @namespace Chart.helpers.canvas
@@ -3473,13 +3473,13 @@ helpers.drawRoundedRectangle = function(ctx) {
 
 /***/ }),
 
-/***/ 563:
+/***/ 848:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(546);
+var helpers = __webpack_require__(831);
 
 /**
  * @alias Chart.helpers.options
@@ -3577,7 +3577,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 564:
+/***/ 849:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3585,9 +3585,9 @@ module.exports = {
 /* global document: false */
 
 
-var color = __webpack_require__(547);
-var defaults = __webpack_require__(542);
-var helpers = __webpack_require__(541);
+var color = __webpack_require__(832);
+var defaults = __webpack_require__(827);
+var helpers = __webpack_require__(826);
 
 module.exports = function(Chart) {
 
@@ -4220,11 +4220,11 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 565:
+/***/ 850:
 /***/ (function(module, exports, __webpack_require__) {
 
-var conversions = __webpack_require__(548);
-var route = __webpack_require__(566);
+var conversions = __webpack_require__(833);
+var route = __webpack_require__(851);
 
 var convert = {};
 
@@ -4305,10 +4305,10 @@ module.exports = convert;
 
 /***/ }),
 
-/***/ 566:
+/***/ 851:
 /***/ (function(module, exports, __webpack_require__) {
 
-var conversions = __webpack_require__(548);
+var conversions = __webpack_require__(833);
 
 /*
 	this function routes a model to all other models.
@@ -4410,11 +4410,11 @@ module.exports = function (fromModel) {
 
 /***/ }),
 
-/***/ 567:
+/***/ 852:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* MIT license */
-var colorNames = __webpack_require__(549);
+var colorNames = __webpack_require__(834);
 
 module.exports = {
    getRgba: getRgba,
@@ -4638,15 +4638,15 @@ for (var name in colorNames) {
 
 /***/ }),
 
-/***/ 568:
+/***/ 853:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var Element = __webpack_require__(543);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var Element = __webpack_require__(828);
+var helpers = __webpack_require__(826);
 
 defaults._set('global', {
 	elements: {
@@ -4753,15 +4753,15 @@ module.exports = Element.extend({
 
 /***/ }),
 
-/***/ 569:
+/***/ 854:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var Element = __webpack_require__(543);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var Element = __webpack_require__(828);
+var helpers = __webpack_require__(826);
 
 var globalDefaults = defaults.global;
 
@@ -4852,15 +4852,15 @@ module.exports = Element.extend({
 
 /***/ }),
 
-/***/ 570:
+/***/ 855:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var Element = __webpack_require__(543);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var Element = __webpack_require__(828);
+var helpers = __webpack_require__(826);
 
 var defaultColor = defaults.global.defaultColor;
 
@@ -4966,14 +4966,14 @@ module.exports = Element.extend({
 
 /***/ }),
 
-/***/ 571:
+/***/ 856:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var Element = __webpack_require__(543);
+var defaults = __webpack_require__(827);
+var Element = __webpack_require__(828);
 
 defaults._set('global', {
 	elements: {
@@ -5191,7 +5191,7 @@ module.exports = Element.extend({
 
 /***/ }),
 
-/***/ 572:
+/***/ 857:
 /***/ (function(module, exports) {
 
 /**
@@ -5213,7 +5213,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 573:
+/***/ 858:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5223,7 +5223,7 @@ module.exports = {
 
 
 
-var helpers = __webpack_require__(541);
+var helpers = __webpack_require__(826);
 
 var EXPANDO_KEY = '$chartjs';
 var CSS_PREFIX = 'chartjs-';
@@ -5671,15 +5671,15 @@ helpers.removeEvent = removeEventListener;
 
 /***/ }),
 
-/***/ 574:
+/***/ 859:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var Element = __webpack_require__(543);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var Element = __webpack_require__(828);
+var helpers = __webpack_require__(826);
 
 defaults._set('global', {
 	plugins: {}
@@ -6053,16 +6053,16 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 575:
+/***/ 860:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* global window: false */
 
 
-var defaults = __webpack_require__(542);
-var Element = __webpack_require__(543);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var Element = __webpack_require__(828);
+var helpers = __webpack_require__(826);
 
 defaults._set('global', {
 	animation: {
@@ -6233,16 +6233,16 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 576:
+/***/ 861:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var helpers = __webpack_require__(541);
-var Interaction = __webpack_require__(550);
-var platform = __webpack_require__(551);
+var defaults = __webpack_require__(827);
+var helpers = __webpack_require__(826);
+var Interaction = __webpack_require__(835);
+var platform = __webpack_require__(836);
 
 module.exports = function(Chart) {
 	var plugins = Chart.plugins;
@@ -7117,13 +7117,13 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 577:
+/***/ 862:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(541);
+var helpers = __webpack_require__(826);
 
 module.exports = function(Chart) {
 
@@ -7455,13 +7455,13 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 578:
+/***/ 863:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(541);
+var helpers = __webpack_require__(826);
 
 module.exports = function(Chart) {
 
@@ -7885,14 +7885,14 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 579:
+/***/ 864:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var helpers = __webpack_require__(826);
 
 module.exports = function(Chart) {
 
@@ -7938,16 +7938,16 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 580:
+/***/ 865:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var Element = __webpack_require__(543);
-var helpers = __webpack_require__(541);
-var Ticks = __webpack_require__(545);
+var defaults = __webpack_require__(827);
+var Element = __webpack_require__(828);
+var helpers = __webpack_require__(826);
+var Ticks = __webpack_require__(830);
 
 defaults._set('scale', {
 	display: true,
@@ -8854,15 +8854,15 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 581:
+/***/ 866:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var Element = __webpack_require__(543);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var Element = __webpack_require__(828);
+var helpers = __webpack_require__(826);
 
 defaults._set('global', {
 	tooltips: {
@@ -9807,14 +9807,14 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 582:
+/***/ 867:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(541);
-var Ticks = __webpack_require__(545);
+var helpers = __webpack_require__(826);
+var Ticks = __webpack_require__(830);
 
 module.exports = function(Chart) {
 
@@ -9947,7 +9947,7 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 583:
+/***/ 868:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10088,15 +10088,15 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 584:
+/***/ 869:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var helpers = __webpack_require__(541);
-var Ticks = __webpack_require__(545);
+var defaults = __webpack_require__(827);
+var helpers = __webpack_require__(826);
+var Ticks = __webpack_require__(830);
 
 module.exports = function(Chart) {
 
@@ -10288,14 +10288,14 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 585:
+/***/ 870:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(541);
-var Ticks = __webpack_require__(545);
+var helpers = __webpack_require__(826);
+var Ticks = __webpack_require__(830);
 
 module.exports = function(Chart) {
 
@@ -10540,15 +10540,15 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 586:
+/***/ 871:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var helpers = __webpack_require__(541);
-var Ticks = __webpack_require__(545);
+var defaults = __webpack_require__(827);
+var helpers = __webpack_require__(826);
+var Ticks = __webpack_require__(830);
 
 module.exports = function(Chart) {
 
@@ -11078,18 +11078,18 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 587:
+/***/ 872:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* global window: false */
 
 
-var moment = __webpack_require__(1);
+var moment = __webpack_require__(2);
 moment = typeof moment === 'function' ? moment : window.moment;
 
-var defaults = __webpack_require__(542);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var helpers = __webpack_require__(826);
 
 // Integer constants are from the ES6 spec.
 var MIN_INTEGER = Number.MIN_SAFE_INTEGER || -9007199254740991;
@@ -11820,15 +11820,15 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 588:
+/***/ 873:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var elements = __webpack_require__(544);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var elements = __webpack_require__(829);
+var helpers = __webpack_require__(826);
 
 defaults._set('bar', {
 	hover: {
@@ -12249,15 +12249,15 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 589:
+/***/ 874:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var elements = __webpack_require__(544);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var elements = __webpack_require__(829);
+var helpers = __webpack_require__(826);
 
 defaults._set('bubble', {
 	hover: {
@@ -12437,15 +12437,15 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 590:
+/***/ 875:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var elements = __webpack_require__(544);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var elements = __webpack_require__(829);
+var helpers = __webpack_require__(826);
 
 defaults._set('doughnut', {
 	animation: {
@@ -12744,15 +12744,15 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 591:
+/***/ 876:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var elements = __webpack_require__(544);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var elements = __webpack_require__(829);
+var helpers = __webpack_require__(826);
 
 defaults._set('line', {
 	showLines: true,
@@ -13085,15 +13085,15 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 592:
+/***/ 877:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var elements = __webpack_require__(544);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var elements = __webpack_require__(829);
+var helpers = __webpack_require__(826);
 
 defaults._set('polarArea', {
 	scale: {
@@ -13315,15 +13315,15 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 593:
+/***/ 878:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var elements = __webpack_require__(544);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var elements = __webpack_require__(829);
+var helpers = __webpack_require__(826);
 
 defaults._set('radar', {
 	scale: {
@@ -13491,13 +13491,13 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 594:
+/***/ 879:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
+var defaults = __webpack_require__(827);
 
 defaults._set('scatter', {
 	hover: {
@@ -13541,7 +13541,7 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 595:
+/***/ 880:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13560,7 +13560,7 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 596:
+/***/ 881:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13578,7 +13578,7 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 597:
+/***/ 882:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13597,7 +13597,7 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 598:
+/***/ 883:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13616,7 +13616,7 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 599:
+/***/ 884:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13635,7 +13635,7 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 600:
+/***/ 885:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13654,7 +13654,7 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 601:
+/***/ 886:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13670,7 +13670,7 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 602:
+/***/ 887:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13682,9 +13682,9 @@ module.exports = function(Chart) {
 
 
 
-var defaults = __webpack_require__(542);
-var elements = __webpack_require__(544);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var elements = __webpack_require__(829);
+var helpers = __webpack_require__(826);
 
 defaults._set('global', {
 	plugins: {
@@ -13999,15 +13999,15 @@ module.exports = function() {
 
 /***/ }),
 
-/***/ 603:
+/***/ 888:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var Element = __webpack_require__(543);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var Element = __webpack_require__(828);
+var helpers = __webpack_require__(826);
 
 defaults._set('global', {
 	legend: {
@@ -14574,15 +14574,15 @@ module.exports = function(Chart) {
 
 /***/ }),
 
-/***/ 604:
+/***/ 889:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(542);
-var Element = __webpack_require__(543);
-var helpers = __webpack_require__(541);
+var defaults = __webpack_require__(827);
+var Element = __webpack_require__(828);
+var helpers = __webpack_require__(826);
 
 defaults._set('global', {
 	title: {
