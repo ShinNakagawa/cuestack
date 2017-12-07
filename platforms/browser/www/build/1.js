@@ -6,9 +6,9 @@ webpackJsonp([1],{
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AddStackPageModule", function() { return AddStackPageModule; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__edit_stack__ = __webpack_require__(842);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__edit_cue__ = __webpack_require__(887);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(53);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -26,28 +26,28 @@ var AddStackPageModule = (function () {
 AddStackPageModule = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["L" /* NgModule */])({
         declarations: [
-            __WEBPACK_IMPORTED_MODULE_0__edit_stack__["a" /* EditStackPage */],
+            __WEBPACK_IMPORTED_MODULE_0__edit_cue__["a" /* EditCuePage */],
         ],
         imports: [
-            __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["g" /* IonicPageModule */].forChild(__WEBPACK_IMPORTED_MODULE_0__edit_stack__["a" /* EditStackPage */]),
+            __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["g" /* IonicPageModule */].forChild(__WEBPACK_IMPORTED_MODULE_0__edit_cue__["a" /* EditCuePage */]),
         ],
         exports: [
-            __WEBPACK_IMPORTED_MODULE_0__edit_stack__["a" /* EditStackPage */]
+            __WEBPACK_IMPORTED_MODULE_0__edit_cue__["a" /* EditCuePage */]
         ]
     })
 ], AddStackPageModule);
 
-//# sourceMappingURL=edit-stack.module.js.map
+//# sourceMappingURL=edit-cue.module.js.map
 
 /***/ }),
 
-/***/ 842:
+/***/ 887:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EditStackPage; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EditCuePage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(53);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__providers_cuestack_cuestack__ = __webpack_require__(62);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -63,8 +63,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var EditStackPage = (function () {
-    function EditStackPage(viewCtrl, navParams, fb, cueStack) {
+var EditCuePage = (function () {
+    function EditCuePage(viewCtrl, navParams, fb, cueStack) {
         this.viewCtrl = viewCtrl;
         this.navParams = navParams;
         this.fb = fb;
@@ -72,65 +72,52 @@ var EditStackPage = (function () {
         var data = navParams.get('card');
         this.card = {
             id: data.id,
-            title: data.title,
-            description: data.description,
+            question: data.question,
+            answer: data.answer,
             imageUrl: data.imageUrl,
-            shareflag: data.shareflag,
         };
-        this.edstatus = data.status;
-        this.idstatus = data.idstatus;
-        this.editStackForm = this.fb.group({
-            'title': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],
-            'description': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],
+        this.idrate = data.idrate;
+        this.edrate = data.rate;
+        this.editCueForm = this.fb.group({
+            'question': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],
+            'answer': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],
             'imageUrl': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],
-            'status': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])],
-            'shareflag': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])]
+            'rate': ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].minLength(1)])]
         });
-        this.title = this.editStackForm.controls['title'];
-        this.description = this.editStackForm.controls['description'];
-        this.imageUrl = this.editStackForm.controls['imageUrl'];
-        this.status = this.editStackForm.controls['status'];
-        this.shareflag = this.editStackForm.controls['shareflag'];
+        this.question = this.editCueForm.controls['question'];
+        this.answer = this.editCueForm.controls['answer'];
+        this.imageUrl = this.editCueForm.controls['imageUrl'];
+        this.rate = this.editCueForm.controls['rate'];
     }
-    EditStackPage.prototype.dismiss = function () {
+    EditCuePage.prototype.dismiss = function () {
         this.viewCtrl.dismiss();
     };
-    EditStackPage.prototype.update = function () {
-        if (this.title.value !== undefined && this.title.value !== '') {
-            this.card.title = this.title.value;
-        }
-        this.card.description = this.description.value;
+    EditCuePage.prototype.update = function () {
+        this.card.question = this.question.value;
+        this.card.answer = this.answer.value;
         this.card.imageUrl = this.imageUrl.value;
-        if (this.status.value !== undefined && this.status.value !== '') {
-            this.edstatus = this.status.value;
-        }
-        if (this.shareflag.value !== undefined && this.shareflag.value !== '') {
-            if (this.shareflag.value === 'public') {
-                this.card.shareflag = true;
-            }
-            else {
-                this.card.shareflag = false;
-            }
+        if (this.rate.value !== undefined && this.rate.value !== '') {
+            this.edrate = this.rate.value;
         }
         //send message to add it into firebase
-        this.cueStack.updateStack(this.card);
-        this.cueStack.updateStackStatus(this.card.id, this.edstatus, this.idstatus);
-        this.viewCtrl.dismiss({ title: "new stack was added" });
+        this.cueStack.updateCue(this.card);
+        this.cueStack.updateCueRate(this.card.id, this.edrate, this.idrate);
+        this.viewCtrl.dismiss({ title: "cue was modified" });
     };
-    return EditStackPage;
+    return EditCuePage;
 }());
-EditStackPage = __decorate([
+EditCuePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* IonicPage */])(),
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-edit-stack',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\list\edit-stack\edit-stack.html"*/'<ion-content>\n  <ion-title>Edit Stack data</ion-title>\n  <form [formGroup]="editStackForm" (ngSubmit)="update()" novalidate>\n    <ion-row>\n      <ion-item>\n        <ion-label for="title"></ion-label>\n        <ion-input type="title" value=\'{{card.title}}\' placeholder="Title" formControlName="title"></ion-input>\n      </ion-item>\n    </ion-row>\n    <ion-row>\n      <ion-item>\n        <ion-label for="description"></ion-label>\n        <ion-input type="description" value=\'{{card.description}}\' placeholder="Description" formControlName="description"></ion-input>\n      </ion-item>\n    </ion-row>\n    <ion-row>\n      <ion-item>\n        <ion-label for="imageUrl"></ion-label>\n        <ion-input type="imageUrl" value=\'{{card.imageUrl}}\' placeholder="ImageUrl" formControlName="imageUrl"></ion-input>\n      </ion-item>\n    </ion-row>\n    <ion-row>\n      <ion-item>\n        <ion-label for="status"></ion-label>\n        <ion-select placeholder="Status" formControlName="status">\n          <ion-option value="all">All</ion-option>\n          <ion-option value="favorite">Favorite</ion-option>\n          <ion-option value="study">Study</ion-option>\n        </ion-select>\n      </ion-item>\n    </ion-row>\n    <ion-row>\n      <ion-item>\n        <ion-label for="shareflag"></ion-label>\n        <ion-select placeholder="Shareflag" formControlName="shareflag">\n          <ion-option value="public">Public</ion-option>\n          <ion-option value="private">Private</ion-option>\n        </ion-select>\n      </ion-item>\n    </ion-row>\n  </form>\n  <ion-row no-padding>\n    <ion-col>\n      <button ion-button block (click)="update()">\n        Update\n      </button>\n    </ion-col>\n    <ion-col text-right>\n      <button ion-button block color="danger" (click)="dismiss()">\n        Cancel\n      </button>\n    </ion-col>\n  </ion-row>\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\list\edit-stack\edit-stack.html"*/
+        selector: 'page-edit-cue',template:/*ion-inline-start:"E:\ionic\CueStacks\src\pages\list-cue\edit-cue\edit-cue.html"*/'<ion-content>\n  <form [formGroup]="editCueForm" (ngSubmit)="submit()" novalidate>      \n    <ion-row>\n      <ion-item>\n        <ion-label for="question"></ion-label>\n        <ion-input type="question" value=\'{{card.question}}\' placeholder="Question" formControlName="question"></ion-input>\n      </ion-item>\n    </ion-row> \n    <ion-row>         \n      <ion-item>\n        <ion-label for="answer"></ion-label>\n        <ion-input type="answer" value=\'{{card.answer}}\' placeholder="Answer" formControlName="answer"></ion-input>\n      </ion-item>\n    </ion-row>\n    <ion-row>         \n      <ion-item>\n        <ion-label for="imageUrl"></ion-label>\n        <ion-input type="imageUrl" value=\'{{card.imageUrl}}\' placeholder="ImageUrl" formControlName="imageUrl"></ion-input>\n      </ion-item>\n    </ion-row>\n    <ion-row>         \n      <ion-item>\n        <ion-label for="rate"></ion-label>\n        <ion-select placeholder="Rate" formControlName="rate">\n          <ion-option value="good">Good</ion-option>\n          <ion-option value="bad">Bad</ion-option>\n          <ion-option value="never shows">Never shows</ion-option>\n        </ion-select>\n      </ion-item>\n    </ion-row>\n  </form>\n  <ion-row no-padding>\n    <ion-col>\n      <button ion-button block (click)="update()">\n        Update\n      </button>\n    </ion-col>\n    <ion-col text-right>\n      <button ion-button block color="danger" (click)="dismiss()">\n        Cancel\n      </button>\n    </ion-col>\n  </ion-row>\n</ion-content>\n'/*ion-inline-end:"E:\ionic\CueStacks\src\pages\list-cue\edit-cue\edit-cue.html"*/
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["n" /* ViewController */],
         __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* NavParams */],
         __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
         __WEBPACK_IMPORTED_MODULE_3__providers_cuestack_cuestack__["a" /* CueStackProvider */]])
-], EditStackPage);
+], EditCuePage);
 
-//# sourceMappingURL=edit-stack.js.map
+//# sourceMappingURL=edit-cue.js.map
 
 /***/ })
 

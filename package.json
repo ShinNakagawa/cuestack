@@ -29,7 +29,7 @@
     "angularfire2": "^4.0.0-rc.2",
     "chart.js": "^2.7.0",
     "connect": "^3.6.5",
-    "cordova-android": "^6.2.3",
+    "cordova-android": "6.3.0",
     "cordova-browser": "5.0.1",
     "cordova-plugin-device": "^1.1.4",
     "cordova-plugin-splashscreen": "^4.0.3",

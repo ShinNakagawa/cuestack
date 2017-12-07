@@ -1,7 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { HttpModule } from '@angular/http';
 //firebase
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
@@ -43,7 +42,6 @@ export const firebaseConfig = {
   ],
   imports: [
     BrowserModule,
-    HttpModule,
     AngularFireModule,
     AngularFireDatabaseModule,
     AngularFireAuthModule,

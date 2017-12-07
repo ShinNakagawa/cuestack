@@ -53,7 +53,12 @@ export class AuthProvider {
     const data = {
       email: email,
       displayName: displayName,
-      status: status
+      status: status,
+      'Rate': {
+        bad: 1,
+        good: 10,
+        never: 100
+      }
     };
 
     this.db.object(path).update(data)

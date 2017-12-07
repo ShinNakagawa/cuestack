@@ -4,6 +4,7 @@ import { AuthProvider } from '../../providers/auth/auth';
 import { CueStackProvider } from '../../providers/cuestack/cuestack';
 import moment from 'moment';
 import { CueRate } from '../../models/cuerate.model';
+import { ListCuePage } from '../list-cue/list-cue';
 
 @IonicPage()
 @Component({
@@ -12,6 +13,7 @@ import { CueRate } from '../../models/cuerate.model';
 })
 export class CuesPage {
   stackData: any;
+  modeType: string;
   currentUserId: string;
   cards: Array<{front: {
                   stackid: string, 
@@ -35,6 +37,7 @@ export class CuesPage {
     private cueStack: CueStackProvider,
     private auth: AuthProvider) {
       this.stackData = navParams.get('stackData');
+      this.modeType = navParams.get('modeType');
       this.currentUserId = '';
       if (this.auth.currentUser) {       
         this.currentUserId = this.cueStack.currentUserId;
@@ -140,6 +143,10 @@ export class CuesPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad CuesPage');
+  }
+
+  openCueList() {
+    this.navCtrl.push(ListCuePage, {title: this.stackData[0].title, id: this.stackData[0].id});
   }
 
   openModalAddCue() {

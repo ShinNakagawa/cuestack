@@ -25329,6 +25329,14 @@ page-login .scroll-content {
   border-radius: 3%;
 }
 
+page-reports .scroll-content {
+  background-color: #f4f4f4;
+}
+
+page-reports ion-card-header {
+  font-weight: bold;
+}
+
 page-signup .scroll-content {
   overflow: hidden;
 }
@@ -25370,12 +25378,4 @@ page-signup .slide-zoom {
 
 page-signup .scroll-content {
   border-radius: 3%;
-}
-
-page-reports .scroll-content {
-  background-color: #f4f4f4;
-}
-
-page-reports ion-card-header {
-  font-weight: bold;
 }

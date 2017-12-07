@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { NavController, ModalController, AlertController, ActionSheetController } from 'ionic-angular';
+import { AlertController } from 'ionic-angular';
 import { AuthProvider } from '../../providers/auth/auth';
 import { CueStackProvider } from '../../providers/cuestack/cuestack';
-import { ListCuePage } from '../list-cue/list-cue';
 import moment from 'moment';
 import { StackStatus } from '../../models/stackstatus.model';
 
@@ -25,11 +24,8 @@ export class ListPage {
   keptCards: any;
   
   constructor(
-    private navCtrl: NavController,
-    private modalCtrl: ModalController,
     private cueStack: CueStackProvider,
     public alertCtrl: AlertController,
-    public actionsheetCtrl: ActionSheetController,
     private auth: AuthProvider) {
       this.checked = false;
       this.value = '1';
@@ -45,6 +41,8 @@ export class ListPage {
         res.forEach(stack => {
           if (stack.statusAry === null || stack.statusAry === undefined){
             console.log('skip to add stack[', stack.id, '] into cards because stack.statusAry is null or undefined.')
+          } else if ( this.keptCards ) {
+            console.log('skip to add stack because it is still in search mode')
           } else {
             let userid = this.cueStack.currentUserId;
             let status = '';
@@ -70,7 +68,6 @@ export class ListPage {
               idstatus: idstatus,
               shareflag: stack.shareflag,
               timeStart: moment(stack.timeStart, 'YYYY-MM-DD').calendar()
-              //timeStart: moment(stack.timeStart, 'YYYY-MM-DD').add(5, 'days').calendar()
             })
           }
         });
@@ -79,38 +76,9 @@ export class ListPage {
   }
 
   cardTapped(event, card) {
-    this.navCtrl.push(ListCuePage, {title: card.title, id: card.id});
-    this.closeMode();    
-  }
-
-  reportsPage(card) {
-    this.modalCtrl.create('ReportsPage', {title: card.title, id: card.id}, { cssClass: 'inset-modal' })
-    .present();
-  }
-
-  edit(card) {
-    this.modalCtrl.create('EditStackPage', { card: card }, { cssClass: 'inset-modal' })
-    .present();
-  }
-
-  openModalAddStack() {
-    let addStackModel = this.modalCtrl.create('AddStackPage', null, { cssClass: 'inset-modal' });
-    addStackModel.onDidDismiss(data => {
-      if (data) {
-        console.log("ListPage::openModalAddStack new stack was added");
-        this.loadCards();
-      }
-    });
-    addStackModel.present();
-  }
-
-  deleteChecked(cards) {
-    cards.forEach(card => { 
-      if (card.checked) {  
-        this.cueStack.deleteStack(card.id);
-      }
-    });
-    this.clearCheck(false);        
+    const alert = this.alertCtrl.create();
+    alert.setTitle(card.title);
+    alert.present();   
   }
 
   checkMode() {    
@@ -124,7 +92,8 @@ export class ListPage {
   }
 
   closeMode() {
-    this.clearCheck(false);           
+    this.clearCheck(false);
+    this.keptCards = null;           
     this.loadCards();          
   }
 
@@ -138,177 +107,65 @@ export class ListPage {
     }   
   }
 
-  setStatus(status: string) {
-    const alert = this.alertCtrl.create();
-    alert.setTitle('Set Status');
+  // Search functions=======================================
+  initializeSearch() {
+    if ( this.keptCards ) {
+      this.cards = this.keptCards;
+    } else {
+      this.keptCards = this.cards;
+    }
+  }
 
-    alert.addInput({
-      type: 'radio',
-      label: 'Favorite',
-      value: 'favorite',
-      checked: (status == 'favorite') ? true : false
-    });
+  getItems(event) {
+    this.initializeSearch();
+    let val = event.target.value;
+    if (!val || !val.trim()) {
+      this.initializeSearch();
+      return;
+    }
+    this.cards = this.query(this.cards, {title: val, description: val});
+  }
 
-    alert.addInput({
-      type: 'radio',
-      label: 'Study',
-      value: 'study',
-      checked: (status == 'study') ? true : false
-    });
-
-    alert.addInput({
-      type: 'radio',
-      label: 'All',
-      value: 'all',
-      checked: (status == 'all') ? true : false
-    });
-
-    alert.addButton('Cancel');
-    alert.addButton({
-      text: 'Ok',
-      handler: (data: any) => {
-        console.log('status data:', data);  
-        this.updateStatus(this.cards, data);
-        this.clearCheck(false);           
+  query(cards: any, params?: any) {
+    if (!params) {
+      return cards;
+    }
+    return cards.filter(item => {
+      for (let key in params) {
+        let field = item[key];
+        if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
+          return item;
+        } else if (field == params[key]) {
+          return item;
+        }
       }
+      return null;
     });
+  }
+
+  onClear(event) {
+    this.initializeSearch();
+    this.keptCards = null;
+    this.loadCards();
+  }
+
+  onCancel(event) {
+    this.initializeSearch();
+    this.keptCards = null;
+    this.loadCards();      
+  }
+  // Search functions=======================================
+
+  edit(card) {
+    const alert = this.alertCtrl.create();
+    alert.setTitle(card.title);
+    alert.present();    
+  }
+
+  report(card) {
+    const alert = this.alertCtrl.create();
+    alert.setTitle(card.title);
     alert.present();
   }
-
-  setShare(sharedflag: boolean) {
-    const alert = this.alertCtrl.create();
-    alert.setTitle('Set Share');
-    alert.addInput({
-      type: 'radio',
-      label: 'Public',
-      value: 'public',
-      checked: (sharedflag == true) ? true : false
-    });
-
-    alert.addInput({
-      type: 'radio',
-      label: 'Private',
-      value: 'private',
-      checked: (sharedflag == false) ? true : false
-    });
-
-    alert.addButton('Cancel');
-    alert.addButton({
-      text: 'Ok',
-      handler: (data: any) => {
-        console.log('share data:', data);
-        let flag = false; 
-        if (data === 'public') {
-          flag = true;
-        }
-        this.updateShare(this.cards, flag);
-        this.clearCheck(false);           
-      }
-    });
-    alert.present();
-  }
-
-  updateStatus(cards, status: string) {
-    cards.forEach(card => {    
-      if (card.checked) {
-        card.idstatus = this.cueStack.updateStackStatus(card.id, status, card.idstatus);
-      }
-    });
-    this.clearCheck(false);        
-  }
-
-  updateShare(cards, sharedflag: boolean) {
-    cards.forEach(card => {    
-      if (card.checked) {
-        this.cueStack.updateStackShare(card.id, sharedflag);
-      }
-    });
-    this.clearCheck(false);        
-  }
-
-  actionSheet1() {
-    const actionsheet = this.actionsheetCtrl.create({
-      title: 'select action',
-      buttons: [
-        {
-          text: 'update status',
-          icon: 'text',
-          handler: () => {
-            this.setStatus('all');
-          }
-        },
-        {
-          text: 'share stacks',
-          icon: 'text',
-          handler: () => {
-            this.setShare(false);
-          }
-        },
-        {
-          text: 'delete',
-          icon: 'trash',
-          handler: () => {
-            this.deleteChecked(this.cards);
-          }
-        },
-        {
-          text: 'cancel',
-          icon: 'close',
-          role: 'destructive',
-          handler: () => {
-            console.log('the user has cancelled the interaction.');
-          }
-        }
-      ]
-    });
-    return actionsheet.present();
-  }
-
-    // Search functions=======================================
-    initializeSearch() {
-      if ( this.keptCards ) {
-        this.cards = this.keptCards;
-      } else {
-        this.keptCards = this.cards;
-      }
-    }
-  
-    getItems(event) {
-      this.initializeSearch();
-      let val = event.target.value;
-      if (!val || !val.trim()) {
-        this.initializeSearch();
-        return;
-      }
-      this.cards = this.query(this.cards, {title: val, description: val});
-    }
-  
-    query(cards: any, params?: any) {
-      if (!params) {
-        return cards;
-      }
-      return cards.filter(item => {
-        for (let key in params) {
-          let field = item[key];
-          if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
-            return item;
-          } else if (field == params[key]) {
-            return item;
-          }
-        }
-        return null;
-      });
-    }
-  
-    onClear(event) {
-      this.initializeSearch();
-      this.keptCards = null;
-    }
-  
-    onCancel(event) {
-      this.initializeSearch();
-      this.keptCards = null;
-    }
-    // Search functions=======================================
 
 }

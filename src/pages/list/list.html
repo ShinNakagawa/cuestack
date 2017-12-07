@@ -10,20 +10,11 @@
             <button ion-button icon-only (click)="searchMode()">
               <ion-icon name='search'></ion-icon>
             </button>
-            <button ion-button icon-only (click)="checkMode()">
-              <ion-icon name='list'></ion-icon>
-            </button>
-            <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">
-              <ion-icon name='add'></ion-icon>
-            </button>     
             </ion-buttons>
         </ion-title>
       </div>
       <div *ngSwitchCase="2">
         <ion-buttons end>
-          <button ion-button icon-only (click)="actionSheet1()">
-            <ion-icon name='beer'></ion-icon>
-          </button>
           <button ion-button icon-only (click)="closeMode()">
             <ion-icon name='close'></ion-icon>
           </button>
@@ -56,7 +47,6 @@
           <img [src]="card.imageUrl" />
         </ion-avatar>
         <ion-label>{{card.title}}</ion-label>
-        <!-- <div item-content>{{card.description}}</div> -->
         <ion-note item-end>Status: {{card.status}}, Share: {{card.shareflag}}</ion-note>     
       </button>
       <ng-template #selectcheck>
@@ -65,17 +55,15 @@
           <img [src]="card.imageUrl" />
         </ion-avatar>
         <h2>{{card.title}}</h2>
-        <!-- <div item-content>{{card.description}}</div> -->
         <p>{{card.description}}</p>
         <ion-note item-end>Status: {{card.status}}, Share: {{card.shareflag}}</ion-note>
       </button>
       </ng-template>
-
       <ion-item-options>
         <button ion-button (click)="edit(card)">
           Edit
         </button>
-        <button ion-button (click)="reportsPage(card)">
+        <button ion-button (click)="report(card)">
           Report
         </button>
       </ion-item-options>

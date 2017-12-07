@@ -103,7 +103,7 @@ export class ListCuePage {
         this.cueStack.deleteCue(card.id);
       }
     });
-    this.clearCheck(false);        
+    this.closeMode();        
   }
 
   checkMode() {    
@@ -117,7 +117,7 @@ export class ListCuePage {
   }
 
   closeMode() {
-    this.clearCheck(false);           
+    this.clearCheck(false);
     this.loadCards();          
   }
 

@@ -9,16 +9,11 @@ import { CueRate } from '../../models/cuerate.model';
 import { StackStatus } from '../../models/stackstatus.model';
 import moment from 'moment';
 
-import { Headers, Http, RequestOptions } from '@angular/http';
-import 'rxjs/add/operator/map';
-
 @Injectable()
 export class CueStackProvider {
   user: firebase.User;
-  private _serviceUrl = 'https://cuestacks.firebaseapp.com/';
   
   constructor(private db: AngularFireDatabase,
-              private http: Http,
               private afAuth: AngularFireAuth ) {
     this.afAuth.authState.subscribe(auth => {
       if (auth !== undefined && auth !== null) {
@@ -35,7 +30,6 @@ export class CueStackProvider {
 
   get currentUserId(): string {
     return this.user !== null ? this.user.uid : '';   
-    //return this.user.uid;
   }
 
   //// ------------ CueRate Table --------------
@@ -157,7 +151,7 @@ export class CueStackProvider {
   //// ------------ Cue Table --------------
 
   //// ------------ Stack Table --------------
-  addStack(title: string, description: string, imageUrl: string, status: string) {  
+  addStack(card: Stack, status: string) {  
     const timestamp = moment(new Date()).format('YYYY-MM-DD');
     //const timestamp = new Date();
     const userid = this.user.uid;
@@ -165,12 +159,12 @@ export class CueStackProvider {
     let key = list.push({
       userid: userid,
       id: 'temp-key',
-      title: title,
-      description: description,
-      imageUrl: imageUrl,
-      status: '',
+      title: card.title,
+      description: card.description,
+      imageUrl: card.imageUrl,
       timeStart: timestamp,
-      shareflag: false,
+      editflag: card.editflag,
+      shareflag: card.shareflag,
     }).key;
     this.updateStackID(key);
     this.addStackStatus(key, status);
@@ -187,20 +181,7 @@ export class CueStackProvider {
     });
   }
 
-  getAllStacks(): Observable<Stack[]> {
-    let headers = new Headers();
-    headers.append('Accept', 'application/json');
-    headers.append('Content-Type', 'application/json');
-
-    headers.append('Access-Control-Allow-Origin', 'https://cuestacks.firebaseapp.com');
-    headers.append('Access-Control-Allow-Credentials', 'true');
-    
-    let options = new RequestOptions({ headers: headers });
-    let url = this._serviceUrl;
-    return this.http.get(url, options).map(res => res.json() );
-  }
-
-  getAllStacks1(): Observable<FirebaseListObservable<Stack[]>> {
+  getAllStacks(): Observable<FirebaseListObservable<Stack[]>> {
     return Observable.create(observer => {
       let refData2: FirebaseListObservable<Stack[]>;
       refData2 = this.db.list('stacks', {
@@ -258,6 +239,7 @@ export class CueStackProvider {
       title: stack.title,
       description: stack.description,
       imageUrl: stack.imageUrl,
+      editflag: stack.editflag,
       shareflag: stack.shareflag
     };
 

@@ -2,28 +2,24 @@
   <ion-navbar>
     <div [ngSwitch]="value">
       <div *ngSwitchCase="1">
-        <button ion-button menuToggle left>
-          <ion-icon name="menu"></ion-icon>
-        </button>
-        <ion-title text-align-center>Cue Stacks</ion-title>
-        <ion-buttons end>
+        <ion-buttons left>
+          <button ion-button icon-only menuToggle="left">
+            <ion-icon name="menu"></ion-icon>
+          </button>
+        </ion-buttons>
+        <ion-title>Cue Stacks</ion-title>
+        <ion-buttons right>
           <button ion-button icon-only (click)="searchMode()">
-            <ion-icon name='search'></ion-icon>
+            <ion-icon name="search"></ion-icon>
           </button>
-          <button ion-button icon-only (click)="checkMode()">
-            <ion-icon name='list'></ion-icon>
+          <button *ngIf="auth.currentUser" ion-button icon-only (click)="actionMenu()">
+            <ion-icon name="more"></ion-icon>
           </button>
-          <!-- <button ion-button icon-only (click)="loadCards()">
-            <ion-icon name='share-alt'></ion-icon>
-          </button> -->
-          <!-- <button *ngIf="auth.currentUser" ion-button icon-only (click)="openModalAddStack()">
-            <ion-icon name='add'></ion-icon>
-          </button>      -->
-        </ion-buttons>       
+        </ion-buttons>
       </div>
       <div *ngSwitchCase="2">
         <ion-buttons end>
-          <button ion-button icon-only (click)="actionSheet1()">
+          <button ion-button icon-only (click)="actionSheet()">
             <ion-icon name='beer'></ion-icon>
           </button>   
           <button ion-button icon-only (click)="closeMode()">
@@ -64,12 +60,29 @@
           {{card.description}}
         </p>
         <p>
-          {{card.status}}
-        </p>  
-        <p>
           {{card.timeStart}}
         </p>  
-        </ion-card-content>
+      </ion-card-content>
+      <ion-row no-padding>
+        <ion-col text-left *ngIf="auth.currentUser">
+          <button ion-button clear small color="danger" icon-left (click)="setStatus(card)">
+            <ion-icon name='car'></ion-icon>
+            {{card.status}}
+          </button>
+        </ion-col>
+        <ion-col text-center *ngIf="card.userid == currentUserId">
+          <button ion-button clear small color="danger" icon-left (click)="report(card)">
+            <ion-icon name='analytics'></ion-icon>
+            Report
+          </button>
+        </ion-col>
+        <ion-col text-right *ngIf="card.userid == currentUserId || ( card.editflag == '1' && auth.currentUser )">
+          <button ion-button clear small color="danger" icon-left (click)="edit(card)">
+            <ion-icon name='document'></ion-icon>
+            Edit
+          </button>
+        </ion-col>
+      </ion-row>
     </div>
   </ion-card>
 

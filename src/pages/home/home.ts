@@ -5,7 +5,6 @@ import { AuthProvider } from '../../providers/auth/auth';
 import { CueStackProvider } from '../../providers/cuestack/cuestack';
 import moment from 'moment';
 import { StackStatus } from '../../models/stackstatus.model';
-import { Stack } from '../../models/stack.model';
 import { Observable, Subscription } from 'rxjs/Rx';
 
 @Component({
@@ -13,14 +12,16 @@ import { Observable, Subscription } from 'rxjs/Rx';
   templateUrl: 'home.html'
 })
 export class HomePage {
-  cards: Array<{id: string, 
+  cards: Array<{id: string,
                 checked: boolean, 
                 title: string, 
                 imageUrl: string, 
                 description: string, 
                 status: string, 
                 idstatus: string, 
-                timeStart: any, 
+                timeStart: any,
+                editflag: string,
+                userid: string,
                 shareflag: boolean}>;
   status: string;
   checked: boolean;
@@ -72,7 +73,7 @@ export class HomePage {
       this.currentUserId = this.cueStack.currentUserId;
       console.log('userid=', this.cueStack.currentUserId);
       this.loadCards();
-    } else if (tick === 2){
+    } else if (tick === 3){
       this.stopTimer();
       // assuming no userID
       console.log('assuming no userID');
@@ -100,7 +101,7 @@ export class HomePage {
 
 loadCards() {
   let userid = this.currentUserId;
-  this.cueStack.getAllStacks1().subscribe(data => {
+  this.cueStack.getAllStacks().subscribe(data => {
     this.cards = [];
     data.subscribe(res => {
       res.forEach(stack =>{
@@ -119,6 +120,12 @@ loadCards() {
               }
             })
           }
+          //update other data
+          checkData[0].title = stack.title;
+          checkData[0].description = stack.description;
+          checkData[0].imageUrl = stack.imageUrl;
+          checkData[0].editflag = stack.editflag;
+          checkData[0].shareflag = stack.shareflag;
         } else if (stack.id === undefined) {
           console.log('stack.id is undefined');
         } else if (stack.id === 'temp-key') {
@@ -126,6 +133,8 @@ loadCards() {
         } else {
           if (stack.statusAry === null || stack.statusAry === undefined){
             console.log('skip to add stack[', stack.id, '] into cards because stack.statusAry is null or undefined.')
+          } else if ( this.keptCards && this.value === '3' ) {
+            console.log('skip to add stack because it is still in search mode')
           } else {
             let status = '';
             let idstatus = '';
@@ -148,6 +157,8 @@ loadCards() {
               imageUrl: stack.imageUrl,
               status: status,
               idstatus: idstatus,
+              editflag: stack.editflag,
+              userid: stack.userid,
               shareflag: stack.shareflag,
               timeStart: moment(stack.timeStart, 'YYYY-MM-DD').calendar()
               //timeStart: moment(stack.timeStart, 'YYYY-MM-DD').add(5, 'days').calendar()
@@ -160,50 +171,6 @@ loadCards() {
       console.log(getAllStacksError);
   });
 }
-
-loadCards1() {
-    this.cards = []; 
-  let data = this.cueStack.getAllStacks();
-    data.subscribe(result => {
-      console.log('result=', result);
-      console.log('result.length=', result.length);
-      let stacks: Stack[];
-      stacks = [];
-      Object.keys(result).map(function(arrayIndex){
-        let array = result[arrayIndex];
-        console.log('array in loop=', array);
-
-        Object.keys(array).map(function(stackIndex){
-          let stack = new Stack;
-          stack = array[stackIndex];
-          console.log('stack in loop=', stack);
-          console.log('stack.id=', stack.id);
-
-          Object.keys(stack.statusAry).map(function(statusIndex){
-            let stackStatus = new StackStatus;
-            stackStatus = stack.statusAry[statusIndex];
-            console.log('stackStatus in loop=', stackStatus);
-            console.log('stackStatus.status=', stackStatus.status);
-          })
-          stacks.push(stack);
-        })
-      });
-      stacks.forEach(stack => {
-        this.cards.push({
-          id: stack.id,
-          checked: false,
-          title: stack.title,
-          description: stack.description,
-          imageUrl: stack.imageUrl,
-          idstatus: '',
-          status: status,
-          shareflag: stack.shareflag,
-          timeStart: moment(stack.timeStart, 'YYYY-MM-DD').calendar()
-        })
-      })       
-    })
-
-  }
 
   openModalAddStack() {
     let addStackModel = this.modalCtrl.create('AddStackPage', null, { cssClass: 'inset-modal' });
@@ -221,7 +188,7 @@ loadCards1() {
     loginModel.onDidDismiss(data => {
       if (data) {
         console.log("HomePage::openModalLogin login");
-        this.loadCards();
+        window.location.reload();
       }
     });
     loginModel.present();
@@ -232,7 +199,7 @@ loadCards1() {
     signupModel.onDidDismiss(data => {
       if (data) {
         console.log("HomePage::openModalSignup signup");
-        this.loadCards();
+        window.location.reload();        
       }
     });
     signupModel.present();
@@ -241,17 +208,21 @@ loadCards1() {
   logout(): void {
     this.auth.logout();
     this.cueStack.logout();
-    this.loadCards();
+    window.location.reload();    
   }
 
   cardTapped(event, card) {
     let stackData = [];
     stackData.push({id: card.id, title: card.title});
-    this.navCtrl.push(CuesPage, {stackData: stackData});
+    let modeType = '';
+    if ( this.currentUserId === card.userid || card.editflag === '1' ) {
+      modeType = 'single';
+    }
+    this.navCtrl.push(CuesPage, {stackData: stackData, modeType: modeType});
     this.closeMode();
   }
 
-  startStudy() {
+  startStudyOnCheck() {
     let stackData = [];
     this.cards.forEach(card => {    
       if (card.checked) {
@@ -259,7 +230,17 @@ loadCards1() {
       }
     });
     this.clearCheck(false);   
-    this.navCtrl.push(CuesPage, {stackData: stackData});    
+    this.navCtrl.push(CuesPage, {stackData: stackData, modeType: 'study'});    
+  }
+
+  startCues(status: string) {
+    let stackData = [];
+    this.cards.forEach(card => {    
+      if (card.status === status) {
+        stackData.push({id: card.id, title: card.title})
+      }
+    });  
+    this.navCtrl.push(CuesPage, {stackData: stackData, modeType: status});    
   }
 
   checkMode() {    
@@ -274,6 +255,7 @@ loadCards1() {
 
   closeMode() {
     this.clearCheck(false);
+    this.keptCards = null;    
     this.loadCards();          
   }
 
@@ -324,16 +306,7 @@ loadCards1() {
     alert.present();
   }
 
-  updateStatus(cards, status: string) {
-    cards.forEach(card => {    
-      if (card.checked) {
-        card.idstatus = this.cueStack.updateStackStatus(card.id, status, card.idstatus);
-      }
-    });
-    this.clearCheck(false);        
-  }
-
-  setStatus(status: string) {
+  setStatusOnCheck(status: string) {
     const alert = this.alertCtrl.create();
     alert.setTitle('Set Status');
 
@@ -363,40 +336,55 @@ loadCards1() {
       text: 'Ok',
       handler: (data: any) => {
         console.log('status data:', data);  
-        this.updateStatus(this.cards, data);
+        this.cards.forEach(card => {    
+          if (card.checked) {
+            card.idstatus = this.cueStack.updateStackStatus(card.id, data, card.idstatus);
+          }
+        });    
         this.clearCheck(false);           
       }
     });
     alert.present();
   }
 
-  actionSheet1() {
+  actionSheet() {
     const actionsheet = this.actionsheetCtrl.create({
       title: 'select action',
       buttons: [
         {
-          text: 'select filter',
-          icon: 'text',
-          handler: () => {
-            this.selectStatus(this.status);
-          }
-        },
-        {
           text: 'update status',
           icon: 'text',
           handler: () => {
-            if (this.currentUserId !== '') {
-              this.setStatus('all');                
-            } else {
+            if (this.currentUserId == null || this.currentUserId == undefined || this.currentUserId == '') {
               alert('Please log in to update status.');                
+            } else {
+              this.setStatusOnCheck('all');                
             }
           }
         },
         {
           text: 'start study',
-          icon: 'text',
+          icon: 'book',
           handler: () => {
-            this.startStudy();
+            this.startStudyOnCheck();
+          }
+        },
+        // {
+        //   text: 'share stacks',
+        //   icon: 'text',
+        //   handler: () => {
+        //     if (this.currentUserId == null || this.currentUserId == undefined || this.currentUserId == '') {
+        //       alert('Please log in to share stack.');                
+        //     } else {
+        //       this.setShareOnCheck(false);
+        //     }
+        //   }
+        // },
+        {
+          text: 'delete',
+          icon: 'trash',
+          handler: () => {
+            this.deleteOnChecked(this.cards);
           }
         },
         {
@@ -410,6 +398,42 @@ loadCards1() {
       ]
     });
     return actionsheet.present();
+  }
+    
+  setStatus(card) {
+    const alert = this.alertCtrl.create();
+    alert.setTitle('Set Status');
+
+    alert.addInput({
+      type: 'radio',
+      label: 'Favorite',
+      value: 'favorite',
+      checked: (card.status == 'favorite') ? true : false
+    });
+
+    alert.addInput({
+      type: 'radio',
+      label: 'Study',
+      value: 'study',
+      checked: (card.status == 'study') ? true : false
+    });
+
+    alert.addInput({
+      type: 'radio',
+      label: 'All',
+      value: 'all',
+      checked: (card.status == 'all') ? true : false
+    });
+
+    alert.addButton('Cancel');
+    alert.addButton({
+      text: 'Ok',
+      handler: (data: any) => {
+        console.log('status data:', data);
+        card.idstatus = this.cueStack.updateStackStatus(card.id, data, card.idstatus);
+      }
+    });
+    alert.present();
   }
 
   // Search functions=======================================
@@ -451,11 +475,153 @@ loadCards1() {
   onClear(event) {
     this.initializeSearch();
     this.keptCards = null;
+    this.loadCards();
   }
 
   onCancel(event) {
     this.initializeSearch();
     this.keptCards = null;
+    this.loadCards();
   }
   // Search functions=======================================
+
+  edit(card) {
+    let editModel = this.modalCtrl.create('EditStackPage', { card: card }, { cssClass: 'inset-modal' });
+    editModel.onDidDismiss(data => {
+      if (data) {
+        console.log('HomePage::EditStackPage data=', data.idstatus);
+        card.idstatus = data.idstatus;
+      }
+    });
+    editModel.present();
+  }
+
+  report(card) {
+    this.modalCtrl.create('ReportsPage', {title: card.title, id: card.id}, { cssClass: 'inset-modal' })
+    .present();
+  }
+
+  // setShareOnCheck(sharedflag: boolean) {
+  //   const alert = this.alertCtrl.create();
+  //   alert.setTitle('Set Share');
+  //   alert.addInput({
+  //     type: 'radio',
+  //     label: 'Public',
+  //     value: 'public',
+  //     checked: (sharedflag == true) ? true : false
+  //   });
+
+  //   alert.addInput({
+  //     type: 'radio',
+  //     label: 'Private',
+  //     value: 'private',
+  //     checked: (sharedflag == false) ? true : false
+  //   });
+
+  //   alert.addButton('Cancel');
+  //   alert.addButton({
+  //     text: 'Ok',
+  //     handler: (data: any) => {
+  //       console.log('share data:', data);
+  //       let flag = false; 
+  //       if (data === 'public') {
+  //         flag = true;
+  //       }
+  //       this.updateShareOnCheck(this.cards, flag);
+  //       this.clearCheck(false);           
+  //     }
+  //   });
+  //   alert.present();
+  // }
+
+  // updateShareOnCheck(cards, sharedflag: boolean) {
+  //   cards.forEach(card => {    
+  //     if (card.checked) {
+  //       if (card.userid === this.currentUserId) {
+  //         this.cueStack.updateStackShare(card.id, sharedflag);
+  //       } else {
+  //         console.log(this.currentUserId, ' attempts to share the card owner[', card.userid, ']');
+  //       }
+  //     }
+  //   });
+  //   this.clearCheck(false);
+  //   this.loadCards();     
+  // }
+
+  deleteOnChecked(cards) {
+    cards.forEach(card => { 
+      if (card.checked) {
+        if (card.userid === this.currentUserId) {
+          this.cueStack.deleteStack(card.id);
+          this.cards.splice(this.cards.indexOf(card), 1);  
+        } else {
+          console.log(this.currentUserId, ' attempts to detele the card owner[', card.userid, ']');
+          let toast = this.toastCtrl.create({
+            message: 'This card can be deleted because this card is not yours.',
+            duration: 3000,
+            position: 'top'
+          });
+          toast.present();
+        }
+      }
+    });
+    this.clearCheck(false);
+  }
+
+  actionMenu() {
+    const actionmenu = this.actionsheetCtrl.create({
+      title: 'select menu',
+      buttons: [
+        {
+          text: 'select',
+          icon: 'list',
+          handler: () => {
+            this.checkMode();
+          }
+        },
+        {
+          text: 'select by filter',
+          icon: 'text',
+          handler: () => {
+            this.selectStatus(this.status);
+          }
+        },
+        {
+          text: 'start study',
+          icon: 'book',
+          handler: () => {
+            this.startCues('study');
+          }
+        },
+        {
+          text: 'start favorite',
+          icon: 'star',
+          handler: () => {
+            this.startCues('favorite');
+          }
+        },
+        {
+          text: 'add new stack',
+          icon: 'add',
+          handler: () => {
+            if (this.currentUserId == null || this.currentUserId == undefined || this.currentUserId == '') {
+              alert('Please log in to add new stack.');                
+            } else {
+              this.openModalAddStack();
+            }
+          }
+        },
+        {
+          text: 'cancel',
+          icon: 'close',
+          role: 'destructive',
+          handler: () => {
+            console.log('the user has cancelled the interaction.');
+          }
+        }
+      ]
+    });
+    return actionmenu.present();
+  }
+  
 }

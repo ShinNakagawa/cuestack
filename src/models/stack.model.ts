@@ -7,5 +7,6 @@ export class Stack {
     userid?: string;
     timeStart?: string; 
     shareflag?: boolean;
+    editflag?: string;
     statusAry?: Array<StackStatus>;  
 }

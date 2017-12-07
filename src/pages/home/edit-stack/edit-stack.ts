@@ -15,6 +15,7 @@ export class EditStackPage {
   description: AbstractControl;
   imageUrl: AbstractControl;
   status: AbstractControl;
+  editflag: AbstractControl;
   shareflag: AbstractControl;
   card: Stack;
   edstatus: string;
@@ -31,6 +32,7 @@ export class EditStackPage {
         title: data.title,
         description: data.description,
         imageUrl: data.imageUrl,
+        editflag: data.editflag,
         shareflag: data.shareflag,
       }
       this.edstatus = data.status;
@@ -40,12 +42,14 @@ export class EditStackPage {
         'description': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
         'imageUrl': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
         'status': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
+        'editflag': ['', Validators.compose([Validators.required, Validators.minLength(1)])],
         'shareflag': ['', Validators.compose([Validators.required, Validators.minLength(1)])]
       });
       this.title = this.editStackForm.controls['title'];  
       this.description = this.editStackForm.controls['description'];  
       this.imageUrl = this.editStackForm.controls['imageUrl'];  
       this.status = this.editStackForm.controls['status'];  
+      this.editflag = this.editStackForm.controls['editflag'];  
       this.shareflag = this.editStackForm.controls['shareflag'];  
     }
 
@@ -60,20 +64,26 @@ export class EditStackPage {
     
     this.card.description = this.description.value;
     this.card.imageUrl = this.imageUrl.value;
-    if (this.status.value !== undefined && this.status.value !== '') {
+    if (this.status !== null && this.status.value !== undefined && this.status.value !== '') {
       this.edstatus = this.status.value;      
     }        
-    if (this.shareflag.value !== undefined && this.shareflag.value !== '') {
+    if (this.shareflag !== null && this.shareflag.value !== undefined && this.shareflag.value !== '') {
       if (this.shareflag.value === 'public') {
         this.card.shareflag = true;
       } else {
         this.card.shareflag = false;      
       }
     }
-
+    if (this.editflag !== null && this.editflag.value !== undefined && this.editflag.value !== '') {
+      if (this.editflag.value === 'full control') {
+        this.card.editflag = '1';
+      } else {
+        this.card.editflag = '0';      
+      }
+    }
     //send message to add it into firebase
     this.cueStack.updateStack(this.card);
     this.cueStack.updateStackStatus(this.card.id, this.edstatus, this.idstatus);    
-    this.viewCtrl.dismiss({title: "new stack was added"});
+    this.viewCtrl.dismiss({idstatus: this.idstatus});
   }
 }
